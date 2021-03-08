@@ -1,16 +1,7 @@
 from db import *
+from environment import *
 import hashlib
 from utils import *
-
-def authenticator(func, user_id: int, pw: str):
-    def wrapper():
-        db = DB()
-        db.connect()
-        date_created = db.select('select date_created from users where user_id = %s and password = %s', params=(user_id, pw), dict_cursor=True)
-        if date_created = tuple():
-            return fail
-        func()
-    return wrapper
 
 
 def get_user_id(email: str):
@@ -54,13 +45,16 @@ class User:
         db.connect()
         if self.user_id is None:
             return fail
-        user_info = db.select('select * from users where user_id = %s and password = %s', params=(self.user_id, hash_password(self.email, self.pw)), dict_cursor=True)
+        user_info = db.select('select * from users where user_id = %s and password = %s and is_verified = true', params=(self.user_id, hash_password(self.email, self.pw)), dict_cursor=True)
         if user_info == tuple():
             return fail
         return user_info
 
 
     def register(self):
+        status = send_email('register.html', self.email, 'Treasure Hunt Account Verification', params=(f'{self.fname} {self.lname}', '\t', '<link>', '\t', '\t'))
+        if not status:
+            return fail
         db = DB()
         db.connect()
         row = {

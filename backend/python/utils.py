@@ -4,7 +4,7 @@ from environment import *
 import mimetypes
 import smtplib
 
-def send_email(file_name: str, receiver_email: str, sender_email=None, subject: str):
+def send_email(file_name: str, receiver_email: str, subject: str, sender_email=None, params=None):
     smtp_config = config.get('smtp')
     final_path = smtp_config.get('file_paths', 'emails') + file_name
 
@@ -16,6 +16,8 @@ def send_email(file_name: str, receiver_email: str, sender_email=None, subject: 
 
     with open(final_path, 'r') as f:
         message = f.read()
+        if params:
+            message.format(params)
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
     msg['From'] = sender_email
