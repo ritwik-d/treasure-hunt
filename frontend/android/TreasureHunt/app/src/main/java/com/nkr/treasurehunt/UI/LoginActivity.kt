@@ -22,9 +22,9 @@ class LoginActivity : AppCompatActivity() {
         val emailOBJ = findViewById<EditText>(R.id.Email)
         val pwdOBJ = findViewById<EditText>(R.id.Password)
 
-        login?.setOnClickListener({ view ->
+        login?.setOnClickListener {
             generateJsonAccountFile(emailOBJ.text.toString(), pwdOBJ.text.toString())
-        })
+        }
     }
 
     companion object {
