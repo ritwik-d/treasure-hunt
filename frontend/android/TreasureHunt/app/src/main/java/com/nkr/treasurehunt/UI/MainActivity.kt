@@ -3,6 +3,7 @@ package com.nkr.treasurehunt.UI
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import com.nkr.treasurehunt.R
@@ -42,5 +43,13 @@ class MainActivity : AppCompatActivity() {
 
         //return the account info
         return accountData
+    }
+
+    fun goToSignUpScreen(view: View) {
+        startActivity(Intent(this, SignupActivity::class.java))
+    }
+
+    fun goToLoginScreen(view: View) {
+        startActivity(Intent(this, LoginActivity::class.java))
     }
 }
