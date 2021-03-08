@@ -4,25 +4,30 @@ from environment import *
 import mimetypes
 import smtplib
 
-config = Config(file_config(''))
-
-def send_email(file_name: str, receiver_email, sender_email=None, subject: str):
+def send_email(file_name: str, receiver_email: str, sender_email=None, subject: str):
     smtp_config = config.get('smtp')
-    final_path = f'''{config.get('file_paths', 'emails')}{file_name}'''
+    final_path = smtp_config.get('file_paths', 'emails') + file_name
+
+    if sender_email is None:
+        sender_email = smtp_config.get('sender')
+    password = smtp_config.get('pw')
+    port = smtp_config.get('port')
     file_type = mimetypes.guess_type(final_path)
+
     with open(final_path, 'r') as f:
         message = f.read()
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
     msg['From'] = sender_email
     msg['To'] = receiver_email
+
     if file_type == 'text/html':
         msg.attach(MIMEText(message, 'html'))
     else:
         msg.attach(MIMEText(message, 'plain'))
 
     try:
-        with smtplib.SMTP(smtp_server, port) as server
+        with smtplib.SMTP(smtp_server, port) as server:
             server.ehlo()
             server.starttls()
             server.ehlo()
@@ -31,3 +36,6 @@ def send_email(file_name: str, receiver_email, sender_email=None, subject: str):
             return True
     except smtplib.SMTPRecipientsRefused:
         return False
+
+fail = {'status': 'failed'}
+suc = ('status': 'success')
