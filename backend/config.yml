@@ -1,3 +1,5 @@
+files:
+  emails: none
 mysql:
   host: none
   pw: none
