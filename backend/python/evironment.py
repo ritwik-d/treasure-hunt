@@ -21,3 +21,5 @@ class Config:
         if type(val) == dict:
             return Config(val)
         return val
+
+config = Config(file_config())

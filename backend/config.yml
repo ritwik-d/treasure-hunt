@@ -1,8 +1,11 @@
-files:
-  emails: none
 mysql:
   host: none
-  pw: none
+  pw: treasurehunt5901
+  user: treasure_hunt
+paths:
+  emails: none
 smtp:
   email: thetreasurehuntteam@gmail.com
+  port: 587
   pw: teamtreasurehunt5901
+  server: smtp.gmail.com
