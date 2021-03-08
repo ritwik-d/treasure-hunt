@@ -1,0 +1,8 @@
+files:
+  emails: none
+mysql:
+  host: none
+  pw: none
+smtp:
+  email: thetreasurehuntteam@gmail.com
+  pw: teamtreasurehunt5901
