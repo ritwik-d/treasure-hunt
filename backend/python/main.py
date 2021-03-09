@@ -16,5 +16,5 @@ async def login(json: LogIn):
 
 @app.post(paths.get('register'))
 async def register(json: Register):
-    user = User(email=json.email, fname=json.fname, lname=json.lname, pw=json.pw)
+    user = User(email=json.email, fname=json.fname, lname=json.lname, pw=json.pw, uname=json.username)
     return user.register()

@@ -10,3 +10,4 @@ class Register(BaseModel):
     fname: str
     lname: str
     pw: str
+    username: str

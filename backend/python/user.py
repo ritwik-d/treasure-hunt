@@ -18,7 +18,7 @@ def hash_password(email: str, password: str):
 
 
 class User:
-    def __init__(self, email=None, fname=None, lname=None, pw=None, user_id=None):
+    def __init__(self, email=None, fname=None, lname=None, pw=None, user_id=None, uname=None):
         self.email = email
         self.fname = fname
         self.lname = lname
@@ -26,6 +26,7 @@ class User:
         if user_id is None:
             user_id = get_user_id(email)
         self.user_id = user_id
+        self.uname = uname
 
 
     def complete_challenge(self, challenge_id: int):
@@ -61,7 +62,8 @@ class User:
             'email': self.email,
             'fname': self.fname,
             'lname': self.lname,
-            'password': hash_password(self.email, self.pw)
+            'password': hash_password(self.email, self.pw),
+            'username': self.uname
         }
         row_id = db.insert('users', row)
         if not row_id is None:
