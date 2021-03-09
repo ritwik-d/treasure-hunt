@@ -17,32 +17,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         //check if there is already a user logged in
-        if (checkForAccount()) {
-            //redirect the user to home screen
-            startActivity(Intent(this, HomeActivity::class.java).apply {
-                putExtra("email", readAccount())
-            })
-        }
-    }
-
-    private fun checkForAccount() : Boolean {
-        //get a reference to the folder
-        val root = File(Environment.getExternalStorageDirectory(), "account")
-
-        //return if it exists or not
-        return root.exists()
-    }
-
-    private fun readAccount() : HashMap<String, String> {
-        //read the json data from the local file
-        val accountData = Gson().fromJson(FileReader(File(File(Environment
-            .getExternalStorageDirectory(),
-            "account"), "account.json"))
-            .readText(), HashMap::class.java)
-                as HashMap<String, String>
-
-        //return the account info
-        return accountData
     }
 
     fun goToSignUpScreen(view: View) {
