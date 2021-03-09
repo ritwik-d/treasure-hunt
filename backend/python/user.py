@@ -89,7 +89,7 @@ class User:
     def get_challenges(self):
         db = DB()
         db.connect()
-        groups = list(db.select("select group_id from user_groups where JSON_CONTAINS(members, '1')", dict_cursor=True)).append(None)
+        groups = list(db.select("select group_id from user_groups where JSON_CONTAINS(members, 1)", dict_cursor=True)).append(None)
         print(groups)
 
 
