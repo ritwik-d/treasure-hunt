@@ -5,19 +5,6 @@ import hashlib
 from utils import *
 
 
-def get_user_id(email: str):
-    db = DB()
-    db.connect()
-    user_id = db.select('select user_id from users where email = %s', params=(email,), dict_cursor=True)
-    if user_id != tuple():
-        return user_id[0].get('user_id')
-
-
-def hash_password(email: str, password: str):
-    salt = hashlib.sha256(email.encode()).hexdigest()[0:4]
-    return hashlib.sha256((salt + password).encode()).hexdigest()
-
-
 class User:
     def __init__(self, email=None, fname=None, lname=None, pw=None, user_id=None, uname=None):
         self.email = email
@@ -30,6 +17,23 @@ class User:
         self.uname = uname
 
 
+    def create_challenge(self, difficulty: str, name: str, puzzle: str, group_name=None):
+        db = DB()
+        db.connect()
+        row = {
+            'creator_id': self.user_id,
+            'difficulty': difficulty,
+            'name': name,
+            'puzzle': puzzle
+        }
+        if not group_name is None:
+            row['group_id'] = get_group_id(group_name)
+        row_id = db.insert('challenges', row)
+        if row_id is None:
+            return fail
+        return suc
+
+
     def login(self):
         db = DB()
         db.connect()
@@ -38,7 +42,7 @@ class User:
         user_info = db.select('select * from users where user_id = %s and password = %s and is_verified = "true"', params=(self.user_id, hash_password(self.email, self.pw)), dict_cursor=True)
         if user_info == tuple():
             return fail
-        db.update('users', {'date_last_login': datetime.datetime.now()}, {'user_id': self.user_id, 'password': self.pw})
+        db.update('users', {'date_last_login': datetime.datetime.now()}, {'user_id': self.user_id, 'password': hash_password(self.email, self.pw)})
         return user_info[0]
 
 
