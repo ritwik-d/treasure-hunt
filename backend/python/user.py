@@ -8,7 +8,6 @@ def get_user_id(email: str):
     db = DB()
     db.connect()
     user_id = db.select('select user_id from users where email = %s', params=(email,), dict_cursor=True)
-    print(user_id)
     if user_id != tuple():
         return user_id[0].get('user_id')
 
@@ -46,12 +45,12 @@ class User:
         db = DB()
         db.connect()
         if self.user_id is None:
-            return 'blach'
+            return fail
         user_info = db.select('select * from users where user_id = %s and password = %s and is_verified = "true"', params=(self.user_id, hash_password(self.email, self.pw)), dict_cursor=True)
         print(user_info)
         if user_info == tuple():
             return fail
-        return user_info
+        return user_info[0]
 
 
     def register(self):
