@@ -18,6 +18,11 @@ class CreateGroup(BaseModel):
     user_id: int
 
 
+class GetChallenges(BaseModel):
+    pw: str
+    user_id: int
+
+
 class LogIn(BaseModel):
     email: str
     pw: str
