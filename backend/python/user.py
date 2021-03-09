@@ -1,7 +1,6 @@
 import datetime
 from db import *
 from environment import *
-import hashlib
 from utils import *
 
 
@@ -19,7 +18,7 @@ def get_user_id(email: str):
     user_id = db.select('select user_id from users where email = %s', params=(email,), dict_cursor=True)
     if user_id != tuple():
         return user_id[0].get('user_id')
-        
+
 
 class User:
     def __init__(self, email=None, fname=None, lname=None, pw=None, user_id=None, uname=None):

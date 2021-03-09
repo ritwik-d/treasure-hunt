@@ -1,6 +1,7 @@
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from environment import *
+import hashlib
 import mimetypes
 import smtplib
 
