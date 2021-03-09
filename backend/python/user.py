@@ -1,3 +1,4 @@
+import datetime
 from db import *
 from environment import *
 import hashlib
@@ -29,27 +30,15 @@ class User:
         self.uname = uname
 
 
-    def complete_challenge(self, challenge_id: int):
-        pass
-
-
-    # def create_challenge(self, name: str, group_id=None, puzzle: str):
-    #     pass
-
-
-    def get_challenges(self):
-        pass
-
-
     def login(self):
         db = DB()
         db.connect()
         if self.user_id is None:
             return fail
         user_info = db.select('select * from users where user_id = %s and password = %s and is_verified = "true"', params=(self.user_id, hash_password(self.email, self.pw)), dict_cursor=True)
-        print(user_info)
         if user_info == tuple():
             return fail
+        db.update('users', {'date_last_login': datetime.datetime.now()}, {'user_id': self.user_id, 'password': self.pw})
         return user_info[0]
 
 
@@ -71,7 +60,3 @@ class User:
         if not row_id is None:
             return suc
         return fail
-
-
-    def upload_pfp(self):
-        pass
