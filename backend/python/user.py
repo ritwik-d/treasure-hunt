@@ -89,14 +89,25 @@ class User:
     def get_challenges(self):
         db = DB()
         db.connect()
-        groups1 = list(db.select("select group_id from user_groups where JSON_CONTAINS(members, '1')"))
-        groups = []
+        groups1 = db.select("select group_id, name from user_groups where JSON_CONTAINS(members, '1')")
+        groups = {}
         for i in groups1:
-            groups.append(i[0])
+            groups[i[0]] = i[1]
         final = {}
-        pub_chals = list(db.select('select name from challenges where group_id = null'))
-        print(pub_chals)
-        print(groups)
+        pub_chals1 = db.select('select name from challenges where group_id = null')
+        pub_chals = []
+        for i in pub_chals1:
+            pub_chals.append(pub_chals1[0])
+        final['Public'] = pub_chals
+
+        for group in groups:
+            group_chals1 = db.select('select name from challenges where group_id = %s', params=(group,))
+            group_chals = []
+            for chal in group_chals1:
+                group_chals.append(chal[0])
+            final[groups[group]] = group_chals
+
+        return final
 
 
     def login(self):
