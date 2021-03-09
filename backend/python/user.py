@@ -12,7 +12,7 @@ def get_user_id(email: str):
         return user_id[0].get('user_id')
 
 
-def hash_password(email: str, pw: str):
+def hash_password(email: str, password: str):
     salt = hashlib.sha256(email.encode()).hexdigest()[0:4]
     return hashlib.sha256((salt + password).encode()).hexdigest()
 
