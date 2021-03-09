@@ -5,6 +5,22 @@ import hashlib
 from utils import *
 
 
+def get_group_id(gname: str):
+    db = DB()
+    db.connect()
+    group_id = db.select('select group_id from user_groups where name = %s', params=(gname,), dict_cursor=True)
+    if group_id != tuple():
+        return group_id[0].get('user_id')
+
+
+def get_user_id(email: str):
+    db = DB()
+    db.connect()
+    user_id = db.select('select user_id from users where email = %s', params=(email,), dict_cursor=True)
+    if user_id != tuple():
+        return user_id[0].get('user_id')
+        
+
 class User:
     def __init__(self, email=None, fname=None, lname=None, pw=None, user_id=None, uname=None):
         self.email = email
