@@ -61,6 +61,7 @@ class User:
         row = {
             'email': self.email,
             'fname': self.fname,
+            'is_verified': 'true',
             'lname': self.lname,
             'password': hash_password(self.email, self.pw),
             'username': self.uname
