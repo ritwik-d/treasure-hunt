@@ -1,6 +1,6 @@
 import yaml
 
-def file_config(path=''):
+def file_config(path='/home/ritwik/git_hub/TreasureHunt/backend/python/config.yml'):
     with open(path, 'r') as f:
         return yaml.load(f, Loader=yaml.FullLoader)
 

@@ -32,8 +32,8 @@ class User:
         pass
 
 
-    def create_challenge(self, name: str, group_id=None, puzzle: str):
-        pass
+    # def create_challenge(self, name: str, group_id=None, puzzle: str):
+    #     pass
 
 
     def get_challenges(self):
@@ -52,9 +52,9 @@ class User:
 
 
     def register(self):
-        status = send_email('register.html', self.email, 'Treasure Hunt Account Verification', params=(f'{self.fname} {self.lname}', '\t', '<link>', '\t', '\t'))
-        if not status:
-            return fail
+        # status = send_email('register.html', self.email, 'Treasure Hunt Account Verification', params=(f'{self.fname} {self.lname}', '\t', '<link>', '\t', '\t'))
+        # if not status:
+        #     return fail
         db = DB()
         db.connect()
         row = {

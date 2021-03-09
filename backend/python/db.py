@@ -6,12 +6,12 @@ db_connections = {}
 class DB:
     def __init__(self, autocommit=True, db_config=None):
         if db_config is None:
-            db_config = config.get('database')
+            db_config = config.get('mysql')
 
         self.host = db_config.get('host')
         self.user = db_config.get('user')
-        self.pw = db_config.get('password')
-        self.name = db_config.get('db')
+        self.pw = db_config.get('pw')
+        self.name = db_config.get('name')
         self.autocommit = autocommit
         self.db = None
 

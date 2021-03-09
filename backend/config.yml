@@ -3,11 +3,12 @@ api:
     login: /login
     register: /register
 mysql:
-  host: none
+  host: 192.168.1.56
+  name: treasure_hunt_db
   pw: treasurehunt5901
   user: treasure_hunt
 paths:
-  emails: none
+  emails: /home/ritwik/git_hub/TreasureHunt/backend/emails/
 smtp:
   email: thetreasurehuntteam@gmail.com
   port: 587

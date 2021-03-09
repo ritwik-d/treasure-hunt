@@ -40,4 +40,4 @@ def send_email(file_name: str, receiver_email: str, subject: str, sender_email=N
         return False
 
 fail = {'status': 'failed'}
-suc = ('status': 'success')
+suc = {'status': 'success'}
