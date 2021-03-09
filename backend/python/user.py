@@ -47,6 +47,7 @@ class User:
         if self.user_id is None:
             return fail
         user_info = db.select('select * from users where user_id = %s and password = %s and is_verified = "true"', params=(self.user_id, hash_password(self.email, self.pw)), dict_cursor=True)
+        print(user_info)
         if user_info == tuple():
             return fail
         return user_info
