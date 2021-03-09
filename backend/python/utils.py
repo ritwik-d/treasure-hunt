@@ -4,6 +4,14 @@ from environment import *
 import hashlib
 import mimetypes
 import smtplib
+import random
+import string
+
+
+def get_rand_string(length: int):
+    chars = [i for i in string.printable[0:62]]
+    random.shuffle(chars)
+    return ''.join(chars[0:length])
 
 
 def hash_password(email: str, password: str):

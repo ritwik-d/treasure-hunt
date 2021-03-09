@@ -42,19 +42,44 @@ class User:
         self.uname = uname
 
 
-    @authenticate(User.user_id, User.pw)
-    def create_challenge(self, difficulty: str, name: str, puzzle: str, group_name=None):
+    # @authenticate(self.user_id, self.pw)
+    def create_challenge(self, difficulty: str, latitude: float, longitude: float, name: str, puzzle: str, group_name=None):
         db = DB()
         db.connect()
         row = {
             'creator_id': self.user_id,
             'difficulty': difficulty,
+            'latitude': latitude,
+            'longitude': longitude,
             'name': name,
             'puzzle': puzzle
         }
         if not group_name is None:
             row['group_id'] = get_group_id(group_name)
         row_id = db.insert('challenges', row)
+        if row_id is None:
+            return fail
+        return suc
+
+
+    def create_group(self, name: str):
+        db = DB()
+        db.connect()
+        join_code = get_rand_string(6)
+        jcodes1 = db.select('select join_code from user_groups', dict_cursor=True)
+        jcodes = []
+        for jcode in jcodes1:
+            jcodes.append(jcode.get('join_code'))
+        while join_code in jcodes:
+            join_code = get_rand_string(6)
+
+        row = {
+            'creator_id': self.user_id,
+            'join_code': join_code,
+            'members': [self.user_id],
+            'name': name
+        }
+        row_id = db.insert('user_groups', row)
         if row_id is None:
             return fail
         return suc

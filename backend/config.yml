@@ -3,6 +3,7 @@ api:
     login: /login
     register: /register
     create_challenge: /create_challenge
+    create_group: /create_group
 mysql:
   host: 192.168.1.56
   name: treasure_hunt_db
