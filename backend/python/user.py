@@ -4,6 +4,16 @@ from environment import *
 from utils import *
 
 
+def authenticate(func, user_id: str, pw: str):
+    def wrapper(*args):
+        db = DB()
+        db.connect()
+        if db.select('select * from users where user_id = %s and pw = %s', params=(user_id, pw), dict_cursor=True) != tuple():
+            func(args)
+        return fail
+    return wrapper
+
+
 def get_group_id(gname: str):
     db = DB()
     db.connect()
@@ -32,6 +42,7 @@ class User:
         self.uname = uname
 
 
+    @authenticate(self.user_id, self.pw)
     def create_challenge(self, difficulty: str, name: str, puzzle: str, group_name=None):
         db = DB()
         db.connect()
