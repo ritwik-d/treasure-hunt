@@ -57,7 +57,7 @@ class User:
         user_info = db.select('select * from users where user_id = %s and password = %s and is_verified = "true"', params=(self.user_id, hash_password(self.email, self.pw)), dict_cursor=True)
         if user_info == tuple():
             return fail
-        db.update('users', {'date_last_login': datetime.datetime.now()}, {'user_id': self.user_id, 'password': hash_password(self.email, self.pw)})
+        db.update('users', {'date_last_login': datetime.datetime.now()}, {'user_id': self.user_id})
         return user_info[0]
 
 
