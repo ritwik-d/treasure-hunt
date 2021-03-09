@@ -1,8 +1,15 @@
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from environment import *
+import hashlib
 import mimetypes
 import smtplib
+
+
+def hash_password(email: str, password: str):
+    salt = hashlib.sha256(email.encode()).hexdigest()[0:4]
+    return hashlib.sha256((salt + password).encode()).hexdigest()
+
 
 def send_email(file_name: str, receiver_email: str, subject: str, sender_email=None, params=None):
     smtp_config = config.get('smtp')

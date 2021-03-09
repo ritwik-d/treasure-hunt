@@ -35,13 +35,18 @@ create table user_groups (
   group_id bigint unsigned not null auto_increment primary key,
   creator_id bigint unsigned not null,
   members json not null,
+  name varchar(50) not null,
   status enum ('active', 'suspended', 'deleted') not null default 'active',
   foreign key (creator_id) references users(user_id)
 ) engine=innodb;
 
+-- create index on name
+create unique index uix_name on user_groups(name);
+
 -- create a table of challenges
 create table challenges (
   challenge_id bigint unsigned not null auto_increment primary key,
+  difficulty enum ('easy', 'medium', 'hard') not null,
   is_active enum ('true', 'false') not null default 'false',
   creator_id bigint unsigned not null,
   group_id bigint unsigned,
@@ -51,6 +56,7 @@ create table challenges (
   foreign key (creator_id) references users(user_id)
 ) engine=innodb;
 
--- create index on group_id and user_id
+-- create index on group_id, user_id, and name
 create index ix_creator_id on challenges(creator_id);
 create index ix_group_id on challenges(group_id);
+create unique index uix_name on challenges(name);

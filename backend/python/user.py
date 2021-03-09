@@ -1,8 +1,25 @@
 import datetime
 from db import *
 from environment import *
-import hashlib
 from utils import *
+
+
+def authenticate(func, user_id: str, pw: str):
+    def wrapper(*args):
+        db = DB()
+        db.connect()
+        if db.select('select * from users where user_id = %s and pw = %s', params=(user_id, pw), dict_cursor=True) != tuple():
+            func(args)
+        return fail
+    return wrapper
+
+
+def get_group_id(gname: str):
+    db = DB()
+    db.connect()
+    group_id = db.select('select group_id from user_groups where name = %s', params=(gname,), dict_cursor=True)
+    if group_id != tuple():
+        return group_id[0].get('user_id')
 
 
 def get_user_id(email: str):
@@ -11,11 +28,6 @@ def get_user_id(email: str):
     user_id = db.select('select user_id from users where email = %s', params=(email,), dict_cursor=True)
     if user_id != tuple():
         return user_id[0].get('user_id')
-
-
-def hash_password(email: str, password: str):
-    salt = hashlib.sha256(email.encode()).hexdigest()[0:4]
-    return hashlib.sha256((salt + password).encode()).hexdigest()
 
 
 class User:
@@ -30,6 +42,24 @@ class User:
         self.uname = uname
 
 
+    @authenticate(User.user_id, User.pw)
+    def create_challenge(self, difficulty: str, name: str, puzzle: str, group_name=None):
+        db = DB()
+        db.connect()
+        row = {
+            'creator_id': self.user_id,
+            'difficulty': difficulty,
+            'name': name,
+            'puzzle': puzzle
+        }
+        if not group_name is None:
+            row['group_id'] = get_group_id(group_name)
+        row_id = db.insert('challenges', row)
+        if row_id is None:
+            return fail
+        return suc
+
+
     def login(self):
         db = DB()
         db.connect()
@@ -38,7 +68,7 @@ class User:
         user_info = db.select('select * from users where user_id = %s and password = %s and is_verified = "true"', params=(self.user_id, hash_password(self.email, self.pw)), dict_cursor=True)
         if user_info == tuple():
             return fail
-        db.update('users', {'date_last_login': datetime.datetime.now()}, {'user_id': self.user_id, 'password': self.pw})
+        db.update('users', {'date_last_login': datetime.datetime.now()}, {'user_id': self.user_id})
         return user_info[0]
 
 
