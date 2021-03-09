@@ -91,7 +91,7 @@ class User:
         db.connect()
         groups1 = list(db.select("select group_id from user_groups where JSON_CONTAINS(members, '1')"))
         groups = []
-        for i groups1:
+        for i in groups1:
             groups.append(i[0])
         final = {}
         pub_chals = list(db.select('select name from challenges where group_id = null'))
