@@ -16,9 +16,13 @@ class SignupActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
+        //create a reference to a button
         val button = findViewById<Button>(R.id.Signup)
+
+        //create a reference to the username input
         val username = findViewById<EditText>(R.id.username)
 
+        //check if the username is unique
         username.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
