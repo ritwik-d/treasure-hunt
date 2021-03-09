@@ -8,6 +8,7 @@ def get_user_id(email: str):
     db = DB()
     db.connect()
     user_id = db.select('select user_id from users where email = %s', params=(email,), dict_cursor=True)
+    print(user_id)
     if user_id != tuple():
         return user_id[0].get('user_id')
 
