@@ -89,7 +89,7 @@ class User:
     def get_challenges(self):
         db = DB()
         db.connect()
-        groups1 = db.select("select group_id, name from user_groups where JSON_CONTAINS(members, '1')")
+        groups1 = db.select(f"select group_id, name from user_groups where JSON_CONTAINS(members, '{self.user_id}')")
         groups = {}
         for i in groups1:
             groups[i[0]] = i[1]
