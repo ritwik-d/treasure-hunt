@@ -1,3 +1,7 @@
+api:
+  paths:
+    login: /login
+    register: /register
 mysql:
   host: none
   pw: treasurehunt5901

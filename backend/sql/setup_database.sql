@@ -13,6 +13,7 @@ grant all on treasure_hunt_db.* to treasure_hunt@localhost;
 -- create a table of users
 create table users (
   user_id bigint unsigned not null auto_increment primary key,
+  username varchar(20) not null,
   date_created datetime not null default current_timestamp,
   date_updated datetime not null default current_timestamp on update current_timestamp,
   date_last_login datetime,
@@ -21,6 +22,7 @@ create table users (
   is_verified enum ('true', 'false') not null default 'false',
   lname varchar(50) not null,
   password char(64) not null,
+  points int unsigned not null default 0,
   picture_extension varchar(8),
   status enum ('active', 'suspended', 'deleted') not null default 'active'
 ) engine=innodb;
@@ -45,7 +47,7 @@ create table challenges (
   group_id bigint unsigned,
   name varchar(25) not null,
   puzzle varchar(50) not null,
-  status enum ('active', 'suspended', 'deleted') not null default 'active'
+  status enum ('active', 'suspended', 'deleted') not null default 'active',
   foreign key (user_id) references users(user_id)
 ) engine=innodb;
 
