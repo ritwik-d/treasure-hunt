@@ -1,6 +1,7 @@
 import datetime
 from db import *
 from environment import *
+import json
 from utils import *
 
 
@@ -76,7 +77,7 @@ class User:
         row = {
             'creator_id': self.user_id,
             'join_code': join_code,
-            'members': [self.user_id],
+            'members': json.dumps([self.user_id]),
             'name': name
         }
         row_id = db.insert('user_groups', row)
