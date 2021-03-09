@@ -42,7 +42,7 @@ class User:
         self.uname = uname
 
 
-    @authenticate(self.user_id, self.pw)
+    @authenticate(User.user_id, User.pw)
     def create_challenge(self, difficulty: str, name: str, puzzle: str, group_name=None):
         db = DB()
         db.connect()
