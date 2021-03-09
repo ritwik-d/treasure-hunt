@@ -94,7 +94,7 @@ class User:
         for i in groups1:
             groups.append(i[0])
         final = {}
-        pub_chals = list(db.select('select name from challenges where group_id = a'))
+        pub_chals = list(db.select('select name from challenges where group_id = null'))
         print(pub_chals)
         print(groups)
 
