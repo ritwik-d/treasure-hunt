@@ -2,7 +2,7 @@
 
 from api_models import *
 from environment import *
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from user import *
 
 app = FastAPI()
@@ -62,10 +62,10 @@ async def login(json: LogIn):
     return user.login()
 
 
-@app.post(paths.get('register'))
-async def register(json: Register):
+@app.post(paths.get('register'), status_code=201)
+async def register(json: Register, response: Response):
     user = User(email=json.email, fname=json.fname, lname=json.lname, pw=json.pw, uname=json.username)
-    return user.register()
+    response.status_code = user.register()
 
 
 @app.post(paths.get('get_user_data'))

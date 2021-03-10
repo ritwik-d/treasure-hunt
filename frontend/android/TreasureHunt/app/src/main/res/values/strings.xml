@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">TreasureHunt</string>
+    <string name="cancel">Cancel</string>
+    <string name="email">Email</string>
+    <string name="logIn">Log In</string>
+    <string name="pw">Password</string>
+    <string name="signUp">Sign Up</string>
+    <string name="username">Username</string>
+
+    <!--    networking -->
+
+    <string name="host">192.168.1.56:8000</string>
 </resources>

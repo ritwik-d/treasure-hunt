@@ -209,5 +209,5 @@ class User:
         }
         row_id = db.insert('users', row)
         if not row_id is None:
-            return suc
-        return fail
+            return 201
+        return 400
