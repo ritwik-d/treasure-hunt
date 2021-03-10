@@ -32,7 +32,7 @@ def get_user_id(email: str):
 
 
 class User:
-    def __init__(self, email=None, fname=None, lname=None, pw=None, user_id=None, uname=None):
+    def __init__(self, email=None, pw=None, user_id=None, uname=None):
         self.email = email
         self.fname = fname
         self.lname = lname
@@ -201,9 +201,7 @@ class User:
         db.connect()
         row = {
             'email': self.email,
-            'fname': self.fname,
             'is_verified': 'true',
-            'lname': self.lname,
             'password': hash_password(self.email, self.pw),
             'username': self.uname
         }

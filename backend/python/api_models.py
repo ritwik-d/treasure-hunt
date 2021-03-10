@@ -64,7 +64,5 @@ class LogIn(BaseModel):
 
 class Register(BaseModel):
     email: str
-    fname: str
-    lname: str
     pw: str
     username: str
