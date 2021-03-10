@@ -4,6 +4,10 @@ api:
     create_group: /create_group
     get_challenge_data: /get_challenge_data
     get_challenges: /get_challenges
+    get_group_data: /get_group_data
+    get_groups: /get_groups
+    get_group_members: /get_group_members
+    get_user_data: /get_user_data
     join_group: /join_group
     login: /login
     register: /register
@@ -14,6 +18,8 @@ mysql:
   user: treasure_hunt
 paths:
   emails: /home/ritwik/git_hub/TreasureHunt/backend/emails/
+security:
+  secret_key: 1p7TqwPUIZxfV09yMzXc
 smtp:
   email: thetreasurehuntteam@gmail.com
   port: 587

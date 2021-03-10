@@ -2,10 +2,25 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from environment import *
 import hashlib
+import json
 import mimetypes
 import smtplib
 import random
 import string
+
+
+def get_jwt(user_id: int):
+    secret_key = config.get('security', 'secret_key')
+    json = {'user_id': user_id}
+    hash = hashlib.sha256((secret_key + json.dumps(json)).encode()).hexdigest()
+    return {'json': json, 'hash': hash}
+
+
+def verify_jwt(hash: str, json: dict):
+    secret_key = config.get('security', 'secret_key')
+    real_hash = hashlib.sha256((secret_key + json.dumps(json)).encode()).hexdigest()
+    if hash == real_hash:
+        return True
 
 
 def get_rand_string(length: int):

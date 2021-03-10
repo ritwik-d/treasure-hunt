@@ -32,6 +32,24 @@ async def get_challenges(json: GetChallenges):
     return user.get_challenges()
 
 
+@app.post(paths.get('get_group_data'))
+async def get_challenge_data(json: GetGroupData):
+    user = User(pw=json.pw, user_id=json.user_id)
+    return user.get_group_data(json.name)
+
+
+@app.post(paths.get('get_groups'))
+async def get_groups(json: GetGroups):
+    user = User(pw=json.pw, user_id=json.user_id)
+    return user.get_groups()
+
+
+@app.post(paths.get('get_group_members'))
+async def get_group_members(json: GetGroupMembers):
+    user = User(pw=json.pw, user_id=json.user_id)
+    return user.get_group_members(json.group_id)
+
+
 @app.post(paths.get('join_group'))
 async def join_group(json: JoinGroup):
     user = User(pw=json.pw, user_id=json.user_id)
@@ -48,3 +66,9 @@ async def login(json: LogIn):
 async def register(json: Register):
     user = User(email=json.email, fname=json.fname, lname=json.lname, pw=json.pw, uname=json.username)
     return user.register()
+
+
+@app.post(paths.get('get_user_data'))
+async def get_user_data(json: GetUserData):
+    user = User(pw=json.pw, user_id=json.user_id)
+    return user.get_user_data()

@@ -5,12 +5,12 @@ import json
 from utils import *
 
 
-def authenticate(func, user_id: str, pw: str):
-    def wrapper(*args):
+def authenticate(func):
+    def wrapper(user, *args, **kwargs):
         db = DB()
         db.connect()
-        if db.select('select * from users where user_id = %s and pw = %s', params=(user_id, pw), dict_cursor=True) != tuple():
-            func(args)
+        if db.select('select * from users where user_id = %s and pw = %s', params=(user.user_id, user.pw), dict_cursor=True) != tuple():
+            return func(user, *args, **kwargs)
         return fail
     return wrapper
 
@@ -43,7 +43,16 @@ class User:
         self.uname = uname
 
 
-    # @authenticate(self.user_id, self.pw)
+    @authenticate
+    def complete_challenge(self, challenge_id: int):
+        db = DB()
+        db.connect()
+        db.delete('challenges', {'challenge_id': challenge_id})
+        points = db.select('select points from users where user_id = %s', params=(self.user_id,))[0][0] + 1
+        db.update('users', {'points', points}, {'user_id': self.user_id})
+
+
+    @authenticate
     def create_challenge(self, difficulty: str, latitude: float, longitude: float, name: str, puzzle: str, group_name=None):
         db = DB()
         db.connect()
@@ -63,6 +72,7 @@ class User:
         return suc
 
 
+    @authenticate
     def create_group(self, name: str):
         db = DB()
         db.connect()
@@ -86,6 +96,7 @@ class User:
         return suc
 
 
+    @authenticate
     def get_challenge_data(self, name: str):
         db = DB()
         db.connect()
@@ -93,6 +104,7 @@ class User:
         return data
 
 
+    @authenticate
     def get_challenges(self):
         db = DB()
         db.connect()
@@ -117,6 +129,43 @@ class User:
         return final
 
 
+    @authenticate
+    def get_groups(self):
+        db = DB()
+        db.connect()
+        groups1 = db.select(f"select name from user_groups where JSON_CONTAINS(members, '{self.user_id}')")
+        groups = []
+        for i in groups1:
+            groups.append(i[0])
+        return groups
+
+
+    @authenticate
+    def get_group_data(self, name: str):
+        db = DB()
+        db.connect()
+        return db.select('select * from user_groups where name = %s', params=(name,), dict_cursor=True)[0]
+
+
+    @authenticate
+    def get_group_members(self, group_id: int):
+        db = DB()
+        db.connect()
+        uids = json.loads(db.select('select members from user_groups where group_id = %s', params=(group_id,), dict_cursor=True)[0].get('members'))
+        names = []
+        for uid in uids:
+            names.append(db.select('select username from users where user_id = %s', params=(uid,))[0][0])
+        return names
+
+
+    @authenticate
+    def get_user_data(self):
+        db = DB()
+        db.connect()
+        return db.select('select * from users from user_id = %s', params=(self.user_id,), dict_cursor=True)[0]
+
+
+    @authenticate
     def join_group(self, join_code: str):
         db = DB()
         db.connect()
@@ -139,9 +188,11 @@ class User:
         if user_info == tuple():
             return fail
         db.update('users', {'date_last_login': datetime.datetime.now()}, {'user_id': self.user_id})
-        return user_info[0]
+        user_info = user_info[0]
+        return user_info
 
 
+    @authenticate
     def register(self):
         # status = send_email('register.html', self.email, 'Treasure Hunt Account Verification', params=(f'{self.fname} {self.lname}', '\t', '<link>', '\t', '\t'))
         # if not status:

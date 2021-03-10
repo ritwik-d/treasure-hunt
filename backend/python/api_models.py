@@ -29,6 +29,28 @@ class GetChallenges(BaseModel):
     user_id: int
 
 
+class GetGroupData(BaseModel):
+    name: str
+    pw: str
+    user_id: int
+
+
+class GetGroups(BaseModel):
+    pw: str
+    user_id: int
+
+
+class GetUserData(BaseModel):
+    pw: str
+    user_id: int
+
+
+class GetGroupMembers(BaseModel):
+    group_id: int
+    pw: str
+    user_id: int
+
+
 class JoinGroup(BaseModel):
     join_code: str
     pw: str

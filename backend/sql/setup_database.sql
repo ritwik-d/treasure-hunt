@@ -53,7 +53,6 @@ create table challenges (
   date_created datetime not null default current_timestamp,
   date_updated datetime not null default current_timestamp on update current_timestamp,
   difficulty enum ('easy', 'medium', 'hard') not null,
-  is_active enum ('true', 'false') not null default 'false',
   creator_id bigint unsigned not null,
   group_id bigint unsigned,
   latitude double(5, 5) not null,
