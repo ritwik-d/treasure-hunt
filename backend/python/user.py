@@ -86,6 +86,13 @@ class User:
         return suc
 
 
+    def get_challenge_data(self, name: str):
+        db = DB()
+        db.connect()
+        data = db.select('select * from challenges where name = %s', params=(name,), dict_cursor=True)[0]
+        return data
+
+
     def get_challenges(self):
         db = DB()
         db.connect()

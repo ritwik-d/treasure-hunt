@@ -20,6 +20,12 @@ async def create_group(json: CreateGroup):
     return user.create_group(json.name)
 
 
+@app.post(paths.get('get_challenge_data'))
+async def get_challenge_data(json: GetChallengeData):
+    user = User(pw=json.pw, user_id=json.user_id)
+    return user.get_challenge_data(json.name)
+
+
 @app.post(paths.get('get_challenges'))
 async def get_challenges(json: GetChallenges):
     user = User(pw=json.pw, user_id=json.user_id)
