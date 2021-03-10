@@ -86,3 +86,14 @@ class DB:
         cursor.execute(sql, params)
         print(f'delete sql: {sql}')
         return cursor.lastrowid
+
+
+    def execute_sql(sql: str, params=None):
+        if self.db is None:
+            return None
+        cursor = self.db.cursor()
+        if params:
+            cursor.execute(sql, params)
+        else:
+            cursor.execute(sql)
+        return cursor.lastrowid

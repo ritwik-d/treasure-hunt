@@ -43,8 +43,9 @@ create table user_groups (
   foreign key (creator_id) references users(user_id)
 ) engine=innodb;
 
--- create index on name
+-- create index on name and join_code
 create unique index uix_name on user_groups(name);
+create unique index uix_join_code on user_groups(join_code);
 
 -- create a table of challenges
 create table challenges (

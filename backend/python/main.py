@@ -26,6 +26,12 @@ async def get_challenges(json: GetChallenges):
     return user.get_challenges()
 
 
+@app.post(paths.get('join_group'))
+async def join_group(json: JoinGroup):
+    user = User(pw=json.pw, user_id=json.user_id)
+    return user.join_group(json.join_code)
+
+
 @app.post(paths.get('login'))
 async def login(json: LogIn):
     user = User(email=json.email, pw=json.pw)

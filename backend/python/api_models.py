@@ -23,6 +23,12 @@ class GetChallenges(BaseModel):
     user_id: int
 
 
+class JoinGroup(BaseModel):
+    join_code: str
+    pw: str
+    user_id: int
+
+
 class LogIn(BaseModel):
     email: str
     pw: str
