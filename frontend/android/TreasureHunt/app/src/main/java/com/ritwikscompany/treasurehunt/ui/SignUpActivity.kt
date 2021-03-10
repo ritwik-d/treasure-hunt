@@ -7,7 +7,6 @@ import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import com.github.kittinunf.fuel.Fuel
 import com.google.gson.Gson
 import com.ritwikscompany.treasurehunt.R
@@ -83,6 +82,6 @@ class SignUpActivity : AppCompatActivity() {
             startActivity(Intent(ctx, MainActivity::class.java))
         }
 
-        Toast.makeText(ctx, "ERROR", Toast.LENGTH_LONG).show()
+        Toast.makeText(ctx, "An account has already been created with this email", Toast.LENGTH_LONG).show()
     }
 }
