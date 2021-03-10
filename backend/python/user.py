@@ -175,7 +175,7 @@ class User:
         if self.user_id in json.loads(group[0].get('members')):
             return {'status': 'alreadyjoined'}
 
-        db.update('user_groups', {'members': db.select("select JSON_ARRAY_APPEND(members, '$', %s) as 'result' from user_groups where group_id = %s", params=(self.user_id, group[0].get('group_id')))[0][0]}, {'group_id': group[0].get('group_id')})
+        db.update('user_groups', {'members': db.select("select JSON_ARRAY_APPEND(members, '$', %s) as 'result' from user_groups where group_id = %s", params=(self.user_id, group[0].get('group_id')), dict_cursor=True)[0].get('result')}, {'group_id': group[0].get('group_id')})
         return suc
 
 
