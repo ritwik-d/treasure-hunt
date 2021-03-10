@@ -116,7 +116,10 @@ class User:
         group = db.select('select * from user_groups where join_code = %s', params=(join_code,), dict_cursor=True)
         if group == tuple():
             return {'status': 'nogroup'}
-        print(json.loads(group[0].get('members')))
+        if self.user_id in json.loads(group[0].get('members')):
+            return {'status': 'alreadyjoined'}
+
+        db.update('user_groups', {'members': db.select("select JSON_ARRAY_APPEND(members, '$', %s) as 'result' from user_groups where group_id = %s", params=(self.user_id, group[0].get('group_id')))[0][0]}, {'group_id': group[0].get('group_id')})
 
 
     def login(self):
