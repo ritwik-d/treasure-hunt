@@ -110,6 +110,15 @@ class User:
         return final
 
 
+    def join_group(self, join_code: str):
+        db = DB()
+        db.connect()
+        group = db.select('select * from user_groups where join_code = %s', params=(join_code,), dict_cursor=True)
+        if group = tuple():
+            return {'status': 'nogroup'}
+        print(json.loads(group[0].get('members')))
+
+
     def login(self):
         db = DB()
         db.connect()
