@@ -75,7 +75,6 @@ class SignUpActivity : AppCompatActivity() {
             "pw" to pw,
             "username" to username
         ))
-        println("bodyjson: $bodyJson")
 
         CoroutineScope(Dispatchers.IO).launch {
             val (request, response, result) = Fuel.post("http://192.168.1.56:8000/register")
@@ -85,15 +84,13 @@ class SignUpActivity : AppCompatActivity() {
             withContext(Dispatchers.Main) {
                 runOnUiThread {
                     val status = response.statusCode
-                    println("status: $status")
-                    println("request: $request")
-                    println("response: $response")
-                    println("result: $result")
                     if (status == 201) {
                         startActivity(Intent(ctx, MainActivity::class.java))
                     }
 
-                    Toast.makeText(ctx, "An account has already been created with this email", Toast.LENGTH_LONG).show()
+                    else if (status == 400) {
+                        Toast.makeText(ctx, "An account has already been created with this email", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }
