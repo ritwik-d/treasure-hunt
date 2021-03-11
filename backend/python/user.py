@@ -206,3 +206,22 @@ class User:
         if not row_id is None:
             return 201
         return 400
+
+    def get_username(self, username: str):
+        db = DB()
+        db.connect()
+        user_info = db.select('select * from users where username = "' + username + '"',
+        params=(self.user_id, hash_password(self.email, self.pw)), dict_cursor=True)
+        if user_info == tuple():
+            return {'status': 404}
+
+        return {'status' : 201, 'body' : True}
+
+    def get_email(self, email: str):
+        db = DB()
+        db.connect()
+        user_info = db.select('select * from users where email = "' + email + '"')
+        if user_info == tuple():
+            return {'status': 404}
+
+        return {'status' : 201, 'body' : True}
