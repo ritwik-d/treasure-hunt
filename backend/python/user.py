@@ -207,21 +207,22 @@ class User:
             return 201
         return 400
 
-    def get_username(self, username: str):
+
+    def verify_username(self):
         db = DB()
         db.connect()
-        user_info = db.select('select * from users where username = "' + username + '"',
-        params=(self.user_id, hash_password(self.email, self.pw)), dict_cursor=True)
-        if user_info == tuple():
-            return {'status': 404}
+        uname = db.select('select username from users where username = %s', params=(self.uname,))
+        if uname == tuple():
+            return {'status': 200}
 
-        return {'status' : 201, 'body' : True}
+        return {'status': 400}
 
-    def get_email(self, email: str):
+
+    def verify_email(self):
         db = DB()
         db.connect()
-        user_info = db.select('select * from users where email = "' + email + '"')
-        if user_info == tuple():
-            return {'status': 404}
+        email = db.select('select email from users where email = %s', params=(self.email,))
+        if email == tuple():
+            return {'status': 200}
 
-        return {'status' : 201, 'body' : True}
+        return {'status': 400}

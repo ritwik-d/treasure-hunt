@@ -66,3 +66,11 @@ class Register(BaseModel):
     email: str
     pw: str
     username: str
+
+
+class VerifyEmail(BaseModel):
+    email: str
+
+
+class VerifyUsername(BaseModel):
+    username: str

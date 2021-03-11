@@ -80,6 +80,10 @@ class SignUpActivity : AppCompatActivity() {
                             ).show()
                         }
                     }
+
+                    else {
+                        Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }

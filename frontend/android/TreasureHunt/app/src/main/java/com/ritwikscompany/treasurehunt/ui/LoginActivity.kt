@@ -56,7 +56,10 @@ class LoginActivity : AppCompatActivity() {
                             val (bytes, error) = result
                             if (bytes != null) {
                                 val userData = Gson().fromJson(String(bytes), HashMap::class.java) as HashMap<String, Any>
-                                println(userData)
+                                val intent = Intent(ctx, HomeActivity::class.java).apply {
+                                    putExtra("userData", userData)
+                                }
+                                startActivity(intent)
                             }
 
                             else {
@@ -68,8 +71,9 @@ class LoginActivity : AppCompatActivity() {
                             Toast.makeText(ctx, "Log In Failure", Toast.LENGTH_LONG).show()
                         }
                     }
+
                     else {
-                        Toast.makeText(ctx, "Log In Failure", Toast.LENGTH_LONG).show()
+                        Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
                     }
                 }
             }

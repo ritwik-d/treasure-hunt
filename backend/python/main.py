@@ -50,6 +50,12 @@ async def get_group_members(json: GetGroupMembers):
     return user.get_group_members(json.group_id)
 
 
+@app.post(paths.get('get_user_data'))
+async def get_user_data(json: GetUserData):
+    user = User(pw=json.pw, user_id=json.user_id)
+    return user.get_user_data()
+
+
 @app.post(paths.get('join_group'))
 async def join_group(json: JoinGroup):
     user = User(pw=json.pw, user_id=json.user_id)
@@ -70,7 +76,13 @@ async def register(json: Register, response: Response):
     response.status_code = user.register()
 
 
-@app.post(paths.get('get_user_data'))
-async def get_user_data(json: GetUserData):
-    user = User(pw=json.pw, user_id=json.user_id)
-    return user.get_user_data()
+@app.post(paths.get('verify_email'))
+async def verify_email(json: VerifyEmail, response: Response):
+    user = User(email=json.email)
+    response.status_code = user.verify_email().get('status')
+
+
+@app.post(paths.get('verify_username'))
+async def verify_username(json: VerifyUsername, repsonse: Response):
+    user = User(uname=json.username)
+    repsonse.status_code = user.verify_username().get('status')

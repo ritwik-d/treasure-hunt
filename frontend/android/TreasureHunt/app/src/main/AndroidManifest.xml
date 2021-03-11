@@ -2,14 +2,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ritwikscompany.treasurehunt">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
-        android:theme="@style/Theme.TreasureHunt">
+        android:theme="@style/Theme.TreasureHunt"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".ui.MyChallengesActivity"></activity>
+        <activity android:name=".ui.PickChallengeActivity" />
+        <activity android:name=".ui.GroupsActivity" />
+        <activity android:name=".ui.HomeActivity" />
         <activity android:name=".ui.SignUpActivity" />
         <activity android:name=".ui.LoginActivity" />
         <activity android:name=".ui.MainActivity">
@@ -20,6 +26,5 @@
             </intent-filter>
         </activity>
     </application>
-    <uses-permission android:name="android.permission.INTERNET"/>
 
 </manifest>
