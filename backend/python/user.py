@@ -34,8 +34,6 @@ def get_user_id(email: str):
 class User:
     def __init__(self, email=None, pw=None, user_id=None, uname=None):
         self.email = email
-        self.fname = fname
-        self.lname = lname
         self.pw = pw
         if user_id is None:
             user_id = get_user_id(email)

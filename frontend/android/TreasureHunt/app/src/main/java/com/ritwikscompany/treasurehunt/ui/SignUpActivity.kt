@@ -10,6 +10,10 @@ import android.widget.Toast
 import com.github.kittinunf.fuel.Fuel
 import com.google.gson.Gson
 import com.ritwikscompany.treasurehunt.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SignUpActivity : AppCompatActivity() {
 
@@ -71,17 +75,27 @@ class SignUpActivity : AppCompatActivity() {
             "pw" to pw,
             "username" to username
         ))
+        println("bodyjson: $bodyJson")
 
-        val (request, response, result) = Fuel.post("${getString(R.string.host)}/register")
-            .body(bodyJson)
-            .response()
+        CoroutineScope(Dispatchers.IO).launch {
+            val (request, response, result) = Fuel.post("http://192.168.1.56:8000/register")
+                .body(bodyJson)
+                .response()
 
-        val status = response.statusCode
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    val status = response.statusCode
+                    println("status: $status")
+                    println("request: $request")
+                    println("response: $response")
+                    println("result: $result")
+                    if (status == 201) {
+                        startActivity(Intent(ctx, MainActivity::class.java))
+                    }
 
-        if (status == 201) {
-            startActivity(Intent(ctx, MainActivity::class.java))
+                    Toast.makeText(ctx, "An account has already been created with this email", Toast.LENGTH_LONG).show()
+                }
+            }
         }
-
-        Toast.makeText(ctx, "An account has already been created with this email", Toast.LENGTH_LONG).show()
     }
 }
