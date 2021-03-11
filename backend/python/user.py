@@ -221,7 +221,7 @@ class User:
     def verify_email(self):
         db = DB()
         db.connect()
-        email = db.select('select email from users where email = %s', params=(self.email))
+        email = db.select('select email from users where email = %s', params=(self.email,))
         if email == tuple():
             return {'status': 200}
 
