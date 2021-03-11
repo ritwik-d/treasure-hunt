@@ -190,7 +190,6 @@ class User:
         return user_info
 
 
-    @authenticate
     def register(self):
         # status = send_email('register.html', self.email, 'Treasure Hunt Account Verification', params=(f'{self.fname} {self.lname}', '\t', '<link>', '\t', '\t'))
         # if not status:
