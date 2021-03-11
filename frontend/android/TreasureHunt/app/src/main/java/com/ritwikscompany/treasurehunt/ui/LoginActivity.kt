@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.core.isSuccessful
 import com.google.gson.Gson
 import com.ritwikscompany.treasurehunt.R
 import kotlinx.coroutines.CoroutineScope
@@ -44,16 +45,30 @@ class LoginActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             val (request, response, result) = Fuel.post("${getString(R.string.host)}/login")
                 .body(bodyJson)
+                .header("Content-Type" to "application/json")
                 .response()
 
             withContext(Dispatchers.Main) {
                 runOnUiThread {
-                    val status = response.statusCode
-                    if (status == 200) {
-                        println("response body type: ${response.body().javaClass.name}")
-                    }
+                    if (response.isSuccessful) {
+                        val status = response.statusCode
+                        if (status == 200) {
+                            val (bytes, error) = result
+                            if (bytes != null) {
+                                val userData = Gson().fromJson(String(bytes), HashMap::class.java) as HashMap<String, Any>
+                                println(userData)
+                            }
 
-                    else if (status == 404) {
+                            else {
+                                Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
+                            }
+                        }
+
+                        else if (status == 404) {
+                            Toast.makeText(ctx, "Log In Failure", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                    else {
                         Toast.makeText(ctx, "Log In Failure", Toast.LENGTH_LONG).show()
                     }
                 }
@@ -72,5 +87,7 @@ class LoginActivity : AppCompatActivity() {
         val pw = pwET.text.toString()
 
         // make login api call
+
+        httpCall(email, pw)
     }
 }

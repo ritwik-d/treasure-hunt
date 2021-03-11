@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.core.isSuccessful
 import com.google.gson.Gson
 import com.ritwikscompany.treasurehunt.R
 import kotlinx.coroutines.CoroutineScope
@@ -46,17 +47,22 @@ class SignUpActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             val (request, response, result) = Fuel.post("${getString(R.string.host)}/register")
                 .body(bodyJson)
+                .header("Content-Type" to "application/json")
                 .response()
 
             withContext(Dispatchers.Main) {
                 runOnUiThread {
-                    val status = response.statusCode
-                    if (status == 201) {
-                        startActivity(Intent(ctx, LoginActivity::class.java))
-                    }
-
-                    else if (status == 400) {
-                        Toast.makeText(ctx, "An account has already been created with this email", Toast.LENGTH_LONG).show()
+                    if (response.isSuccessful) {
+                        val status = response.statusCode
+                        if (status == 201) {
+                            startActivity(Intent(ctx, LoginActivity::class.java))
+                        } else if (status == 400) {
+                            Toast.makeText(
+                                ctx,
+                                "An account has already been created with this email",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
                     }
                 }
             }
