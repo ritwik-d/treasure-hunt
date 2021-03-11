@@ -27,6 +27,7 @@ create table users (
 
 -- create unique index on email
 create unique index uix_email on users(email);
+create unique index uix_username on users(username);
 
 -- create a table of groups
 create table user_groups (

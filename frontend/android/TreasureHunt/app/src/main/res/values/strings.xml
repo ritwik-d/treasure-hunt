@@ -10,4 +10,11 @@
     <!--    networking -->
 
     <string name="host">http://192.168.1.56:8000</string>
+
+    <!--   home screen -->
+
+    <string name="feedback">Feedback</string>
+    <string name="findChallenge">Find Challenge</string>
+    <string name="groups">Groups</string>
+    <string name="myChallenge">My Challenges</string>
 </resources>
