@@ -181,13 +181,13 @@ class User:
         db = DB()
         db.connect()
         if self.user_id is None:
-            return fail
+            return {'status': 404}
         user_info = db.select('select * from users where user_id = %s and password = %s and is_verified = "true"', params=(self.user_id, hash_password(self.email, self.pw)), dict_cursor=True)
         if user_info == tuple():
-            return fail
+            return {'status': 404}
         db.update('users', {'date_last_login': datetime.datetime.now()}, {'user_id': self.user_id})
         user_info = user_info[0]
-        return user_info
+        return {'status': 200, 'body': user_info}
 
 
     def register(self):

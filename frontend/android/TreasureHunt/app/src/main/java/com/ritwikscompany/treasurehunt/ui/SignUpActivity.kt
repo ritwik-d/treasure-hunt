@@ -37,6 +37,33 @@ class SignUpActivity : AppCompatActivity() {
     }
 
 
+    private fun httpCall(email: String, pw: String, username: String) {
+        val bodyJson = Gson().toJson(hashMapOf(
+            "email" to email,
+            "pw" to pw,
+            "username" to username
+        ))
+        CoroutineScope(Dispatchers.IO).launch {
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/register")
+                .body(bodyJson)
+                .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    val status = response.statusCode
+                    if (status == 201) {
+                        startActivity(Intent(ctx, LoginActivity::class.java))
+                    }
+
+                    else if (status == 400) {
+                        Toast.makeText(ctx, "An account has already been created with this email", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    }
+
+
     private fun signUpOnClick() {
         // get ui objects
 
@@ -70,29 +97,6 @@ class SignUpActivity : AppCompatActivity() {
 
         // makes api call
 
-        val bodyJson = Gson().toJson(hashMapOf(
-            "email" to email,
-            "pw" to pw,
-            "username" to username
-        ))
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("http://192.168.1.56:8000/register")
-                .body(bodyJson)
-                .response()
-
-            withContext(Dispatchers.Main) {
-                runOnUiThread {
-                    val status = response.statusCode
-                    if (status == 201) {
-                        startActivity(Intent(ctx, MainActivity::class.java))
-                    }
-
-                    else if (status == 400) {
-                        Toast.makeText(ctx, "An account has already been created with this email", Toast.LENGTH_LONG).show()
-                    }
-                }
-            }
-        }
+        httpCall(email, pw, username)
     }
 }

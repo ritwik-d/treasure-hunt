@@ -57,12 +57,14 @@ async def join_group(json: JoinGroup):
 
 
 @app.post(paths.get('login'))
-async def login(json: LogIn):
+async def login(json: LogIn, response: Response):
     user = User(email=json.email, pw=json.pw)
-    return user.login()
+    request = user.login()
+    response.status_code = request.get('status')
+    return request.get('body')
 
 
-@app.post(paths.get('register'), status_code=201)
+@app.post(paths.get('register'))
 async def register(json: Register, response: Response):
     user = User(email=json.email, pw=json.pw, uname=json.username)
     response.status_code = user.register()
