@@ -3,6 +3,8 @@ package com.ritwikscompany.treasurehunt.ui
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
@@ -30,6 +32,20 @@ class SignUpActivity : AppCompatActivity() {
         findViewById<Button>(R.id.su_sign_up).setOnClickListener {
             signUpOnClick()
         }
+
+        val emailET = findViewById<EditText>(R.id.su_email)
+        val pwET = findViewById<EditText>(R.id.su_pw)
+        val usernameET = findViewById<EditText>(R.id.su_username)
+
+        emailET.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                TODO("Configure Database and Api")
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
     }
 
 
