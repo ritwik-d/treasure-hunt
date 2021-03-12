@@ -10,6 +10,7 @@ import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.isSuccessful
 import com.google.gson.Gson
 import com.ritwikscompany.treasurehunt.R
+import com.ritwikscompany.treasurehunt.utils.Account
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,6 +22,7 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+        val emailString = intent.getStringExtra("email")
 
         findViewById<Button>(R.id.log_cancel).setOnClickListener {
             cancelOnClick()
@@ -28,6 +30,12 @@ class LoginActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.log_log_in).setOnClickListener {
             logInOnClick()
+        }
+
+        val emailET = findViewById<EditText>(R.id.log_email)
+
+        if (emailString != null) {
+            emailET.setText(emailString)
         }
     }
 
@@ -56,14 +64,17 @@ class LoginActivity : AppCompatActivity() {
                             val (bytes, error) = result
                             if (bytes != null) {
                                 val userData = Gson().fromJson(String(bytes), HashMap::class.java) as HashMap<String, Any>
+                                val user = Account(userData.get("email") as String,
+                                    userData.get("pw") as String, "")
                                 val intent = Intent(ctx, HomeActivity::class.java).apply {
-                                    putExtra("userData", userData)
+                                    putExtra("userData", user.toSer())
                                 }
                                 startActivity(intent)
                             }
 
                             else {
                                 Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
+                                println("yes")
                             }
                         }
 
