@@ -71,7 +71,7 @@ class User:
 
 
     @authenticate
-    def create_group(self, name: str):
+    def create_group(self, name: str, description=None):
         db = DB()
         db.connect()
         join_code = get_rand_string(6)
@@ -84,6 +84,7 @@ class User:
 
         row = {
             'creator_id': self.user_id,
+            'description': description,
             'join_code': join_code,
             'members': json.dumps([self.user_id]),
             'name': name
@@ -92,6 +93,16 @@ class User:
         if row_id is None:
             return fail
         return suc
+
+
+    @authenticate
+    def delete_challenge(self, challenge_id: int):
+        db = DB()
+        db.connect()
+        row_id = db.delete('challenges', {'challenge_id': challenge_id, 'creator_id': self.user_id})
+        if row_id is None:
+            return {'status': 400}
+        return {'status': 200}
 
 
     @authenticate
@@ -124,7 +135,7 @@ class User:
                 group_chals.append(chal[0][0])
             final[groups[group]] = group_chals
 
-        return final
+        return {'body': final, 'status': 200}
 
 
     @authenticate
@@ -154,6 +165,13 @@ class User:
         for uid in uids:
             names.append(db.select('select username from users where user_id = %s', params=(uid,))[0][0])
         return names
+
+
+    @authenticate
+    def get_user_challenges(self):
+        db = DB()
+        db.connect()
+        return {'body': list(db.select('select * from challenges where creator_id = %s', params=(self.user_id,), dict_cursor=True)), 'status': 200}
 
 
     @authenticate

@@ -35,6 +35,7 @@ create table user_groups (
   creator_id bigint unsigned not null,
   date_created datetime not null default current_timestamp,
   date_updated datetime not null default current_timestamp on update current_timestamp,
+  description varchar(500),
   join_code char(6) not null,
   members json not null,
   name varchar(50) not null,

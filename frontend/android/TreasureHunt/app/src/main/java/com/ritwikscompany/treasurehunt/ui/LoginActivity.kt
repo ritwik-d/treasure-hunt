@@ -53,7 +53,7 @@ class LoginActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         val status = response.statusCode
                         if (status == 200) {
-                            val (bytes, error) = result
+                            val (bytes, _) = result
                             if (bytes != null) {
                                 val userData = Gson().fromJson(String(bytes), HashMap::class.java) as HashMap<String, Any>
                                 val intent = Intent(ctx, HomeActivity::class.java).apply {

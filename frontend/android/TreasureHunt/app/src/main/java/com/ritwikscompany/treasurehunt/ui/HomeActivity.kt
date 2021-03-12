@@ -1,6 +1,7 @@
 package com.ritwikscompany.treasurehunt.ui
 
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -22,6 +23,10 @@ class HomeActivity : AppCompatActivity() {
             findChallengeOnClick()
         }
 
+        findViewById<Button>(R.id.home_feedback).setOnClickListener {
+            feedbackOnClick()
+        }
+
         findViewById<Button>(R.id.home_my_challenges).setOnClickListener {
             myChallengesOnClick()
         }
@@ -36,6 +41,12 @@ class HomeActivity : AppCompatActivity() {
         val intent = Intent(ctx, PickChallengeActivity::class.java).apply {
             putExtra("userData", userData)
         }
+        startActivity(intent)
+    }
+
+
+    private fun feedbackOnClick() {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.surveyLink)))
         startActivity(intent)
     }
 

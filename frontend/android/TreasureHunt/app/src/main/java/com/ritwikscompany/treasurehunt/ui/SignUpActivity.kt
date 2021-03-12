@@ -34,8 +34,6 @@ class SignUpActivity : AppCompatActivity() {
         }
 
         val emailET = findViewById<EditText>(R.id.su_email)
-        val pwET = findViewById<EditText>(R.id.su_pw)
-        val usernameET = findViewById<EditText>(R.id.su_username)
 
         emailET.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}

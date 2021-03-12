@@ -14,6 +14,13 @@ class CreateChallenge(BaseModel):
 
 class CreateGroup(BaseModel):
     name: str
+    description: Optional[str] = None
+    pw: str
+    user_id: int
+
+
+class DeleteChallenge(BaseModel):
+    challenge_id: int
     pw: str
     user_id: int
 
@@ -36,6 +43,11 @@ class GetGroupData(BaseModel):
 
 
 class GetGroups(BaseModel):
+    pw: str
+    user_id: int
+
+
+class GetUserChallenges(BaseModel):
     pw: str
     user_id: int
 

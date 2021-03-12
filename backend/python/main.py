@@ -17,7 +17,13 @@ async def create_challenge(json: CreateChallenge):
 @app.post(paths.get('create_group'))
 async def create_group(json: CreateGroup):
     user = User(pw=json.pw, user_id=json.user_id)
-    return user.create_group(json.name)
+    return user.create_group(json.name, json.description)
+
+
+@app.post(paths.get('delete_challenge'))
+async def delete_challenge(json: DeleteChallenge, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response.status_code = user.delete_challenge(json.challenge_id)
 
 
 @app.post(paths.get('get_challenge_data'))
@@ -27,9 +33,11 @@ async def get_challenge_data(json: GetChallengeData):
 
 
 @app.post(paths.get('get_challenges'))
-async def get_challenges(json: GetChallenges):
+async def get_challenges(json: GetChallenges, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
-    return user.get_challenges()
+    response_2 = user.get_challenges()
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
 
 
 @app.post(paths.get('get_group_data'))
@@ -48,6 +56,14 @@ async def get_groups(json: GetGroups):
 async def get_group_members(json: GetGroupMembers):
     user = User(pw=json.pw, user_id=json.user_id)
     return user.get_group_members(json.group_id)
+
+
+@app.post(paths.get('get_user_challenges'))
+async def get_user_challenges(json: GetUserChallenges, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response_2 = user.get_user_challenges()
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
 
 
 @app.post(paths.get('get_user_data'))

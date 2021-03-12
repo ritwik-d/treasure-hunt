@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">TreasureHunt</string>
+
+    <!--  log in / sign up  -->
+
     <string name="cancel">Cancel</string>
     <string name="email">Email</string>
     <string name="logIn">Log In</string>
@@ -16,5 +19,22 @@
     <string name="feedback">Feedback</string>
     <string name="findChallenge">Find Challenge</string>
     <string name="groups">Groups</string>
+    <string name="groupName">Group Name</string>
+    <string name="groupDesc">Group Description (Optional)</string>
     <string name="myChallenge">My Challenges</string>
+
+    <!--   challenges -->
+
+    <string name="createChallenge">Create Challenge</string>
+    <string name="noChallenges">You have no challenges!</string>
+
+    <!--   groups -->
+
+    <string name="createGroup">Create Group</string>
+    <string name="joinGroup">Join Group</string>
+    <string name="myGroups">My Groups</string>
+
+    <!--   survey -->
+
+    <string name="surveyLink">https://docs.google.com/forms/d/e/1FAIpQLSecPydSBK134zt2Q2tXNKCxIAVKZwvYk37UH-8-F7GLqHYENw/viewform</string>
 </resources>
