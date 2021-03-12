@@ -51,8 +51,6 @@ class SignUpActivity : AppCompatActivity() {
         log_in_button.isEnabled = true
 
         val emailET = findViewById<EditText>(R.id.su_email)
-        val pwET = findViewById<EditText>(R.id.su_pw)
-        val usernameET = findViewById<EditText>(R.id.su_username)
 
         emailET.setError("Invalid Email")
 

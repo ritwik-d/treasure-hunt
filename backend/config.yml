@@ -2,11 +2,13 @@ api:
   paths:
     create_challenge: /create_challenge
     create_group: /create_group
+    delete_challenge: /delete_challenge
     get_challenge_data: /get_challenge_data
     get_challenges: /get_challenges
     get_group_data: /get_group_data
     get_groups: /get_groups
     get_group_members: /get_group_members
+    get_user_challenges: /get_user_challenges
     get_user_data: /get_user_data
     join_group: /join_group
     login: /login

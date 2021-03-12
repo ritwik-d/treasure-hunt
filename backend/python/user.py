@@ -9,7 +9,8 @@ def authenticate(func):
     def wrapper(user, *args, **kwargs):
         db = DB()
         db.connect()
-        if db.select('select * from users where user_id = %s and password = %s', params=(user.user_id, user.pw), dict_cursor=True) != tuple():
+        print(f'uid: {user.user_id}\npw: {user.pw}')
+        if db.select('select * from users where user_id = %s and password = %s', params=(user.user_id, hash_password(user.email, user.pw)), dict_cursor=True) != tuple():
             return func(user, *args, **kwargs)
         return fail
     return wrapper
@@ -20,7 +21,7 @@ def get_group_id(gname: str):
     db.connect()
     group_id = db.select('select group_id from user_groups where name = %s', params=(gname,), dict_cursor=True)
     if group_id != tuple():
-        return group_id[0].get('user_id')
+        return group_id[0].get('group_id')
 
 
 def get_user_id(email: str):
@@ -71,9 +72,10 @@ class User:
 
 
     @authenticate
-    def create_group(self, name: str):
+    def create_group(self, name: str, description=None):
         db = DB()
         db.connect()
+        print('request made')
         join_code = get_rand_string(6)
         jcodes1 = db.select('select join_code from user_groups', dict_cursor=True)
         jcodes = []
@@ -84,6 +86,7 @@ class User:
 
         row = {
             'creator_id': self.user_id,
+            'description': description,
             'join_code': join_code,
             'members': json.dumps([self.user_id]),
             'name': name
@@ -92,6 +95,16 @@ class User:
         if row_id is None:
             return fail
         return suc
+
+
+    @authenticate
+    def delete_challenge(self, challenge_id: int):
+        db = DB()
+        db.connect()
+        row_id = db.delete('challenges', {'challenge_id': challenge_id, 'creator_id': self.user_id})
+        if row_id is None:
+            return {'status': 400}
+        return {'status': 200}
 
 
     @authenticate
@@ -114,17 +127,17 @@ class User:
         pub_chals1 = db.select('select name from challenges where group_id is null and creator_id <> %s', params=(self.user_id,))
         pub_chals = []
         for i in pub_chals1:
-            pub_chals.append(pub_chals1[0][0])
+            pub_chals.append(pub_chals1[0])
         final['Public'] = pub_chals
 
         for group in groups:
             group_chals1 = db.select('select name from challenges where group_id = %s and creator_id <> %s', params=(group, self.user_id))
             group_chals = []
             for chal in group_chals1:
-                group_chals.append(chal[0][0])
+                group_chals.append(chal[0])
             final[groups[group]] = group_chals
 
-        return final
+        return {'body': final, 'status': 200}
 
 
     @authenticate
@@ -154,6 +167,13 @@ class User:
         for uid in uids:
             names.append(db.select('select username from users where user_id = %s', params=(uid,))[0][0])
         return names
+
+
+    @authenticate
+    def get_user_challenges(self):
+        db = DB()
+        db.connect()
+        return {'body': list(db.select('select * from challenges where creator_id = %s', params=(self.user_id,), dict_cursor=True)), 'status': 200}
 
 
     @authenticate

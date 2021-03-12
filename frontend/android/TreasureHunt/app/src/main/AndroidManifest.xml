@@ -12,7 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TreasureHunt"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.MyChallengesActivity"></activity>
+        <activity android:name=".ui.MyGroupsActivity"></activity>
+        <activity android:name=".ui.JoinGroupActivity" />
+        <activity android:name=".ui.CreateGroupActivity" />
+        <activity android:name=".ui.EditChallengeActivity" />
+        <activity android:name=".ui.CreateChallengeActivity" />
+        <activity android:name=".ui.MapsActivity" />
+        <activity android:name=".ui.MyChallengesActivity" />
         <activity android:name=".ui.PickChallengeActivity" />
         <activity android:name=".ui.GroupsActivity" />
         <activity android:name=".ui.HomeActivity" />
