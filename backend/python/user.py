@@ -23,7 +23,7 @@ def get_group_id(gname: str):
     db.connect()
     group_id = db.select('select group_id from user_groups where name = %s', params=(gname,), dict_cursor=True)
     if group_id != tuple():
-        return group_id[0].get('user_id')
+        return group_id[0].get('group_id')
 
 
 def get_user_id(email: str):
