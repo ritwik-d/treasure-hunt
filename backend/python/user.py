@@ -129,14 +129,14 @@ class User:
         pub_chals1 = db.select('select name from challenges where group_id is null and creator_id <> %s', params=(self.user_id,))
         pub_chals = []
         for i in pub_chals1:
-            pub_chals.append(pub_chals1[0][0])
+            pub_chals.append(pub_chals1[0])
         final['Public'] = pub_chals
 
         for group in groups:
             group_chals1 = db.select('select name from challenges where group_id = %s and creator_id <> %s', params=(group, self.user_id))
             group_chals = []
             for chal in group_chals1:
-                group_chals.append(chal[0][0])
+                group_chals.append(chal[0])
             final[groups[group]] = group_chals
 
         return {'body': final, 'status': 200}
