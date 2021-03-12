@@ -10,7 +10,7 @@ def authenticate(func):
         db = DB()
         db.connect()
         print(f'uid: {user.user_id}\npw: {user.pw}')
-        if db.select('select * from users where user_id = %s and password = %s', params=(user.user_id, user.pw), dict_cursor=True) != tuple():
+        if db.select('select * from users where user_id = %s and password = %s', params=(user.user_id, hash_password(user.email, user.pw)), dict_cursor=True) != tuple():
             print('it worked')
             return func(user, *args, **kwargs)
         print('it didnt work')
