@@ -74,6 +74,7 @@ class User:
     def create_group(self, name: str, description=None):
         db = DB()
         db.connect()
+        print('request made')
         join_code = get_rand_string(6)
         jcodes1 = db.select('select join_code from user_groups', dict_cursor=True)
         jcodes = []

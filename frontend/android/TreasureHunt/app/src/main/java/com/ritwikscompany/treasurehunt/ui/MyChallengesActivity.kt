@@ -27,7 +27,7 @@ class MyChallengesActivity : AppCompatActivity() {
         this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
 
         val bodyJson = Gson().toJson(hashMapOf(
-            "user_id" to userData.get("user_id") as Int,
+            "user_id" to userData.get("user_id") as Double,
             "pw" to userData.get("password") as String
         ))
         CoroutineScope(Dispatchers.IO).launch {
