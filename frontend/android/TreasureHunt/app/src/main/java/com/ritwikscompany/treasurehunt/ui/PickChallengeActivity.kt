@@ -32,6 +32,7 @@ class PickChallengeActivity : AppCompatActivity() {
     private fun initialize() {
         val bodyJson = Gson().toJson(hashMapOf(
                 "user_id" to userData.get("user_id"),
+                "email" to userData.get("email"),
                 "pw" to userData.get("password").toString()
         ))
         CoroutineScope(Dispatchers.IO).launch {

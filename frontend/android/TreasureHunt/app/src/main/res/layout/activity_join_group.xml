@@ -6,4 +6,29 @@
     android:layout_height="match_parent"
     tools:context=".ui.JoinGroupActivity">
 
+    <EditText
+        android:id="@+id/jg_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:layout_marginBottom="50dp"
+        android:ems="10"
+        android:hint="@string/joinCode"
+        app:layout_constraintBottom_toTopOf="@+id/jg_join"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/jg_join"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="500dp"
+        android:text="@string/joinGroup"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/jg_code" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

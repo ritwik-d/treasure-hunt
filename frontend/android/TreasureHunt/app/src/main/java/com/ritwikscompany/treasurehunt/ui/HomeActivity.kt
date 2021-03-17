@@ -18,7 +18,7 @@ class HomeActivity : AppCompatActivity() {
 
         this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
 
-        findViewById<TextView>(R.id.home_name).text = userData.get("username").toString()
+        findViewById<TextView>(R.id.home_name).text = "Hello ${userData.get("username").toString()}!"
         findViewById<Button>(R.id.home_find_challenge).setOnClickListener {
             findChallengeOnClick()
         }

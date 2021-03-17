@@ -15,9 +15,9 @@ async def create_challenge(json: CreateChallenge):
 
 
 @app.post(paths.get('create_group'))
-async def create_group(json: CreateGroup):
+async def create_group(json: CreateGroup, response: Response):
     user = User(email=json.email, pw=json.pw, user_id=json.user_id)
-    return user.create_group(json.name, json.description)
+    response.status_code = user.create_group(json.name, json.description)
 
 
 @app.post(paths.get('delete_challenge'))
@@ -72,6 +72,13 @@ async def get_user_data(json: GetUserData):
     return user.get_user_data()
 
 
+@app.post(paths.get('get_users'))
+async def get_users(json: GetUsers, response: Response):
+    response_2 = get_users()
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
+
+
 @app.post(paths.get('join_group'))
 async def join_group(json: JoinGroup):
     user = User(email=json.email, pw=json.pw, user_id=json.user_id)
@@ -92,13 +99,7 @@ async def register(json: Register, response: Response):
     response.status_code = user.register()
 
 
-@app.post(paths.get('verify_email'))
-async def verify_email(json: VerifyEmail, response: Response):
-    user = User(email=json.email)
-    response.status_code = user.verify_email().get('status')
-
-
-@app.post(paths.get('verify_username'))
-async def verify_username(json: VerifyUsername, repsonse: Response):
-    user = User(uname=json.username)
-    repsonse.status_code = user.verify_username().get('status')
+@app.post(paths.get('update_challenge'))
+async def update_challenge(json: UpdateChallenge, response: Response):
+    user = User(email=json.email, pw=json.pw, user_id=json.user_id)
+    response.status_code = user.update_challenge(json.challenge_name, json.new_name, json.new_puzzle, json.new_difficulty, json.new_group_name)

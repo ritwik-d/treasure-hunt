@@ -32,6 +32,12 @@ def get_user_id(email: str):
         return user_id[0].get('user_id')
 
 
+def get_users(self):
+    db = DB()
+    db.connect()
+    return {'status': 200, 'body': list(db.select('select email, username from users', dict_cursor=True))}
+
+
 class User:
     def __init__(self, email=None, pw=None, user_id=None, uname=None):
         self.email = email
@@ -75,7 +81,6 @@ class User:
     def create_group(self, name: str, description=None):
         db = DB()
         db.connect()
-        print('request made')
         join_code = get_rand_string(6)
         jcodes1 = db.select('select join_code from user_groups', dict_cursor=True)
         jcodes = []
@@ -93,8 +98,8 @@ class User:
         }
         row_id = db.insert('user_groups', row)
         if row_id is None:
-            return fail
-        return suc
+            return 400
+        return 201
 
 
     @authenticate
@@ -228,21 +233,12 @@ class User:
         return 400
 
 
-    def verify_username(self):
+    @authenticate
+    def update_challenge(self, challenge_name: str, new_name: str, new_puzzle: str, new_difficulty: str, new_group_name: str):
         db = DB()
         db.connect()
-        uname = db.select('select username from users where username = %s', params=(self.uname,))
-        if uname == tuple():
-            return {'status': 200}
-
-        return {'status': 400}
-
-
-    def verify_email(self):
-        db = DB()
-        db.connect()
-        email = db.select('select email from users where email = %s', params=(self.email,))
-        if email == tuple():
-            return {'status': 200}
-
-        return {'status': 400}
+        new_group_id = get_group_id(new_group_name)
+        row_id = db.update('challenges', {'difficulty': new_difficulty, 'group_id': new_group_id, 'name': new_name, 'puzzle': new_puzzle}, {'challenge_name': challenge_name})
+        if row_id is None:
+            return 400
+        return 200

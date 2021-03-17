@@ -10,24 +10,25 @@
         android:id="@+id/su_cancel"
         android:layout_width="150dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="31dp"
+        android:layout_marginBottom="97dp"
         android:text="@string/cancel"
-        app:layout_constraintBottom_toTopOf="@+id/LogIn"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/su_sign_up" />
 
-    <Button
-        android:id="@+id/LogIn"
-        android:layout_width="150dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="16dp"
-        android:text="@string/logIn"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/su_cancel" />
+<!--    <Button-->
+<!--        android:id="@+id/su_log_in"-->
+<!--        android:layout_width="150dp"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_marginBottom="33dp"-->
+<!--        android:text="@string/logIn"-->
+<!--        android:visibility="invisible"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/su_sign_up"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.501"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/su_pw" />-->
 
     <Button
         android:id="@+id/su_sign_up"
@@ -38,7 +39,7 @@
         app:layout_constraintBottom_toTopOf="@+id/su_cancel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/su_pw" />
+        app:layout_constraintTop_toBottomOf="@+id/su_log_in" />
 
     <EditText
         android:id="@+id/su_username"
@@ -72,11 +73,11 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="1dp"
         android:layout_marginRight="1dp"
-        android:layout_marginBottom="198dp"
+        android:layout_marginBottom="115dp"
         android:ems="10"
         android:hint="@string/pw"
         android:inputType="textPassword"
-        app:layout_constraintBottom_toTopOf="@+id/su_sign_up"
+        app:layout_constraintBottom_toTopOf="@+id/su_log_in"
         app:layout_constraintEnd_toEndOf="@+id/su_email"
         app:layout_constraintTop_toBottomOf="@+id/su_email" />
 

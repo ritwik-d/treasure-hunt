@@ -48,6 +48,7 @@
 
     <TextView
         android:id="@+id/home_name"
+        android:gravity="center"
         android:layout_width="214dp"
         android:layout_height="44dp"
         android:layout_marginTop="18dp"

@@ -10,11 +10,11 @@ api:
     get_group_members: /get_group_members
     get_user_challenges: /get_user_challenges
     get_user_data: /get_user_data
+    get_users: /get_users
     join_group: /join_group
     login: /login
     register: /register
-    verify_email: /verify_email
-    verify_username: /verify_username
+    update_challenge: /update_challenge
 mysql:
   host: 192.168.1.56
   name: treasure_hunt_db

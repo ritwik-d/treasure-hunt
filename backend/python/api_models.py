@@ -73,6 +73,10 @@ class GetGroupMembers(BaseModel):
     user_id: int
 
 
+class GetUsers(BaseModel):
+    pass
+
+
 class JoinGroup(BaseModel):
     email: str
     join_code: str
@@ -91,9 +95,12 @@ class Register(BaseModel):
     username: str
 
 
-class VerifyEmail(BaseModel):
+class UpdateChallenge(BaseModel):
     email: str
-
-
-class VerifyUsername(BaseModel):
-    username: str
+    pw: str
+    user_id: str
+    challenge_name: str
+    new_name: str
+    new_puzzle: str
+    new_difficulty: str
+    new_group_name: str

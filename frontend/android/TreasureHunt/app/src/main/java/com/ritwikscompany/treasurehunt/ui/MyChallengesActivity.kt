@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.view.View.INVISIBLE
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
@@ -20,21 +21,61 @@ import kotlinx.coroutines.withContext
 class MyChallengesActivity : AppCompatActivity() {
 
     private val ctx = this@MyChallengesActivity
+
+    private lateinit var name1: TextView
+    private lateinit var edit1: ImageButton
+    private lateinit var trash1: ImageButton
+    private lateinit var name2: TextView
+    private lateinit var edit2: ImageButton
+    private lateinit var trash2: ImageButton
+    private lateinit var name3: TextView
+    private lateinit var edit3: ImageButton
+    private lateinit var trash3: ImageButton
+
     private lateinit var userData: HashMap<String, Any>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_challenges)
         this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
 
+        name1 = findViewById(R.id.mc_name_1)
+        edit1 = findViewById(R.id.mc_edit_1)
+        trash1 = findViewById(R.id.mc_trash_1)
+        name2 = findViewById(R.id.mc_name_2)
+        edit2 = findViewById(R.id.mc_edit_2)
+        trash2 = findViewById(R.id.mc_trash_2)
+        name3 = findViewById(R.id.mc_name_3)
+        edit3 = findViewById(R.id.mc_edit_3)
+        trash3 = findViewById(R.id.mc_trash_3)
+
+        initialize()
+
+        findViewById<Button>(R.id.mc_create_challenge).setOnClickListener {
+            createChallengeOnClick()
+        }
+    }
+
+
+    private fun initialize() {
+        name1.visibility = INVISIBLE
+        name2.visibility = INVISIBLE
+        name3.visibility = INVISIBLE
+        edit1.visibility = INVISIBLE
+        edit2.visibility = INVISIBLE
+        edit3.visibility = INVISIBLE
+        trash1.visibility = INVISIBLE
+        trash2.visibility = INVISIBLE
+        trash3.visibility = INVISIBLE
+
         val bodyJson = Gson().toJson(hashMapOf(
-            "user_id" to userData.get("user_id") as Double,
-            "pw" to userData.get("password") as String
+                "user_id" to userData.get("user_id") as Double,
+                "pw" to userData.get("password") as String
         ))
         CoroutineScope(Dispatchers.IO).launch {
             val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_user_challenges")
-                .body(bodyJson)
-                .header("Content-Type" to "application/json")
-                .response()
+                    .body(bodyJson)
+                    .header("Content-Type" to "application/json")
+                    .response()
 
             withContext(Dispatchers.Main) {
                 runOnUiThread {
@@ -77,19 +118,10 @@ class MyChallengesActivity : AppCompatActivity() {
                 }
             }
         }
-
-
-        findViewById<Button>(R.id.mc_create_challenge).setOnClickListener {
-            createChallengeOnClick()
-        }
     }
 
 
     private fun challengeSizeOne(challenges: MutableList<HashMap<String, Any>>) {
-        val name1 = findViewById<TextView>(R.id.mc_name_1)
-        val edit1 = findViewById<ImageButton>(R.id.mc_edit_1)
-        val trash1 = findViewById<ImageButton>(R.id.mc_trash_1)
-
         name1.text = challenges[0].get("name").toString()
         edit1.setOnClickListener {
             editOnClick(challenges[0])
@@ -104,10 +136,6 @@ class MyChallengesActivity : AppCompatActivity() {
     private fun challengeSizeTwo(challenges: MutableList<HashMap<String, Any>>) {
         challengeSizeOne(challenges)
 
-        val name2 = findViewById<TextView>(R.id.mc_name_2)
-        val edit2 = findViewById<ImageButton>(R.id.mc_edit_2)
-        val trash2 = findViewById<ImageButton>(R.id.mc_trash_2)
-
         name2.text = challenges[1].get("name").toString()
         edit2.setOnClickListener {
             editOnClick(challenges[1])
@@ -121,10 +149,6 @@ class MyChallengesActivity : AppCompatActivity() {
 
     private fun challengeSizeThree(challenges: MutableList<HashMap<String, Any>>) {
         challengeSizeTwo(challenges)
-
-        val name3 = findViewById<TextView>(R.id.mc_name_3)
-        val edit3 = findViewById<ImageButton>(R.id.mc_edit_3)
-        val trash3 = findViewById<ImageButton>(R.id.mc_trash_3)
 
         name3.text = challenges[2].get("name").toString()
         edit3.setOnClickListener {
@@ -163,7 +187,7 @@ class MyChallengesActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         val status = response.statusCode
                         if (status == 200) {
-                            makeInvisible(buttonRow)
+                            initialize()
                         }
 
                         else if (status == 400) {
@@ -182,52 +206,6 @@ class MyChallengesActivity : AppCompatActivity() {
             }
         }
     }
-
-
-    private fun makeInvisible(buttonRow: Int) {
-        val name1 = findViewById<TextView>(R.id.mc_name_1)
-        val edit1 = findViewById<ImageButton>(R.id.mc_edit_1)
-        val trash1 = findViewById<ImageButton>(R.id.mc_trash_1)
-        val name2 = findViewById<TextView>(R.id.mc_name_2)
-        val edit2 = findViewById<ImageButton>(R.id.mc_edit_2)
-        val trash2 = findViewById<ImageButton>(R.id.mc_trash_2)
-        val name3 = findViewById<TextView>(R.id.mc_name_3)
-        val edit3 = findViewById<ImageButton>(R.id.mc_edit_3)
-        val trash3 = findViewById<ImageButton>(R.id.mc_trash_3)
-
-        fun oneInvisible() {
-            name1.visibility = View.INVISIBLE
-            edit1.visibility = View.INVISIBLE
-            trash1.visibility = View.INVISIBLE
-        }
-
-
-        fun twoInvisible() {
-            name2.visibility = View.INVISIBLE
-            edit2.visibility = View.INVISIBLE
-            trash2.visibility = View.INVISIBLE
-        }
-
-
-        fun threeInvisible() {
-            name3.visibility = View.INVISIBLE
-            edit3.visibility = View.INVISIBLE
-            trash3.visibility = View.INVISIBLE
-        }
-
-        when (buttonRow) {
-            0 -> {
-                oneInvisible()
-            }
-            1 -> {
-                twoInvisible()
-            }
-            2 -> {
-                threeInvisible()
-            }
-        }
-    }
-
 
     private fun createChallengeOnClick() {
         val intent = Intent(ctx, CreateChallengeActivity::class.java).apply {
