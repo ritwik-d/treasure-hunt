@@ -34,6 +34,7 @@ async def get_challenge_data(json: GetChallengeData):
 async def get_challenges(json: GetChallenges, response: Response):
     user = User(email=json.email, pw=json.pw, user_id=json.user_id)
     response_2 = user.get_challenges()
+    print(f'response_2: <{response_2}>')
     response.status_code = response_2.get('status')
     return response_2.get('body')
 
