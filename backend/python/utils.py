@@ -26,7 +26,7 @@ def verify_jwt(hash: str, json: dict):
 def get_rand_string(length: int):
     chars = [i for i in string.printable[0:62]]
     random.shuffle(chars)
-    return ''.join(chars[0:length])
+    return ''.join(chars[0: length])
 
 
 def hash_password(email: str, password: str):
