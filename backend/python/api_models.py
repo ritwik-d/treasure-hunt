@@ -3,7 +3,6 @@ from typing import Optional
 
 class CreateChallenge(BaseModel):
     difficulty: str
-    email: str
     group_name: Optional[str] = None
     latitude: float
     longitude: float
@@ -14,7 +13,6 @@ class CreateChallenge(BaseModel):
 
 
 class CreateGroup(BaseModel):
-    email: str
     name: str
     description: Optional[str] = None
     pw: str
@@ -23,51 +21,43 @@ class CreateGroup(BaseModel):
 
 class DeleteChallenge(BaseModel):
     challenge_id: int
-    email: str
     pw: str
     user_id: int
 
 
 class GetChallengeData(BaseModel):
-    email: str
     name: str
     pw: str
     user_id: int
 
 
 class GetChallenges(BaseModel):
-    email: str
     pw: str
     user_id: int
 
 
 class GetGroupData(BaseModel):
-    email: str
     name: str
     pw: str
     user_id: int
 
 
 class GetGroups(BaseModel):
-    email: str
     pw: str
     user_id: int
 
 
 class GetUserChallenges(BaseModel):
-    email: str
     pw: str
     user_id: int
 
 
 class GetUserData(BaseModel):
-    email: str
     pw: str
     user_id: int
 
 
 class GetGroupMembers(BaseModel):
-    email: str
     group_id: int
     pw: str
     user_id: int
@@ -78,7 +68,6 @@ class GetUsers(BaseModel):
 
 
 class JoinGroup(BaseModel):
-    email: str
     join_code: str
     pw: str
     user_id: int
@@ -96,7 +85,6 @@ class Register(BaseModel):
 
 
 class UpdateChallenge(BaseModel):
-    email: str
     pw: str
     user_id: str
     challenge_name: str

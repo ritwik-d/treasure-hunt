@@ -9,7 +9,7 @@ def authenticate(func):
     def wrapper(user, *args, **kwargs):
         db = DB()
         db.connect()
-        if db.select('select * from users where user_id = %s and password = %s', params=(user.user_id, hash_password(user.email, user.pw)), dict_cursor=True) != tuple():
+        if db.select('select * from users where user_id = %s and password = %s', params=(user.user_id, user.pw), dict_cursor=True) != tuple():
             return func(user, *args, **kwargs)
     return wrapper
 
