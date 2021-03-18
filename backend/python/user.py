@@ -120,7 +120,6 @@ class User:
 
     @authenticate
     def get_challenges(self):
-        print('get challenges is called')
         db = DB()
         db.connect()
         groups1 = db.select(f"select group_id, name from user_groups where JSON_CONTAINS(members, '{self.user_id}')")
@@ -140,7 +139,6 @@ class User:
             for chal in group_chals1:
                 group_chals.append(chal[0])
             final[groups[group]] = group_chals
-        print(f'final: <{final}>')
         return {'body': final, 'status': 200}
 
 
