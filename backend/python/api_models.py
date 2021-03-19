@@ -76,6 +76,7 @@ class JoinGroup(BaseModel):
 class LogIn(BaseModel):
     email: str
     pw: str
+    is_hashed: Optional[int] = 0
 
 
 class Register(BaseModel):

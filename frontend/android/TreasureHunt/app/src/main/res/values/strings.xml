@@ -1,11 +1,16 @@
 <resources>
-    <string name="app_name">TreasureHunt</string>
+    <string name="app_name">Treasure Hunt</string>
+
+    <!--  gcp api  -->
+
+    <string name="googleMapsApiKey">AIzaSyABV9NsQ4qqvUE14j3LAsl2cZRb-4xpbbc</string>
 
     <!--  log in / sign up  -->
 
     <string name="cancel">Cancel</string>
     <string name="email">Email</string>
     <string name="logIn">Log In</string>
+    <string name="logOut">Log Out</string>
     <string name="pw">Password</string>
     <string name="signUp">Sign Up</string>
     <string name="username">Username</string>

@@ -58,21 +58,15 @@ class SignUpActivity : AppCompatActivity() {
 
             withContext(Dispatchers.Main) {
                 runOnUiThread {
-                    if (response.isSuccessful) {
-                        val status = response.statusCode
-                        if (status == 201) {
-                            startActivity(Intent(ctx, LoginActivity::class.java))
-                        } else if (status == 400) {
-                            Toast.makeText(
-                                ctx,
-                                "An account has already been created with this email",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    }
-
-                    else {
-                        Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
+                    val status = response.statusCode
+                    if (status == 201) {
+                        startActivity(Intent(ctx, LoginActivity::class.java))
+                    } else if (status == 400) {
+                        Toast.makeText(
+                            ctx,
+                            "An account has already been created with this email",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
             }
@@ -93,7 +87,7 @@ class SignUpActivity : AppCompatActivity() {
 
         // verifies info
 
-        if (!isValid(email) or (!Patterns.EMAIL_ADDRESS.matcher(email).matches())) {
+        if ((!isValid(email)) or (!Patterns.EMAIL_ADDRESS.matcher(email).matches())) {
             emailET.error = "Enter a valid email"
             emailET.requestFocus()
             return

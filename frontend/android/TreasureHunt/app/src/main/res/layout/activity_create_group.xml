@@ -41,7 +41,7 @@
         android:id="@+id/cg_create"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="275dp"
+        android:layout_marginBottom="200dp"
         android:text="@string/createGroup"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

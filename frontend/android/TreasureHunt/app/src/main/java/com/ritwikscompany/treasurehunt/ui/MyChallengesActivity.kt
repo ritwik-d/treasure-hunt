@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
@@ -12,6 +13,7 @@ import android.widget.Toast
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.isSuccessful
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.ritwikscompany.treasurehunt.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -50,7 +52,8 @@ class MyChallengesActivity : AppCompatActivity() {
 
         initialize()
 
-        findViewById<Button>(R.id.mc_create_challenge).setOnClickListener {
+        val fab: View = findViewById(R.id.mc_create_challenge)
+        fab.setOnClickListener {
             createChallengeOnClick()
         }
     }
@@ -67,9 +70,9 @@ class MyChallengesActivity : AppCompatActivity() {
         trash2.visibility = INVISIBLE
         trash3.visibility = INVISIBLE
 
-        val bodyJson = Gson().toJson(hashMapOf(
-                "user_id" to userData.get("user_id") as Double,
-                "pw" to userData.get("password") as String
+        val bodyJson = Gson().toJson(hashMapOf<String, Any>(
+            "user_id" to userData.get("user_id") as Int,
+            "pw" to userData.get("password") as String
         ))
         CoroutineScope(Dispatchers.IO).launch {
             val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_user_challenges")
@@ -79,41 +82,38 @@ class MyChallengesActivity : AppCompatActivity() {
 
             withContext(Dispatchers.Main) {
                 runOnUiThread {
-                    if (response.isSuccessful) {
-                        val status = response.statusCode
-                        if (status == 200) {
-                            val (bytes, _) = result
-                            if (bytes != null) {
-                                val userChallenges = Gson().fromJson(String(bytes), MutableList::class.java) as MutableList<HashMap<String, Any>>
+                    val status = response.statusCode
+                    if (status == 200) {
+                        val (bytes, _) = result
+                        if (bytes != null) {
+                            val type = object: TypeToken<MutableList<HashMap<String, Any>>>(){}.type
+                            val userChallenges = Gson().fromJson(String(bytes), type) as MutableList<HashMap<String, Any>>
+                            println(userChallenges.javaClass.name)
+                            println(userChallenges)
 
-                                when (userChallenges.size) {
-                                    0 -> {
-                                        findViewById<TextView>(R.id.mc_no_chal).visibility = View.VISIBLE
-                                    }
-                                    1 -> {
-                                        challengeSizeOne(userChallenges)
-                                    }
-                                    2 -> {
-                                        challengeSizeTwo(userChallenges)
-                                    }
-                                    3 -> {
-                                        challengeSizeThree(userChallenges)
-                                    }
+                            when (userChallenges.size) {
+                                0 -> {
+                                    findViewById<TextView>(R.id.mc_no_chal).visibility = VISIBLE
                                 }
-                            }
-
-                            else {
-                                Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
+                                1 -> {
+                                    challengeSizeOne(userChallenges)
+                                }
+                                2 -> {
+                                    challengeSizeTwo(userChallenges)
+                                }
+                                3 -> {
+                                    challengeSizeThree(userChallenges)
+                                }
                             }
                         }
 
-                        else if (status == 404) {
-                            Toast.makeText(ctx, "ERROR", Toast.LENGTH_LONG).show()
+                        else {
+                            Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
                         }
                     }
 
-                    else {
-                        Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
+                    else if (status == 404) {
+                        Toast.makeText(ctx, "ERROR", Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -122,13 +122,17 @@ class MyChallengesActivity : AppCompatActivity() {
 
 
     private fun challengeSizeOne(challenges: MutableList<HashMap<String, Any>>) {
+        name1.visibility = VISIBLE
+        edit1.visibility = VISIBLE
+        trash1.visibility = VISIBLE
+
         name1.text = challenges[0].get("name").toString()
         edit1.setOnClickListener {
             editOnClick(challenges[0])
         }
 
         trash1.setOnClickListener {
-            trashOnClick(challenges[0].get("challenge_id") as Int, 0)
+            trashOnClick(challenges[0].get("challenge_id").toString().toDouble().toInt())
         }
     }
 
@@ -136,13 +140,17 @@ class MyChallengesActivity : AppCompatActivity() {
     private fun challengeSizeTwo(challenges: MutableList<HashMap<String, Any>>) {
         challengeSizeOne(challenges)
 
+        name2.visibility = VISIBLE
+        edit2.visibility = VISIBLE
+        trash2.visibility = VISIBLE
+
         name2.text = challenges[1].get("name").toString()
         edit2.setOnClickListener {
             editOnClick(challenges[1])
         }
 
         trash2.setOnClickListener {
-            trashOnClick(challenges[1].get("challenge_id") as Int, 1)
+            trashOnClick(challenges[1].get("challenge_id").toString().toDouble().toInt())
         }
     }
 
@@ -150,13 +158,17 @@ class MyChallengesActivity : AppCompatActivity() {
     private fun challengeSizeThree(challenges: MutableList<HashMap<String, Any>>) {
         challengeSizeTwo(challenges)
 
+        name3.visibility = VISIBLE
+        edit3.visibility = VISIBLE
+        trash3.visibility = VISIBLE
+
         name3.text = challenges[2].get("name").toString()
         edit3.setOnClickListener {
             editOnClick(challenges[2])
         }
 
         trash3.setOnClickListener {
-            trashOnClick(challenges[2].get("challenge_id") as Int, 2)
+            trashOnClick(challenges[2].get("challenge_id").toString().toDouble().toInt())
         }
     }
 
@@ -170,14 +182,14 @@ class MyChallengesActivity : AppCompatActivity() {
     }
 
 
-    private fun trashOnClick(challengeId: Int, buttonRow: Int) {
+    private fun trashOnClick(challengeId: Int) {
         val bodyJson = Gson().toJson(hashMapOf(
             "user_id" to userData.get("user_id") as Int,
             "pw" to userData.get("password"),
             "challenge_id" to challengeId
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/register")
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/delete_challenge")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
@@ -206,6 +218,7 @@ class MyChallengesActivity : AppCompatActivity() {
             }
         }
     }
+
 
     private fun createChallengeOnClick() {
         val intent = Intent(ctx, CreateChallengeActivity::class.java).apply {

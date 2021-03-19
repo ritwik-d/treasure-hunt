@@ -9,11 +9,11 @@ import com.ritwikscompany.treasurehunt.R
 class GroupsActivity : AppCompatActivity() {
 
     private val ctx = this@GroupsActivity
-    private lateinit var userData: HashMap<String, Any>
+    private var userData = hashMapOf<String, Any>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_groups)
-        this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
+        userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
 
         findViewById<Button>(R.id.groups_create_group).setOnClickListener {
             createGroupOnClick()

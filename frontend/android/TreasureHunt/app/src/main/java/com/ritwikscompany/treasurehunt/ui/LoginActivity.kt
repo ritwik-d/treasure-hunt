@@ -1,5 +1,6 @@
 package com.ritwikscompany.treasurehunt.ui
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -22,7 +23,6 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-        val emailString = intent.getStringExtra("email")
 
         findViewById<Button>(R.id.log_cancel).setOnClickListener {
             cancelOnClick()
@@ -30,12 +30,6 @@ class LoginActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.log_log_in).setOnClickListener {
             logInOnClick()
-        }
-
-        val emailET = findViewById<EditText>(R.id.log_email)
-
-        if (emailString != null) {
-            emailET.setText(emailString)
         }
     }
 
@@ -58,33 +52,33 @@ class LoginActivity : AppCompatActivity() {
 
             withContext(Dispatchers.Main) {
                 runOnUiThread {
-                    if (response.isSuccessful) {
-                        val status = response.statusCode
-                        if (status == 200) {
-                            val (bytes, _) = result
-                            if (bytes != null) {
-                                val userData = Gson().fromJson(String(bytes), HashMap::class.java) as HashMap<String, Any>
-                                val user = Account(userData.get("email") as String,
-                                    userData.get("pw") as String, "")
-                                val intent = Intent(ctx, HomeActivity::class.java).apply {
-                                    putExtra("userData", user.toSer())
-                                }
-                                startActivity(intent)
+                    val status = response.statusCode
+                    if (status == 200) {
+                        val (bytes, _) = result
+                        if (bytes != null) {
+                            val userData = Gson().fromJson(String(bytes), HashMap::class.java) as HashMap<String, Any>
+                            userData["user_id"] = userData.get("user_id").toString().toDouble().toInt()
+
+                            val sharedPref = application.getSharedPreferences("userInfo", Context.MODE_PRIVATE)
+                            with(sharedPref.edit()) {
+                                putString("email", userData.get("email") as String)
+                                putString("pw", userData.get("password") as String)
+                                apply()
                             }
 
-                            else {
-                                Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
-                                println("yes")
+                            val intent = Intent(ctx, HomeActivity::class.java).apply {
+                                putExtra("userData", userData)
                             }
+                            startActivity(intent)
                         }
 
-                        else if (status == 404) {
-                            Toast.makeText(ctx, "Log In Failure", Toast.LENGTH_LONG).show()
+                        else {
+                            Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
                         }
                     }
 
-                    else {
-                        Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
+                    else if (status == 404) {
+                        Toast.makeText(ctx, "Log In Failure", Toast.LENGTH_LONG).show()
                     }
                 }
             }

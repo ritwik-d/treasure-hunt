@@ -6,46 +6,46 @@
     android:layout_height="match_parent"
     tools:context=".ui.SignUpActivity">
 
+    <!--    <Button-->
+    <!--        android:id="@+id/su_log_in"-->
+    <!--        android:layout_width="150dp"-->
+    <!--        android:layout_height="0dp"-->
+    <!--        android:layout_marginBottom="33dp"-->
+    <!--        android:text="@string/logIn"-->
+    <!--        android:visibility="invisible"-->
+    <!--        app:layout_constraintBottom_toTopOf="@+id/su_sign_up"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintHorizontal_bias="0.501"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/su_pw" />-->
+
     <Button
         android:id="@+id/su_cancel"
         android:layout_width="150dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="97dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="209dp"
         android:text="@string/cancel"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/su_sign_up" />
 
-<!--    <Button-->
-<!--        android:id="@+id/su_log_in"-->
-<!--        android:layout_width="150dp"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:layout_marginBottom="33dp"-->
-<!--        android:text="@string/logIn"-->
-<!--        android:visibility="invisible"-->
-<!--        app:layout_constraintBottom_toTopOf="@+id/su_sign_up"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="0.501"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/su_pw" />-->
-
     <Button
         android:id="@+id/su_sign_up"
         android:layout_width="150dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="28dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="33dp"
         android:text="@string/signUp"
         app:layout_constraintBottom_toTopOf="@+id/su_cancel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/su_log_in" />
+        app:layout_constraintTop_toBottomOf="@+id/su_pw" />
 
     <EditText
         android:id="@+id/su_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="119dp"
+        android:layout_marginTop="82dp"
         android:layout_marginBottom="28dp"
         android:ems="10"
         android:hint="@string/username"
@@ -56,29 +56,29 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/su_email"
+        android:id="@+id/su_pw"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="26dp"
+        android:layout_marginBottom="116dp"
         android:ems="10"
-        android:hint="@string/email"
-        android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/su_pw"
-        app:layout_constraintStart_toStartOf="@+id/su_username"
-        app:layout_constraintTop_toBottomOf="@+id/su_username" />
+        android:hint="@string/pw"
+        android:inputType="textPassword"
+        app:layout_constraintBottom_toTopOf="@+id/su_sign_up"
+        app:layout_constraintStart_toStartOf="@+id/su_email"
+        app:layout_constraintTop_toBottomOf="@+id/su_email" />
 
     <EditText
-        android:id="@+id/su_pw"
+        android:id="@+id/su_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="1dp"
         android:layout_marginRight="1dp"
-        android:layout_marginBottom="115dp"
+        android:layout_marginBottom="28dp"
         android:ems="10"
-        android:hint="@string/pw"
-        android:inputType="textPassword"
-        app:layout_constraintBottom_toTopOf="@+id/su_log_in"
-        app:layout_constraintEnd_toEndOf="@+id/su_email"
-        app:layout_constraintTop_toBottomOf="@+id/su_email" />
+        android:hint="@string/email"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/su_pw"
+        app:layout_constraintEnd_toEndOf="@+id/su_username"
+        app:layout_constraintTop_toBottomOf="@+id/su_username" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -53,7 +53,6 @@ class CreateGroupActivity : AppCompatActivity() {
 
     private fun httpCall(groupName: String, groupDesc: String?) {
         val bodyJson = Gson().toJson(hashMapOf(
-            "email" to userData.get("email"),
             "pw" to userData.get("password"),
             "user_id" to userData.get("user_id"),
             "name" to groupName,

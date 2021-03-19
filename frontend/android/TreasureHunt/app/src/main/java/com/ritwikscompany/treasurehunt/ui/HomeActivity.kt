@@ -1,9 +1,13 @@
 package com.ritwikscompany.treasurehunt.ui
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.TextView
 import com.ritwikscompany.treasurehunt.R
@@ -37,6 +41,24 @@ class HomeActivity : AppCompatActivity() {
     }
 
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.home_menu, menu)
+        return true
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_log_out -> {
+                clearSharedPref()
+                startActivity(Intent(ctx, MainActivity::class.java))
+            }
+        }
+        return true
+    }
+
+
     private fun findChallengeOnClick() {
         val intent = Intent(ctx, PickChallengeActivity::class.java).apply {
             putExtra("userData", userData)
@@ -64,5 +86,15 @@ class HomeActivity : AppCompatActivity() {
             putExtra("userData", userData)
         }
         startActivity(intent)
+    }
+
+
+    private fun clearSharedPref() {
+        val sharedPref = application.getSharedPreferences("userInfo", Context.MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            remove("email")
+            remove("pw")
+            apply()
+        }
     }
 }

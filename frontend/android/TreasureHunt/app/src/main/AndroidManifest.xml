@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TreasureHunt"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.GroupPageActivity"></activity>
+        <activity android:name=".ui.GroupPageActivity" />
         <activity android:name=".ui.MyGroupsActivity" />
         <activity android:name=".ui.JoinGroupActivity" />
         <activity android:name=".ui.CreateGroupActivity" />

@@ -30,11 +30,11 @@ class PickChallengeActivity : AppCompatActivity() {
 
 
     private fun initialize() {
-        val bodyJson = Gson().toJson(hashMapOf(
-                "user_id" to userData.get("user_id"),
-                "email" to userData.get("email"),
-                "pw" to userData.get("password").toString()
+        val bodyJson = Gson().toJson(hashMapOf<String, Any>(
+            "user_id" to userData.get("user_id") as Int,
+            "pw" to userData.get("password") as String
         ))
+        println(bodyJson)
         CoroutineScope(Dispatchers.IO).launch {
             val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_challenges")
                     .body(bodyJson)
@@ -43,7 +43,6 @@ class PickChallengeActivity : AppCompatActivity() {
 
             withContext(Dispatchers.Main) {
                 runOnUiThread {
-                    if (response.isSuccessful) {
                         val status = response.statusCode
                         if (status == 200) {
                             val (bytes, _) = result
@@ -53,6 +52,23 @@ class PickChallengeActivity : AppCompatActivity() {
                                 val listView = findViewById<ListView>(R.id.pc_list_view)
                                 for (group in challengeData.keys) {
                                     tabLayout.addTab(tabLayout.newTab().setText(group))
+                                }
+
+                                val firstTab = tabLayout.getTabAt(tabLayout.selectedTabPosition)?.text.toString()
+                                val listItems = challengeData.get(firstTab) as MutableList
+                                val adapter = ArrayAdapter(
+                                    ctx,
+                                    android.R.layout.simple_list_item_1,
+                                    listItems
+                                )
+                                listView.adapter = adapter
+
+                                listView.setOnItemClickListener { _, _, position, _ ->
+                                    val intent = Intent(ctx, MapsActivity::class.java).apply {
+                                        putExtra("userData", userData)
+                                        putExtra("challengeName", listItems[position])
+                                    }
+                                    startActivity(intent)
                                 }
 
                                 tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -88,11 +104,6 @@ class PickChallengeActivity : AppCompatActivity() {
                         else if (status == 400) {
                             Toast.makeText(ctx, "ERROR", Toast.LENGTH_LONG).show()
                         }
-                    }
-
-                    else {
-                        Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
-                    }
                 }
             }
         }
