@@ -81,7 +81,7 @@ class DB:
         cursor = self.db.cursor()
         sql = f'DELETE FROM {table_name} WHERE'
         for col in where_params:
-            sql += f' {col} = %s'
+            sql += f' {col} = %s,'
         print(f'delete sql: {sql}')
         params = tuple(where_params.values())
         cursor.execute(sql, params)
