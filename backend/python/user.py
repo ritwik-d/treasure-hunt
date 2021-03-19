@@ -106,8 +106,8 @@ class User:
         db.connect()
         row_id = db.delete('challenges', {'challenge_id': challenge_id, 'creator_id': self.user_id})
         if row_id is None:
-            return {'status': 400}
-        return {'status': 200}
+            return 400
+        return 200
 
 
     @authenticate
