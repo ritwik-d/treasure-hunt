@@ -80,8 +80,9 @@ class DB:
             return None
         cursor = self.db.cursor()
         sql = f"""DELETE FROM {table_name} WHERE {', '.join([f'{k} = %s' for k in where_params])}"""
-        print(f'delete sql: {sql}')
-        params = tuple(where_params.values())
+                params = tuple(where_params.values())
+
+        print(f'delete sql: <{sql}>, params: {params}')
         cursor.execute(sql, params)
         return cursor.lastrowid
 
