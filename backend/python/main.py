@@ -78,9 +78,9 @@ async def get_users(json: GetUsers, response: Response):
 
 
 @app.post(paths.get('join_group'))
-async def join_group(json: JoinGroup):
+async def join_group(json: JoinGroup, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
-    return user.join_group(json.join_code)
+    response.status_code = user.join_group(json.join_code)
 
 
 @app.post(paths.get('login'))
