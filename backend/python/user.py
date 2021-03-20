@@ -209,8 +209,8 @@ class User:
         if is_hashed == 0:
             user_info = db.select('select * from users where user_id = %s and password = %s and is_verified = "true"', params=(self.user_id, hash_password(self.email, self.pw)), dict_cursor=True)
         else:
-            user_info = db.select('select * from users where user_id = %s and password = %s and is_verified = "true"', params=(self.user_id, self.pw, dict_cursor=True))
-            
+            user_info = db.select('select * from users where user_id = %s and password = %s and is_verified = "true"', params=(self.user_id, self.pw), dict_cursor=True)
+
         if user_info == tuple():
             return {'status': 404}
         db.update('users', {'date_last_login': datetime.datetime.now()}, {'user_id': self.user_id})
