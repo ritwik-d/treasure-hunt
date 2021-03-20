@@ -86,7 +86,7 @@ async def join_group(json: JoinGroup, response: Response):
 @app.post(paths.get('login'))
 async def login(json: LogIn, response: Response):
     user = User(email=json.email, pw=json.pw)
-    request = user.login()
+    request = user.login(json.is_hashed)
     response.status_code = request.get('status')
     return request.get('body')
 
