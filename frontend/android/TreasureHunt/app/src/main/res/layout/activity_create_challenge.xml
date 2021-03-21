@@ -6,4 +6,61 @@
     android:layout_height="match_parent"
     tools:context=".ui.CreateChallengeActivity">
 
+    <EditText
+        android:id="@+id/cc_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="@string/name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="76dp" />
+
+    <EditText
+        android:id="@+id/cc_puzzle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="@string/puzzle"
+        tools:layout_editor_absoluteX="100dp"
+        tools:layout_editor_absoluteY="155dp" />
+
+    <Spinner
+        android:id="@+id/cc_diff"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:background="@android:drawable/btn_dropdown"
+        android:spinnerMode="dropdown"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.685"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="236dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/difficulty"
+        android:textSize="20sp"
+        tools:layout_editor_absoluteX="84dp"
+        tools:layout_editor_absoluteY="244dp" />
+
+    <Spinner
+        android:id="@+id/cc_groups"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:background="@android:drawable/btn_dropdown"
+        android:spinnerMode="dropdown"
+        tools:layout_editor_absoluteX="179dp"
+        tools:layout_editor_absoluteY="315dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/groups"
+        android:textSize="20sp"
+        tools:layout_editor_absoluteX="84dp"
+        tools:layout_editor_absoluteY="326dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

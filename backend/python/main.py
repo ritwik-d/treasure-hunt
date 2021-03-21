@@ -45,9 +45,11 @@ async def get_group_data(json: GetGroupData):
 
 
 @app.post(paths.get('get_groups'))
-async def get_groups(json: GetGroups):
+async def get_groups(json: GetGroups, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
-    return user.get_groups()
+    response_2 = user.get_groups()
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
 
 
 @app.post(paths.get('get_group_members'))

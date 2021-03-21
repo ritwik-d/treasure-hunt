@@ -31,7 +31,16 @@
     <!--   challenges -->
 
     <string name="createChallenge">Create Challenge</string>
+    <string name="editChallenge">Edit Challenge</string>
     <string name="noChallenges">You have no challenges!</string>
+    <string name="puzzle">Puzzle</string>
+    <string name="name">Name</string>
+    <string name="difficulty">Difficulty</string>
+    <string-array name="difficulties">
+        <item>Easy</item>
+        <item>Medium</item>
+        <item>Hard</item>
+    </string-array>
 
     <!--   groups -->
 
@@ -43,4 +52,6 @@
     <!--   survey -->
 
     <string name="surveyLink">https://docs.google.com/forms/d/e/1FAIpQLSecPydSBK134zt2Q2tXNKCxIAVKZwvYk37UH-8-F7GLqHYENw/viewform</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

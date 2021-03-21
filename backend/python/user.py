@@ -150,7 +150,7 @@ class User:
         groups = []
         for i in groups1:
             groups.append(i[0])
-        return groups
+        return {'body': groups, 'status': 200}
 
 
     @authenticate
