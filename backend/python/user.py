@@ -59,6 +59,8 @@ class User:
     def create_challenge(self, difficulty: str, latitude: float, longitude: float, name: str, puzzle: str, group_name=None):
         db = DB()
         db.connect()
+        if len(db.select('select challenge_id from challenges where creator_id = %s', params=(self.user_id,))) == 3:
+            return 404
         row = {
             'creator_id': self.user_id,
             'difficulty': difficulty,
@@ -71,8 +73,8 @@ class User:
             row['group_id'] = get_group_id(group_name)
         row_id = db.insert('challenges', row)
         if row_id is None:
-            return fail
-        return suc
+            return 400
+        return 201
 
 
     @authenticate
