@@ -117,7 +117,7 @@ class User:
         db = DB()
         db.connect()
         data = db.select('select * from challenges where name = %s', params=(name,), dict_cursor=True)[0]
-        return data
+        return {'body': list(data), 'status': 200}
 
 
     @authenticate

@@ -25,9 +25,11 @@ async def delete_challenge(json: DeleteChallenge, response: Response):
 
 
 @app.post(paths.get('get_challenge_data'))
-async def get_challenge_data(json: GetChallengeData):
+async def get_challenge_data(json: GetChallengeData, response: Response):
     user = User(email=json.email, pw=json.pw, user_id=json.user_id)
-    return user.get_challenge_data(json.name)
+    response_2 = user.get_challenge_data(json.name)
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
 
 
 @app.post(paths.get('get_challenges'))
