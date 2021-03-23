@@ -41,9 +41,11 @@ async def get_challenges(json: GetChallenges, response: Response):
 
 
 @app.post(paths.get('get_group_data'))
-async def get_group_data(json: GetGroupData):
+async def get_group_data(json: GetGroupData, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
-    return user.get_group_data(json.name)
+    response_2 = user.get_group_data(json.name)
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
 
 
 @app.post(paths.get('get_groups'))

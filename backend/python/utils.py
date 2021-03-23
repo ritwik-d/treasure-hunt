@@ -34,7 +34,7 @@ def hash_password(email: str, password: str):
     return hashlib.sha256((salt + password).encode()).hexdigest()
 
 
-def send_email(file_name: str, receiver_email: str, subject: str, sender_email=None, params=None):
+def send_email(file_name: str, receiver_email: str, subject: str, sender_email=None, params=None, html=True):
     smtp_config = config.get('smtp')
     final_path = smtp_config.get('file_paths', 'emails') + file_name
 
@@ -42,7 +42,6 @@ def send_email(file_name: str, receiver_email: str, subject: str, sender_email=N
         sender_email = smtp_config.get('sender')
     password = smtp_config.get('pw')
     port = smtp_config.get('port')
-    file_type = mimetypes.guess_type(final_path)
 
     with open(final_path, 'r') as f:
         message = f.read()
@@ -53,7 +52,7 @@ def send_email(file_name: str, receiver_email: str, subject: str, sender_email=N
     msg['From'] = sender_email
     msg['To'] = receiver_email
 
-    if file_type == 'text/html':
+    if html:
         msg.attach(MIMEText(message, 'html'))
     else:
         msg.attach(MIMEText(message, 'plain'))
