@@ -15,8 +15,7 @@ def get_config():
 
 def main():
     dump_file_name = config.get('paths', 'tmp') + datetime.datetime.now().strftime('%m-%d-%Y') + '.sql'
-    os.system(f"""root_pw='{config.get('mysql', 'root_pw')}'""")
-    os.system(f'''mysqldump -u root -p$root_pw --databases {config.get('mysql', 'name')} > {dump_file_name}''')
+    os.system(f'''mysqldump -u root -p{config.get('mysql', 'root_pw')} --databases {config.get('mysql', 'name')} > {dump_file_name}''')
     fb_config = get_config()
     firebase = pyrebase.initialize_app(fb_config)
     storage = firebase.storage()
