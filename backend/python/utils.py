@@ -49,8 +49,8 @@ def send_email(file_name: str, receiver_email: str, subject: str, sender_email=N
 
     with open(final_path, 'r') as f:
         message = f.read()
-        if params:
-            message = message.format(params)
+        if not params is None:
+            message = message.format(*params)
     print(f'message: {message}')
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
