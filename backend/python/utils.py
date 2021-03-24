@@ -36,7 +36,7 @@ def hash_password(email: str, password: str):
 
 def send_email(file_name: str, receiver_email: str, subject: str, sender_email=None, params=None, html=True):
     smtp_config = config.get('smtp')
-    final_path = smtp_config.get('file_paths', 'emails') + file_name
+    final_path = config.get('paths', 'emails') + file_name
 
     if sender_email is None:
         sender_email = smtp_config.get('sender')
@@ -59,9 +59,9 @@ def send_email(file_name: str, receiver_email: str, subject: str, sender_email=N
 
     try:
         with smtplib.SMTP(smtp_server, port) as server:
-            server.ehlo()
+            # server.ehlo()
             server.starttls()
-            server.ehlo()
+            # server.ehlo()
             server.login(sender_email, password)
             server.sendmail(sender_email, receiver_email, msg.as_string())
             return True
