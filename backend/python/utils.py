@@ -39,7 +39,7 @@ def send_email(file_name: str, receiver_email: str, subject: str, sender_email=N
     final_path = config.get('paths', 'emails') + file_name
 
     if sender_email is None:
-        sender_email = smtp_config.get('sender')
+        sender_email = smtp_config.get('email')
 
     password = smtp_config.get('pw')
     port = smtp_config.get('port')
