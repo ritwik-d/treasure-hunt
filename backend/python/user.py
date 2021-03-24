@@ -260,7 +260,7 @@ class User:
     def register(self):
         db = DB()
         db.connect()
-        
+
         if self.uname in list(itertools.chain(*db.select('select username from users'))):
             return 401
         email_verify_token = get_rand_string(10)
@@ -273,7 +273,8 @@ class User:
         row = {
             'email': self.email,
             'password': hash_password(self.email, self.pw),
-            'username': self.uname
+            'username': self.uname,
+            'email_verify_token': email_verify_token
         }
         row_id = db.insert('users', row)
         if not row_id is None:
