@@ -43,7 +43,7 @@ def send_email(file_name: str, receiver_email: str, subject: str, sender_email=N
 
     password = smtp_config.get('pw')
     port = smtp_config.get('port')
-    smtp_server = smtp_server.get('server')
+    smtp_server = smtp_config.get('server')
 
     with open(final_path, 'r') as f:
         message = f.read()
