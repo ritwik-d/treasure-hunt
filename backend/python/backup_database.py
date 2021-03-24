@@ -2,6 +2,7 @@
 
 import datetime
 from environment import *
+import gzip
 import json
 import pyrebase
 import os
@@ -13,9 +14,16 @@ def get_config():
         return json.loads(f.read())
 
 
+def gzip_file(file_path: str):
+    with open(file_path, 'rb') as f_in, gzip.open(file_path + '.gz', 'wb') as f_out:
+        f_out.writelines(f_in)
+
+
 def main():
     dump_file_name = config.get('paths', 'tmp') + datetime.datetime.now().strftime('%m-%d-%Y') + '.sql'
     os.system(f'''mysqldump -u root -p{config.get('mysql', 'root_pw')} --databases {config.get('mysql', 'name')} > {dump_file_name}''')
+    gzip_file(dump_file_name)
+
     fb_config = get_config()
     firebase = pyrebase.initialize_app(fb_config)
     storage = firebase.storage()
