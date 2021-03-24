@@ -40,8 +40,10 @@ def send_email(file_name: str, receiver_email: str, subject: str, sender_email=N
 
     if sender_email is None:
         sender_email = smtp_config.get('sender')
+
     password = smtp_config.get('pw')
     port = smtp_config.get('port')
+    smtp_server = smtp_server.get('server')
 
     with open(final_path, 'r') as f:
         message = f.read()
