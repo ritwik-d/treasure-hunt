@@ -160,7 +160,7 @@ class User:
     def get_group_data(self, name: str):
         db = DB()
         db.connect()
-        group_data = db.select('select members, creator_id, join_code from user_groups where name = %s', params=(name,))[0]
+        group_data = db.select('select members, creator_id, join_code from user_groups where name = %s', params=(name,), dict_cursor=True)[0]
         user_ids = json.loads(group_data.get('members'))
         creator_id = group_data.get('creator_id')
         final_data = []
