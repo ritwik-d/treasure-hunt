@@ -174,7 +174,7 @@ class User:
             data['status'] = status
             final_data.append(data)
 
-        final_data = {'table_layout': sorted(final_data, key = lambda i: i['points'])}
+        final_data = {'table_layout': sorted(final_data, key = lambda i: i['points'], reverse=True)}
         if self.user_id == creator_id:
             final_data['join_code'] = [{'join_code': group_data.get('join_code')}]
         print(f'final data: <{pprint.pformat(final_data)}>')

@@ -1,14 +1,12 @@
 package com.ritwikscompany.treasurehunt.ui
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity.CENTER
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.github.kittinunf.fuel.Fuel
 import com.google.gson.Gson
@@ -18,7 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.collections.HashMap as HashMap
+import kotlin.jvm.internal.Intrinsics
 
 class GroupPageActivity : AppCompatActivity() {
 
@@ -56,11 +54,11 @@ class GroupPageActivity : AppCompatActivity() {
                     if (status == 200) {
                         val (bytes, _) = result
                         if (bytes != null) {
-                            val type = object: TypeToken<HashMap<String, MutableList<HashMap<String, Any>>>>(){}.type
-                            val data = Gson().fromJson(String(bytes), type) as HashMap<String, MutableList<HashMap<String, Any>>>
-                            val tableData = data.get("table_layout")
+                            val type = object: TypeToken<HashMap<String, List<HashMap<String, Any>>>>(){}.type
+                            val data: HashMap<String, List<HashMap<String, Any>>> = Gson().fromJson(String(bytes), type) as HashMap<String, List<HashMap<String, Any>>>
+                            val tableData: List<HashMap<String, Any>> = data.get("table_layout")!!
                             println("tableData: $tableData")
-                            for ((rank, member) in (tableData)!!.withIndex()) {
+                            for ((rank: Int, member: HashMap<String, Any>) in (tableData).withIndex()) {
                                 val titles = tableLayout!!.findViewById<TableRow>(R.id.gp_titles)
                                 val row = TableRow(ctx)
 
@@ -81,7 +79,8 @@ class GroupPageActivity : AppCompatActivity() {
 
                                 rankTV.text = (rank + 1).toString()
                                 usernameTV.text = member.get("username") as String
-                                pointsTV.text = member.get("points") as String
+                                val points: Double = member.get("points") as Double
+                                pointsTV.text = points.toInt().toString()
                                 statusTV.text = member.get("status") as String
 
                                 if (member.get("username") as String == userData.get("username")) {
