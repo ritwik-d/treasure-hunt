@@ -258,6 +258,9 @@ class User:
 
 
     def register(self):
+        db = DB()
+        db.connect()
+        
         if self.uname in list(itertools.chain(*db.select('select username from users'))):
             return 401
         email_verify_token = get_rand_string(10)
@@ -267,8 +270,6 @@ class User:
         status = send_email('account_verification.html', self.email, 'Treasure Hunt Account Verification', params=(self.uname, email_verify_token))
         if not status:
             return 402
-        db = DB()
-        db.connect()
         row = {
             'email': self.email,
             'password': hash_password(self.email, self.pw),
