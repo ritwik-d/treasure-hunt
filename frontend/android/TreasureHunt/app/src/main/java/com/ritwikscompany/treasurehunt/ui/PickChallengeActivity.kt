@@ -19,7 +19,7 @@ import kotlinx.coroutines.withContext
 class PickChallengeActivity : AppCompatActivity() {
 
     private val ctx = this@PickChallengeActivity
-    private lateinit var userData: HashMap<String, Any>
+    private var userData = HashMap<String, Any>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pick_challenge)
@@ -64,7 +64,7 @@ class PickChallengeActivity : AppCompatActivity() {
                                 listView.adapter = adapter
 
                                 listView.setOnItemClickListener { _, _, position, _ ->
-                                    val intent = Intent(ctx, MapsActivity::class.java).apply {
+                                    val intent = Intent(ctx, GameActivity::class.java).apply {
                                         putExtra("userData", userData)
                                         putExtra("challengeName", listItems[position])
                                     }
@@ -82,7 +82,7 @@ class PickChallengeActivity : AppCompatActivity() {
                                         listView.adapter = adapter
 
                                         listView.setOnItemClickListener { _, _, position, _ ->
-                                            val intent = Intent(ctx, MapsActivity::class.java).apply {
+                                            val intent = Intent(ctx, GameActivity::class.java).apply {
                                                 putExtra("userData", userData)
                                                 putExtra("challengeName", listItems[position])
                                             }

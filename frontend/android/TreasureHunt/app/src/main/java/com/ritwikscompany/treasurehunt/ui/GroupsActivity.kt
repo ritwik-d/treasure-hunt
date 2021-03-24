@@ -9,7 +9,7 @@ import com.ritwikscompany.treasurehunt.R
 class GroupsActivity : AppCompatActivity() {
 
     private val ctx = this@GroupsActivity
-    private var userData = hashMapOf<String, Any>()
+    private var userData = HashMap<String, Any>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_groups)

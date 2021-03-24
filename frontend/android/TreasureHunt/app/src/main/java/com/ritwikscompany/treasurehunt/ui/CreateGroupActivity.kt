@@ -66,25 +66,19 @@ class CreateGroupActivity : AppCompatActivity() {
 
             withContext(Dispatchers.Main) {
                 runOnUiThread {
-                    if (response.isSuccessful) {
-                        val status = response.statusCode
-                        if (status == 201) {
-                            val intent = Intent(ctx, GroupPageActivity::class.java).apply {
-                                putExtra("groupName", groupName)
-                                putExtra("userData", userData)
-                            }
-                            startActivity(intent)
-                        } else if (status == 400) {
-                            Toast.makeText(
-                                    ctx,
-                                    "A group has already been created with this name",
-                                    Toast.LENGTH_LONG
-                            ).show()
+                    val status = response.statusCode
+                    if (status == 201) {
+                        val intent = Intent(ctx, GroupPageActivity::class.java).apply {
+                            putExtra("groupName", groupName)
+                            putExtra("userData", userData)
                         }
-                    }
-
-                    else {
-                        Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
+                        startActivity(intent)
+                    } else if (status == 400) {
+                        Toast.makeText(
+                                ctx,
+                                "A group has already been created with this name",
+                                Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
             }

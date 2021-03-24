@@ -41,6 +41,7 @@
         <item>Medium</item>
         <item>Hard</item>
     </string-array>
+    <string name="isHereMessage">Am I Here?</string>
 
     <!--   groups -->
 
@@ -49,9 +50,14 @@
     <string name="myGroups">My Groups</string>
     <string name="joinCode">Join Code</string>
 
+    <!--   leaderboard -->
+
+    <string name="points">Points</string>
+    <string name="status">Status</string>
+    <string name="rank">Rank</string>
+
+
     <!--   survey -->
 
     <string name="surveyLink">https://docs.google.com/forms/d/e/1FAIpQLSecPydSBK134zt2Q2tXNKCxIAVKZwvYk37UH-8-F7GLqHYENw/viewform</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

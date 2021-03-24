@@ -15,7 +15,7 @@ import com.ritwikscompany.treasurehunt.R
 class HomeActivity : AppCompatActivity() {
 
     private val ctx = this@HomeActivity
-    private lateinit var userData: HashMap<String, Any>
+    private var userData = HashMap<String, Any>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)

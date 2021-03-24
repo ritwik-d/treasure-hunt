@@ -6,4 +6,70 @@
     android:layout_height="match_parent"
     tools:context=".ui.GroupPageActivity">
 
+    <TableLayout
+        android:id="@+id/gp_tb"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TableRow
+            android:id="@+id/gp_titles"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#f1f1f1">
+
+            <TextView
+                android:id="@+id/gp_rank_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="1dp"
+                android:layout_marginBottom="1dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/rank"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/gp_username_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/username"
+                android:layout_marginRight="1dp"
+                android:layout_marginBottom="1dp"
+                android:layout_marginLeft="1dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/gp_points_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/points"
+                android:layout_marginBottom="1dp"
+                android:layout_marginLeft="1dp"
+                android:textStyle="bold"
+                android:layout_marginStart="1dp" />
+
+            <TextView
+                android:id="@+id/gp_status_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/status"
+                android:layout_marginBottom="1dp"
+                android:layout_marginLeft="1dp"
+                android:textStyle="bold"
+                android:layout_marginStart="1dp" />
+
+        </TableRow>
+
+    </TableLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

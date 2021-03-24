@@ -34,7 +34,7 @@ class MyChallengesActivity : AppCompatActivity() {
     private lateinit var edit3: ImageButton
     private lateinit var trash3: ImageButton
 
-    private lateinit var userData: HashMap<String, Any>
+    private var userData = HashMap<String, Any>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_challenges)
