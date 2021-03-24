@@ -64,13 +64,15 @@ class DB:
 
 
     # update colums in mysql and returns last row id
-    def update(self, table_name: str, update_params: dict, where_params: dict):
+    def update(self, table_name: str, update_params: dict, where_params: dict, aff_rows=False):
         if self.db is None:
             return None
         cursor = self.db.cursor()
         sql = f"""UPDATE {table_name} set {', '.join([f'{k} = %s' for k in update_params])} WHERE {', '.join([f'{k} = %s' for k in where_params])}"""
         print(f'update sql: {sql}')
         cursor.execute(sql, tuple(list(update_params.values()) + list(where_params.values())))
+        if aff_rows:
+            return cursor.affected_rows()
         return cursor.lastrowid
 
 

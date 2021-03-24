@@ -107,3 +107,8 @@ async def register(json: Register, response: Response):
 async def update_challenge(json: UpdateChallenge, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
     response.status_code = user.update_challenge(json.challenge_name, json.new_name, json.new_puzzle, json.new_difficulty, json.new_group_name)
+
+
+@app.get(paths.get('verify_account'))
+async def verify_account(email_verify_token: str):
+    return verify_account_web(email_verify_token)

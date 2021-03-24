@@ -1,6 +1,7 @@
 import datetime
 from db import *
 from environment import *
+from html_bodies import *
 import itertools
 import json
 import pprint
@@ -38,8 +39,20 @@ def get_users(self):
     return {'status': 200, 'body': list(db.select('select email, username from users', dict_cursor=True))}
 
 
-class AccountVerificationEmail:
-    def __init__(self, email: str, pw: str)
+def verify_account_web(email_verify_token: str):
+    db = DB()
+    db.connect()
+    affected_rows = db.update('users', {'is_verified': 'true'}, {'email_verify_token': email_verify_token}, aff_rows=True)
+    body = HTMLBody('account_verification.html')
+    response = None
+    if affected_rows != 1:
+        body.params('Failure')
+        response = body.get_response(404)
+    else:
+        body.params('Success')
+        response = body.get_response(200)
+
+    return response
 
 
 class User:
@@ -276,6 +289,3 @@ class User:
         if row_id is None:
             return 400
         return 200
-
-
-    def verify_account(self, email_verify_token: str)

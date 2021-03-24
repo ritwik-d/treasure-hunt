@@ -15,6 +15,7 @@ api:
     login: /login
     register: /register
     update_challenge: /update_challenge
+    verify_account: /verify_account/{email_verify_token}
 firebase_storage:
   db_backups: database_backups/
 mysql:
@@ -24,6 +25,7 @@ mysql:
   root_pw: mysqlpw5901
   user: treasure_hunt
 paths:
+  html_bodies: /home/ritwik/git_hub/TreasureHunt/backend/html_bodies/
   emails: /home/ritwik/git_hub/TreasureHunt/backend/emails/
   firebase_config: /home/ritwik/git_hub/TreasureHunt/backend/firebase_config.json
   tmp: /home/ritwik/git_hub/TreasureHunt/backend/tmp/
