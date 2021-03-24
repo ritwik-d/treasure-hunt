@@ -72,7 +72,7 @@ class DB:
         print(f'update sql: {sql}')
         cursor.execute(sql, tuple(list(update_params.values()) + list(where_params.values())))
         if aff_rows:
-            return cursor.affected_rows()
+            return self.db.affected_rows()
         return cursor.lastrowid
 
 
