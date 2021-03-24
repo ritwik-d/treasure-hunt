@@ -8,8 +8,8 @@
 
     <TableLayout
         android:id="@+id/gp_tb"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,7 +30,8 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/rank"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginEnd="1dp" />
 
             <TextView
                 android:id="@+id/gp_username_tv"
