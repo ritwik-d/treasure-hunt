@@ -48,7 +48,7 @@ def send_email(file_name: str, receiver_email: str, subject: str, sender_email=N
     with open(final_path, 'r') as f:
         message = f.read()
         if params:
-            message.format(params)
+            message.format(*params)
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
     msg['From'] = sender_email
@@ -69,7 +69,7 @@ def send_email(file_name: str, receiver_email: str, subject: str, sender_email=N
             return True
     except smtplib.SMTPRecipientsRefused:
         return False
-        
+
 
 fail = {'status': 'failed'}
 suc = {'status': 'success'}
