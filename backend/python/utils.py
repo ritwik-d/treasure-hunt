@@ -35,6 +35,7 @@ def hash_password(email: str, password: str):
 
 
 def send_email(file_name: str, receiver_email: str, subject: str, sender_email=None, params=None, html=True):
+    print('calling send email')
     smtp_config = config.get('smtp')
     final_path = config.get('paths', 'emails') + file_name
 
@@ -44,11 +45,13 @@ def send_email(file_name: str, receiver_email: str, subject: str, sender_email=N
     password = smtp_config.get('pw')
     port = smtp_config.get('port')
     smtp_server = smtp_config.get('server')
+    print(f'final_path: {final_path}\nsender_email: {sender_email}\npassword: {password}\nport: {port}\nserver: {smtp_server}\nparams: {params}')
 
     with open(final_path, 'r') as f:
         message = f.read()
         if params:
             message.format(*params)
+    print(f'message: {message}')
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
     msg['From'] = sender_email
