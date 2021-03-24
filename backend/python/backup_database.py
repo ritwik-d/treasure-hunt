@@ -6,7 +6,7 @@ import json
 import pyrebase
 import os
 
-config = Config()
+config = Config(file_config())
 
 def get_config():
     with open(fb_config.get('paths', 'firebase_config'), 'r') as f:
