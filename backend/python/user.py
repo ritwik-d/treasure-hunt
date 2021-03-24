@@ -43,8 +43,6 @@ def verify_account_web(email_verify_token: str):
     db = DB()
     db.connect()
     affected_rows = db.update('users', {'is_verified': 'true'}, {'email_verify_token': email_verify_token}, aff_rows=True)
-    print(affected_rows)
-    print(type(affected_rows))
     body = HTMLBody('account_verification.html')
     response = None
     if affected_rows != 1:

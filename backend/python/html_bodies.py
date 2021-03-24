@@ -9,7 +9,7 @@ class HTMLBody:
 
 
     def params(self, *params):
-        self.html = self.html.format(params)
+        self.html = self.html.format(*params)
 
 
     def get_response(self, status_code=200):
