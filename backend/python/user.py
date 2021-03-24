@@ -1,6 +1,7 @@
 import datetime
 from db import *
 from environment import *
+import itertools
 import json
 import pprint
 from utils import *
@@ -35,6 +36,10 @@ def get_users(self):
     db = DB()
     db.connect()
     return {'status': 200, 'body': list(db.select('select email, username from users', dict_cursor=True))}
+
+
+class AccountVerificationEmail:
+    def __init__(self, email: str, pw: str)
 
 
 class User:
@@ -240,14 +245,19 @@ class User:
 
 
     def register(self):
-        # status = send_email('register.html', self.email, 'Treasure Hunt Account Verification', params=(f'{self.fname} {self.lname}', '\t', '<link>', '\t', '\t'))
-        # if not status:
-        #     return fail
+        if self.uname in list(itertools.chain(*db.select('select username from users'))):
+            return 401
+        email_verify_token = get_rand_string(10)
+        while email_verify_token in list(itertools.chain(*db.select('select email_verify_token from users'))):
+            email_verify_token = get_rand_string(10)
+
+        status = send_email('account_verification.html', self.email, 'Treasure Hunt Account Verification', params=(self.uname, email_verify_token))
+        if not status:
+            return 402
         db = DB()
         db.connect()
         row = {
             'email': self.email,
-            'is_verified': 'true',
             'password': hash_password(self.email, self.pw),
             'username': self.uname
         }
@@ -266,3 +276,6 @@ class User:
         if row_id is None:
             return 400
         return 200
+
+
+    def verify_account(self, email_verify_token: str)

@@ -22,7 +22,8 @@ create table users (
   password char(64) not null,
   points int unsigned not null default 0,
   picture_extension varchar(8),
-  status enum ('active', 'suspended', 'deleted') not null default 'active'
+  status enum ('active', 'suspended', 'deleted') not null default 'active',
+  email_verify_token char(10) not null
 ) engine=innodb;
 
 -- create unique index on email
