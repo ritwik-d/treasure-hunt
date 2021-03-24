@@ -9,7 +9,7 @@ import os
 config = Config(file_config())
 
 def get_config():
-    with open(fb_config.get('paths', 'firebase_config'), 'r') as f:
+    with open(config.get('paths', 'firebase_config'), 'r') as f:
         return json.loads(f.read())
 
 
