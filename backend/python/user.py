@@ -158,7 +158,10 @@ class User:
             group_chals1 = db.select('select name from challenges where group_id = %s and creator_id <> %s', params=(group, self.user_id))
             group_chals = []
             for chal in group_chals1:
-                group_chals.append(chal[0])
+                fchal = chal[0]
+                while type(fchal) != str:
+                    fchal = fchal[0]
+                group_chals.append(fchal)
             final[groups[group]] = group_chals
         return {'body': final, 'status': 200}
 

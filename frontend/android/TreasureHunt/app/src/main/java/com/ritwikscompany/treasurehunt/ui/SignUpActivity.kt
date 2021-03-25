@@ -141,10 +141,11 @@ class SignUpActivity : AppCompatActivity() {
     private fun makeDialog() {
         val builder: AlertDialog.Builder = AlertDialog.Builder(ctx)
         builder?.setTitle("Account Verification")
-        builder?.setMessage("You have received an email to verify your account. Please click the link within the email to verify your account. \nNOTE: You will not be able to log in until you verify your account.")
+        builder?.setMessage("You have received an email to verify your account. Please click the link within the email to verify your account. \n\nNOTE: You will not be able to log in until you verify your account.")
         builder?.setPositiveButton("OK", DialogInterface.OnClickListener { _, _ ->
             startActivity(Intent(ctx, LoginActivity::class.java))
         })
+        builder?.show()
     }
 
 
