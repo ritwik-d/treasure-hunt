@@ -1,5 +1,7 @@
 package com.ritwikscompany.treasurehunt.ui
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -23,6 +25,10 @@ import java.util.regex.Pattern
 class SignUpActivity : AppCompatActivity() {
 
     private val ctx = this@SignUpActivity
+    private lateinit var emailET: EditText
+    private lateinit var pwET: EditText
+    private lateinit var usernameET: EditText
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
@@ -51,22 +57,29 @@ class SignUpActivity : AppCompatActivity() {
             )
         )
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/register")
+            val (_, response, _) = Fuel.post("${getString(R.string.host)}/register")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
 
             withContext(Dispatchers.Main) {
                 runOnUiThread {
-                    val status = response.statusCode
-                    if (status == 201) {
-                        startActivity(Intent(ctx, LoginActivity::class.java))
-                    } else if (status == 400) {
-                        Toast.makeText(
-                            ctx,
-                            "An account has already been created with this email",
-                            Toast.LENGTH_LONG
-                        ).show()
+                    when (response.statusCode) {
+                        201 -> {
+                            makeDialog()
+                        }
+                        400 -> {
+                            emailET.error = "An account has already been created with this email"
+                            emailET.requestFocus()
+                        }
+                        402 -> {
+                            emailET.error = "Enter a valid email"
+                            emailET.requestFocus()
+                        }
+                        401 -> {
+                            usernameET.error = "An account has already been created with this username"
+                            usernameET.requestFocus()
+                        }
                     }
                 }
             }
@@ -77,9 +90,9 @@ class SignUpActivity : AppCompatActivity() {
     private fun signUpOnClick() {
         // get ui objects
 
-        val emailET = findViewById<EditText>(R.id.su_email)
-        val pwET = findViewById<EditText>(R.id.su_pw)
-        val usernameET = findViewById<EditText>(R.id.su_username)
+        emailET = findViewById(R.id.su_email)
+        pwET = findViewById(R.id.su_pw)
+        usernameET = findViewById(R.id.su_username)
 
         val email = emailET.text.toString()
         val pw = pwET.text.toString()
@@ -110,6 +123,7 @@ class SignUpActivity : AppCompatActivity() {
         httpCall(email, pw, username)
     }
 
+
     private fun isValid(emailText: String?): Boolean {
         val emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+
         "[a-zA-Z0-9_+&*-]+)*@" +
@@ -121,6 +135,16 @@ class SignUpActivity : AppCompatActivity() {
             return false
 
         return pat.matcher(emailText).matches()
+    }
+
+
+    private fun makeDialog() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(ctx)
+        builder?.setTitle("Account Verification")
+        builder?.setMessage("You have received an email to verify your account. Please click the link within the email to verify your account. \nNOTE: You will not be able to log in until you verify your account.")
+        builder?.setPositiveButton("OK", DialogInterface.OnClickListener { _, _ ->
+            startActivity(Intent(ctx, LoginActivity::class.java))
+        })
     }
 
 

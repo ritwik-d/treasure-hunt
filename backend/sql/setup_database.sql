@@ -56,8 +56,8 @@ create table challenges (
   difficulty enum ('easy', 'medium', 'hard') not null,
   creator_id bigint unsigned not null,
   group_id bigint unsigned,
-  latitude double(5, 5) not null,
-  longitude double(5, 5) not null,
+  latitude double(10, 10) not null,
+  longitude double(10, 10) not null,
   name varchar(25) not null,
   puzzle varchar(50) not null,
   foreign key (creator_id) references users(user_id)
