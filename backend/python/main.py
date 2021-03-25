@@ -6,6 +6,13 @@ from user import *
 app = FastAPI()
 paths = config.get('api', 'paths')
 
+
+@app.post(paths.get('complete_challenge'))
+async def complete_challenge(json: CompleteChallenge, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response.status_code = user.complete_challenge(json.challenge_id)
+
+
 @app.post(paths.get('create_challenge'))
 async def create_challenge(json: CreateChallenge, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)

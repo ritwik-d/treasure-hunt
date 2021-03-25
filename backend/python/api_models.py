@@ -1,6 +1,12 @@
 from pydantic import BaseModel
 from typing import Optional
 
+class CompleteChallenge(BaseModel):
+    challenge_id: int
+    pw: str
+    user_id: int
+
+
 class CreateChallenge(BaseModel):
     difficulty: str
     group_name: Optional[str] = None

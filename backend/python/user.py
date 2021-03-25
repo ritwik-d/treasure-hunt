@@ -72,6 +72,7 @@ class User:
         db.delete('challenges', {'challenge_id': challenge_id})
         points = db.select('select points from users where user_id = %s', params=(self.user_id,))[0][0] + 1
         db.update('users', {'points', points}, {'user_id': self.user_id})
+        return 200
 
 
     @authenticate

@@ -192,7 +192,7 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback,
             // start location
 
             if (!this::lastLocation.isInitialized){
-                lastLocation = Location("Self");
+                lastLocation = Location("Self")
                 lastLocation.latitude = lat
                 lastLocation.longitude = long
             }
@@ -259,18 +259,21 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback,
                             startActivity(intent)
                         }
                         else -> {
-                            val builder: AlertDialog.Builder = AlertDialog.Builder(ctx)
+                            val builder2: AlertDialog.Builder = AlertDialog.Builder(ctx)
                             val image = ImageView(ctx)
                             image.setImageResource(R.drawable.opened_treasure_chest)
-                            builder?.setTitle("Congratulations on completing the challenge, $challengeName! You get a point!")
-                            builder?.setView(image)
-                            builder?.setPositiveButton("OK", DialogInterface.OnClickListener {_, _ ->
+
+                            // make complete challenge api call
+
+                            builder2?.setTitle("Congratulations on completing the challenge, $challengeName! You get a point!")
+                            builder2?.setView(image)
+                            builder2?.setPositiveButton("OK", DialogInterface.OnClickListener {_, _ ->
                                 val intent = Intent(ctx, PickChallengeActivity::class.java).apply {
                                     putExtra("userData", userData)
                                 }
                                 startActivity(intent)
                             })
-                            builder?.show()
+                            builder2?.show()
                         }
                     }
                 }
@@ -303,6 +306,12 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback,
         }
     }
 
+
+    private fun completeChallenge() {
+        val challengeId: Int = challengeData.get("challenge_id") as Int
+    }
+
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotificationChannel(
             id: String, name: String,
@@ -320,6 +329,7 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback,
                 longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
         notificationManager?.createNotificationChannel(channel)
     }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun sendNotification(title: String, message: String) {
@@ -345,9 +355,9 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback,
 
         // Create the location request to start receiving updates
         mLocationRequest = LocationRequest()
-        mLocationRequest!!.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
-        mLocationRequest!!.setInterval(UPDATE_INTERVAL)
-        mLocationRequest!!.setFastestInterval(FASTEST_INTERVAL)
+        mLocationRequest!!.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+        mLocationRequest!!.interval = UPDATE_INTERVAL
+        mLocationRequest!!.fastestInterval = FASTEST_INTERVAL
 
         // Create LocationSettingsRequest object using location request
         val builder = LocationSettingsRequest.Builder()
@@ -382,6 +392,7 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback,
         )
     }
 
+
     // called when change in current location is updated.
     @RequiresApi(Build.VERSION_CODES.O)
     fun onLocationChanged(location: Location) {
@@ -411,6 +422,7 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback,
 
 
     override fun onMarkerClick(p0: Marker?) = false
+
 
     //places the marker on the map
     private fun placeMarkerOnMap(location1: LatLng) {
