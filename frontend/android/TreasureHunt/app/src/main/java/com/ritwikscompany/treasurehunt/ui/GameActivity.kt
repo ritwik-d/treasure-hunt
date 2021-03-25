@@ -259,7 +259,18 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback,
                             startActivity(intent)
                         }
                         else -> {
-                            
+                            val builder: AlertDialog.Builder = AlertDialog.Builder(ctx)
+                            val image = ImageView(ctx)
+                            image.setImageResource(R.drawable.opened_treasure_chest)
+                            builder?.setTitle("Congratulations on completing the challenge, $challengeName! You get a point!")
+                            builder?.setView(image)
+                            builder?.setPositiveButton("OK", DialogInterface.OnClickListener {_, _ ->
+                                val intent = Intent(ctx, PickChallengeActivity::class.java).apply {
+                                    putExtra("userData", userData)
+                                }
+                                startActivity(intent)
+                            })
+                            builder?.show()
                         }
                     }
                 }
