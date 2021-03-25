@@ -184,14 +184,14 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback,
 
             latlng = LatLng(lat, long)
 
-            // makes buttonhere visible
+            // makes buttonHere visible
             buttonHere.visibility = View.VISIBLE
             start.visibility = View.INVISIBLE
             // start time
             val startTime: Long = System.currentTimeMillis()
             // start location
 
-            if (!this::lastLocation.isInitialized){
+            if (!ctx::lastLocation.isInitialized){
                 lastLocation = Location("Self")
                 lastLocation.latitude = lat
                 lastLocation.longitude = long
@@ -259,21 +259,7 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback,
                             startActivity(intent)
                         }
                         else -> {
-                            val builder2: AlertDialog.Builder = AlertDialog.Builder(ctx)
-                            val image = ImageView(ctx)
-                            image.setImageResource(R.drawable.opened_treasure_chest)
-
-                            // make complete challenge api call
-
-                            builder2?.setTitle("Congratulations on completing the challenge, $challengeName! You get a point!")
-                            builder2?.setView(image)
-                            builder2?.setPositiveButton("OK", DialogInterface.OnClickListener {_, _ ->
-                                val intent = Intent(ctx, PickChallengeActivity::class.java).apply {
-                                    putExtra("userData", userData)
-                                }
-                                startActivity(intent)
-                            })
-                            builder2?.show()
+                            completeChallenge()
                         }
                     }
                 }
@@ -309,6 +295,43 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback,
 
     private fun completeChallenge() {
         val challengeId: Int = challengeData.get("challenge_id") as Int
+
+        val bodyJson = Gson().toJson(hashMapOf(
+            "user_id" to userData.get("user_id"),
+            "pw" to userData.get("password"),
+            "challenge_id" to challengeId
+        ))
+        CoroutineScope(Dispatchers.IO).launch {
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/complete_challenge")
+                    .body(bodyJson)
+                    .header("Content-Type" to "application/json")
+                    .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    val status = response.statusCode
+                    if (status == 200) {
+                        val builder2: AlertDialog.Builder = AlertDialog.Builder(ctx)
+                        val image = ImageView(ctx)
+                        image.setImageResource(R.drawable.opened_treasure_chest)
+
+                        builder2?.setTitle("Congratulations on completing the challenge, $challengeName! You get a point!")
+                        builder2?.setView(image)
+                        builder2?.setPositiveButton("OK", DialogInterface.OnClickListener {_, _ ->
+                            val intent = Intent(ctx, PickChallengeActivity::class.java).apply {
+                                putExtra("userData", userData)
+                            }
+                            startActivity(intent)
+                        })
+                        builder2?.show()
+                    }
+
+                    else if (status == 400) {
+                        Toast.makeText(ctx, "ERROR", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
     }
 
 

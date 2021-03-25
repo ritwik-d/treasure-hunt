@@ -149,20 +149,11 @@ class User:
         for i in groups1:
             groups[i[0]] = i[1]
         final = {}
-        pub_chals1 = db.select('select name from challenges where group_id is null and creator_id <> %s', params=(self.user_id,))
-        pub_chals = []
-        for i in pub_chals1:
-            pub_chals.append(pub_chals1[0])
+        pub_chals = list(itertools.chain(*db.select('select name from challenges where group_id is null and creator_id <> %s', params=(self.user_id,))))
         final['Public'] = pub_chals
 
         for group in groups:
-            group_chals1 = db.select('select name from challenges where group_id = %s and creator_id <> %s', params=(group, self.user_id))
-            group_chals = []
-            for chal in group_chals1:
-                fchal = chal[0]
-                while type(fchal) != str:
-                    fchal = fchal[0]
-                group_chals.append(fchal)
+            group_chals = list(itertools.chain(*db.select('select name from challenges where group_id = %s and creator_id <> %s', params=(group, self.user_id))))
             final[groups[group]] = group_chals
         return {'body': final, 'status': 200}
 

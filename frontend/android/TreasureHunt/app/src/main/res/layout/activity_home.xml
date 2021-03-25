@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center_horizontal"
     android:textAlignment="center"
-    tools:context=".ui.HomeActivity"
-    android:gravity="center_horizontal">
+    tools:context=".ui.HomeActivity">
 
 
     <Button
@@ -33,34 +33,21 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.873" />
 
-    <ImageView
-        android:id="@+id/home_pfp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.715"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.043" />
-
     <TextView
         android:id="@+id/home_name"
-        android:gravity="center"
-        android:layout_width="214dp"
-        android:layout_height="44dp"
-        android:layout_marginTop="18dp"
-        android:layout_marginBottom="12dp"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="136dp"
+        android:layout_marginBottom="481dp"
+        android:gravity="center_horizontal"
         android:text=""
+        android:textAlignment="center"
         android:textSize="32sp"
-        app:layout_constraintBottom_toTopOf="@+id/home_groups"
-        app:layout_constraintEnd_toEndOf="@+id/home_spinner_profile"
-        app:layout_constraintHorizontal_bias="0.6"
+        app:layout_constraintBottom_toTopOf="@+id/home_feedback"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.251" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/home_groups"
@@ -84,26 +71,17 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/thesecondone" />
 
-    <Spinner
-        android:id="@+id/home_spinner_profile"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="34dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginRight="34dp" />
-
     <Button
         android:id="@+id/home_feedback"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:text="@string/feedback"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.949"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/home_name"
         app:layout_constraintVertical_bias="0.976" />
 
 
