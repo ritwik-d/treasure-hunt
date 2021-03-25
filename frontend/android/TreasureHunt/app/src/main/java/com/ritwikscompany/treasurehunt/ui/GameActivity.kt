@@ -156,7 +156,8 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback,
             }
         }
 
-        findViewById<TextView>(R.id.puzzle).text = "Puzzle: ${challengeData.get(" puzzle ") as String}"
+        println("challengedata: $challengeData")
+        findViewById<TextView>(R.id.puzzle).text = "Puzzle: ${challengeData.get("puzzle") as String}"
 
         val start = findViewById<Button>(R.id.start_challenge)
         start.setOnClickListener {
