@@ -233,6 +233,19 @@ class User:
         return 200
 
 
+    @authenticate
+    def leave_group(self, group_name: str):
+        db = DB()
+        db.connect()
+        group_id = get_group_id(group_name)
+        members = json.loads(db.select('select members from user_groups where group_id = %s', params=(group_id,), dict_cursor=True)[0].get('members'))
+        members.remove(self.user_id)
+        row_id = db.update('user_groups', {'members': json.dumps(members)}, {'group_id': group_id})
+        if row_id is None:
+            return 404
+        return 200
+
+
     def login(self, is_hashed: int):
         db = DB()
         db.connect()

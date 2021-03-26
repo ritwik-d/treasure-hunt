@@ -13,6 +13,7 @@ api:
     get_user_data: /get_user_data
     get_users: /get_users
     join_group: /join_group
+    leave_group: /leave_group
     login: /login
     register: /register
     update_challenge: /update_challenge

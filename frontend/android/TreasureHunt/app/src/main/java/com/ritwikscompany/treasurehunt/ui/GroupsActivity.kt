@@ -46,7 +46,6 @@ class GroupsActivity : AppCompatActivity() {
 //        })
     }
 
-
     private fun createGroupOnClick() {
         val intent = Intent(ctx, CreateGroupActivity::class.java).apply {
             putExtra("userData", userData)

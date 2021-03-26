@@ -1,7 +1,11 @@
 package com.ritwikscompany.treasurehunt.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity.CENTER
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
@@ -16,7 +20,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.jvm.internal.Intrinsics
 
 class GroupPageActivity : AppCompatActivity() {
 
@@ -35,12 +38,34 @@ class GroupPageActivity : AppCompatActivity() {
     }
 
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.groups_menu, menu)
+        return true
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_leave_group -> {
+                leaveGroup()
+            }
+        }
+        return true
+    }
+
+
+    private fun leaveGroup() {
+        
+    }
+
+
     private fun initializeTableLayout() {
         val tableLayout = findViewById<TableLayout>(R.id.gp_tb)
         val bodyJson = Gson().toJson(hashMapOf(
-                "user_id" to userData.get("user_id"),
-                "pw" to userData.get("password"),
-                "name" to groupName
+            "user_id" to userData.get("user_id"),
+            "pw" to userData.get("password"),
+            "name" to groupName
         ))
         CoroutineScope(Dispatchers.IO).launch {
             val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_group_data")

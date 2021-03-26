@@ -79,6 +79,12 @@ class JoinGroup(BaseModel):
     user_id: int
 
 
+class LeaveGroup(BaseModel):
+    group_name: str
+    pw: str
+    user_id: int
+
+
 class LogIn(BaseModel):
     email: str
     pw: str

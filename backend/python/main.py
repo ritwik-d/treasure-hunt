@@ -96,6 +96,12 @@ async def join_group(json: JoinGroup, response: Response):
     response.status_code = user.join_group(json.join_code)
 
 
+@app.post(paths.get('leave_group'))
+async def leave_group(json: LeaveGroup, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response.status_code = user.leave_group(json.group_name)
+
+
 @app.post(paths.get('login'))
 async def login(json: LogIn, response: Response):
     user = User(email=json.email, pw=json.pw)
