@@ -68,6 +68,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        android:gravity="center_horizontal" />
+        android:gravity="center_horizontal"
+        android:focusable="true" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

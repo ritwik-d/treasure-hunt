@@ -11,7 +11,7 @@ import com.ritwikscompany.treasurehunt.R
 import de.hdodenhof.circleimageview.CircleImageView
 import java.util.ArrayList
 
-class GroupMemberRecyclerView(var users: ArrayList<String>, var pfps: ArrayList<Bitmap>) :
+class GroupMemberRecyclerView(var users: ArrayList<String>, var pfps: ArrayList<Bitmap>):
     RecyclerView.Adapter<GroupMemberRecyclerView.ViewHolder>() {
     var rows = ArrayList<View>()
 
@@ -37,7 +37,7 @@ class GroupMemberRecyclerView(var users: ArrayList<String>, var pfps: ArrayList<
     }
 
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         var pfpCIV: CircleImageView = itemView.findViewById(R.id.gm_pfp)
         var memberTV = itemView.findViewById<TextView>(R.id.gm_username)!!
     }

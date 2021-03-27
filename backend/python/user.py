@@ -55,6 +55,17 @@ def verify_account_web(email_verify_token: str):
     return response
 
 
+def send_email_reset_password(email: str):
+    db = DB()
+    db.connect()
+    if not email in list(itertools.chain(*db.select('select email from users'))):
+        return {'status': 404}
+
+    vcode = get_rand_string(6)
+    status = send_email('forgot_password.html', email, 'Treasure Hunt Reset Password', params=(vcode))
+    return {'status': 200, 'body': {'vcode': vcode}}
+
+
 class User:
     def __init__(self, email=None, pw=None, user_id=None, uname=None):
         self.email = email

@@ -126,6 +126,13 @@ async def register(json: Register, response: Response):
     response.status_code = user.register()
 
 
+@app.post(paths.get('send_email_reset_password'))
+async def register(json: SendEmailResetPassword, response: Response):
+    response_2 = send_email_reset_password(json.email)
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
+
+
 @app.post(paths.get('update_challenge'))
 async def update_challenge(json: UpdateChallenge, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
