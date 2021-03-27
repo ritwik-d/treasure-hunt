@@ -291,6 +291,11 @@ class User:
 
 
     @authenticate
+    def reset_password(self):
+        pass
+
+
+    @authenticate
     def update_challenge(self, challenge_name: str, new_name: str, new_puzzle: str, new_difficulty: str, new_group_name: str):
         db = DB()
         db.connect()

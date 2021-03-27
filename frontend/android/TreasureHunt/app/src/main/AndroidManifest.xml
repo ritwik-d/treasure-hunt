@@ -13,6 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TreasureHunt"
         android:usesCleartextTraffic="true">
+        <activity android:name=".ui.GroupSettingsActivity" />
+        <activity android:name=".ui.GroupMembersActivity" />
         <activity android:name=".ui.GameActivity" />
         <activity android:name=".ui.GroupPageActivity" />
         <activity android:name=".ui.MyGroupsActivity" />
@@ -33,7 +35,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

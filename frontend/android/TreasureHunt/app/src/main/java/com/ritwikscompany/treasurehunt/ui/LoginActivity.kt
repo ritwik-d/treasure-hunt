@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.isSuccessful
@@ -31,11 +32,20 @@ class LoginActivity : AppCompatActivity() {
         findViewById<Button>(R.id.log_log_in).setOnClickListener {
             logInOnClick()
         }
+
+        findViewById<TextView>(R.id.log_forgot_pw).setOnClickListener {
+            forgotOnClick()
+        }
     }
 
 
     private fun cancelOnClick() {
         startActivity(Intent(ctx, MainActivity::class.java))
+    }
+
+
+    private fun forgotOnClick() {
+
     }
 
 

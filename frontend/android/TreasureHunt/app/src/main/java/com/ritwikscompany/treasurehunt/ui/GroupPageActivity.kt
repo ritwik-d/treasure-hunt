@@ -1,15 +1,14 @@
 package com.ritwikscompany.treasurehunt.ui
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity.CENTER
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import android.widget.TableLayout
-import android.widget.TableRow
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.github.kittinunf.fuel.Fuel
@@ -20,6 +19,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
+import kotlin.collections.HashMap
 
 class GroupPageActivity : AppCompatActivity() {
 
@@ -50,13 +51,66 @@ class GroupPageActivity : AppCompatActivity() {
             R.id.menu_leave_group -> {
                 leaveGroup()
             }
+
+            R.id.menu_group_members -> {
+                val intent = Intent(ctx, GroupMembersActivity::class.java).apply {
+                    putExtra("userData", userData)
+                    putExtra("groupName", groupName)
+                }
+                startActivity(intent)
+            }
+
+            R.id.menu_group_settings -> {
+                val intent = Intent(ctx, GroupSettingsActivity::class.java).apply {
+                    putExtra("userData", userData)
+                    putExtra("groupName", groupName)
+                }
+                startActivity(intent)
+            }
         }
         return true
     }
 
 
     private fun leaveGroup() {
-        
+        val builder: AlertDialog.Builder = AlertDialog.Builder(ctx)
+
+        builder?.setTitle("Are you sure you want to leave $groupName?")
+        builder?.setPositiveButton("Yes", DialogInterface.OnClickListener { _, _ ->
+            val bodyJson = Gson().toJson(hashMapOf(
+                    "user_id" to userData.get("user_id"),
+                    "pw" to userData.get("password"),
+                    "group_name" to groupName
+            ))
+            CoroutineScope(Dispatchers.IO).launch {
+                val (request, response, result) = Fuel.post("${getString(R.string.host)}/create_challenge")
+                        .body(bodyJson)
+                        .header("Content-Type" to "application/json")
+                        .response()
+
+                withContext(Dispatchers.Main) {
+                    runOnUiThread {
+                        when (response.statusCode) {
+                            200 -> {
+                                val intent = Intent(ctx, GroupsActivity::class.java).apply {
+                                    putExtra("userData", userData)
+                                }
+                                startActivity(intent)
+                            }
+                            404 -> {
+                                Toast.makeText(
+                                        ctx,
+                                        "ERROR",
+                                        Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
+                    }
+                }
+            }
+        })
+        builder?.setNegativeButton("No", DialogInterface.OnClickListener {_, _ -> })
+        builder?.show()
     }
 
 
