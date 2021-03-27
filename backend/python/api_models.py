@@ -64,6 +64,12 @@ class GetUserData(BaseModel):
 
 
 class GetGroupMembers(BaseModel):
+    group_id: int
+    pw: str
+    user_id: int
+
+
+class GetGroupRow(BaseModel):
     group_name: str
     pw: str
     user_id: int

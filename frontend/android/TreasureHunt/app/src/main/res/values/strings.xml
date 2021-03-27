@@ -1,4 +1,6 @@
 <resources>
+    <!--  app meta data  -->
+
     <string name="app_name">Treasure Hunt</string>
 
     <!--  gcp api  -->
@@ -37,6 +39,12 @@
     <string name="puzzle">Puzzle</string>
     <string name="name">Name</string>
     <string name="difficulty">Difficulty</string>
+    <string name="start">Start</string>
+    <string-array name="exerciseTypes">
+        <item>Biking</item>
+        <item>Walking</item>
+        <item>Running</item>
+    </string-array>
     <string-array name="difficulties">
         <item>Easy</item>
         <item>Medium</item>

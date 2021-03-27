@@ -157,12 +157,12 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback,
         }
 
         println("challengedata: $challengeData")
-        findViewById<TextView>(R.id.puzzle).text = "Puzzle: ${challengeData.get("puzzle") as String}"
+        findViewById<TextView>(R.id.puzzle).text = "Puzzle: ${challengeData["puzzle"] as String}"
 
         val start = findViewById<Button>(R.id.start_challenge)
         start.setOnClickListener {
             val builder: AlertDialog.Builder = AlertDialog.Builder(ctx)
-            val array = arrayOf("Biking", "Running", "Walking")
+            val array = ctx.resources.getStringArray(R.array.exerciseTypes)
 
             builder?.setTitle("How are you exercising?")
             builder?.setItems(array) { _, which ->

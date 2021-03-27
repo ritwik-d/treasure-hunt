@@ -9,6 +9,7 @@ api:
     get_group_data: /get_group_data
     get_groups: /get_groups
     get_group_members: /get_group_members
+    get_group_row: /get_group_row
     get_user_challenges: /get_user_challenges
     get_user_data: /get_user_data
     get_users: /get_users

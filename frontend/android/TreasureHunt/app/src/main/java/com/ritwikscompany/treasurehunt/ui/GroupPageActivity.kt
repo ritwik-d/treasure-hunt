@@ -83,7 +83,7 @@ class GroupPageActivity : AppCompatActivity() {
                     "group_name" to groupName
             ))
             CoroutineScope(Dispatchers.IO).launch {
-                val (request, response, result) = Fuel.post("${getString(R.string.host)}/create_challenge")
+                val (request, response, result) = Fuel.post("${getString(R.string.host)}/leave_group")
                         .body(bodyJson)
                         .header("Content-Type" to "application/json")
                         .response()
