@@ -72,7 +72,7 @@ async def get_group_members(json: GetGroupMembers, response: Response):
 
 
 @app.post(paths.get('get_group_row'))
-async def get_group_members(json: GetGroupRow, response: Response):
+async def get_group_row(json: GetGroupRow, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
     response_2 = user.get_group_row(json.group_name)
     response.status_code = response_2.get('status')

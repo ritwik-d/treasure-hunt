@@ -3,7 +3,9 @@ package com.ritwikscompany.treasurehunt.ui
 import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
+import android.widget.TableRow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -31,14 +33,14 @@ class GroupMembersActivity : AppCompatActivity() {
         this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
         this.groupName = intent.getStringExtra("groupName") as String
 
-        val bodyJson = Gson().toJson(hashMapOf<String, Any>(
-            "user_id" to userData["user_id"] as Int,
-            "pw" to userData["password"] as String,
+        val bodyJson1 = Gson().toJson(hashMapOf(
+            "user_id" to userData.get("user_id") as Int,
+            "pw" to userData.get("password") as String,
             "group_name" to groupName
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_group_members")
-                .body(bodyJson)
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_group_row")
+                .body(bodyJson1)
                 .header("Content-Type" to "application/json")
                 .response()
 
@@ -48,16 +50,52 @@ class GroupMembersActivity : AppCompatActivity() {
                     if (status == 200) {
                         val (bytes, _) = result
                         if (bytes != null) {
-                            val type = object: TypeToken<ArrayList<String>>(){}.type
-                            val users = Gson().fromJson(String(bytes), type) as ArrayList<String>
+                            val type = object: TypeToken<HashMap<String, Any>>(){}.type
+                            val groupData: HashMap<String, Any> = Gson().fromJson(String(bytes), type) as HashMap<String, Any>
+                            val bodyJson2 = Gson().toJson(hashMapOf<String, Any>(
+                                "user_id" to userData["user_id"] as Int,
+                                "pw" to userData["password"] as String,
+                                "group_id" to groupData["group_id"] as Int
+                            ))
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val (request2, response2, result2) = Fuel.post("${getString(R.string.host)}/get_group_members")
+                                    .body(bodyJson2)
+                                    .header("Content-Type" to "application/json")
+                                    .response()
 
-                            val recyclerView = findViewById<RecyclerView>(R.id.gm_rview)
-                            var pfps = arrayListOf<Bitmap>()
-                            for (i in 0..(users.size)) {
-                                pfps.add(ContextCompat.getDrawable(ctx, R.drawable.no_pfp)!!.toBitmap())
+                                withContext(Dispatchers.Main) {
+                                    runOnUiThread {
+                                        val status2 = response2.statusCode
+                                        if (status2 == 200) {
+                                            val (bytes2, _) = result2
+                                            if (bytes2 != null) {
+                                                val type2 = object: TypeToken<ArrayList<String>>(){}.type
+                                                val users = Gson().fromJson(String(bytes), type2) as ArrayList<String>
+
+                                                val recyclerView = findViewById<RecyclerView>(R.id.gm_rview)
+                                                val pfps = arrayListOf<Bitmap>()
+                                                for (i in 0..(users.size)) {
+                                                    pfps.add(ContextCompat.getDrawable(ctx, R.drawable.no_pfp)!!.toBitmap())
+                                                }
+
+                                                if (userData.get("user_id") as Int == groupData.get("creator_id") as Int) {
+                                                    recyclerView.adapter = com.ritwikscompany.treasurehunt.utils.GroupAdminRecyclerView(users, pfps)
+                                                } else {
+                                                    recyclerView.adapter = com.ritwikscompany.treasurehunt.utils.GroupMemberRecyclerView(users, pfps)
+                                                }
+                                            }
+
+                                            else {
+                                                Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
+                                            }
+                                        }
+
+                                        else if (status2 == 400) {
+                                            Toast.makeText(ctx, "ERROR2", Toast.LENGTH_LONG).show()
+                                        }
+                                    }
+                                }
                             }
-                            recyclerView.adapter = com.ritwikscompany.treasurehunt.utils.GroupAdminRecyclerView(users, pfps)
-                            // set recycler view adapter with the array "users"
                         }
 
                         else {
@@ -65,8 +103,8 @@ class GroupMembersActivity : AppCompatActivity() {
                         }
                     }
 
-                    else if (status == 400) {
-                        Toast.makeText(ctx, "ERROR", Toast.LENGTH_LONG).show()
+                    else if (status == 404) {
+                        Toast.makeText(ctx, "ERROR1", Toast.LENGTH_LONG).show()
                     }
                 }
             }
