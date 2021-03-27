@@ -64,9 +64,11 @@ async def get_groups(json: GetGroups, response: Response):
 
 
 @app.post(paths.get('get_group_members'))
-async def get_group_members(json: GetGroupMembers):
+async def get_group_members(json: GetGroupMembers, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
-    return user.get_group_members(json.group_id)
+    response_2 = user.get_group_members(json.group_name)
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
 
 
 @app.post(paths.get('get_user_challenges'))

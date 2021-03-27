@@ -195,14 +195,15 @@ class User:
 
 
     @authenticate
-    def get_group_members(self, group_id: int):
+    def get_group_members(self, group_name: str):
         db = DB()
         db.connect()
+        group_id = get_group_id(group_name)
         uids = json.loads(db.select('select members from user_groups where group_id = %s', params=(group_id,), dict_cursor=True)[0].get('members'))
         names = []
         for uid in uids:
             names.append(db.select('select username from users where user_id = %s', params=(uid,))[0][0])
-        return names
+        return {'body': names, 'status': 200}
 
 
     @authenticate

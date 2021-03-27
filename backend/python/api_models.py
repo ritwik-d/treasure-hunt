@@ -64,7 +64,7 @@ class GetUserData(BaseModel):
 
 
 class GetGroupMembers(BaseModel):
-    group_id: int
+    group_name: str
     pw: str
     user_id: int
 
