@@ -1,6 +1,7 @@
 package com.ritwikscompany.treasurehunt.ui
 
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,6 +9,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.isSuccessful
 import com.google.gson.Gson
@@ -45,7 +47,66 @@ class LoginActivity : AppCompatActivity() {
 
 
     private fun forgotOnClick() {
+        val emailET = EditText(ctx)
+        emailET.hint = getString(R.string.email)
 
+        val builder = AlertDialog.Builder(ctx)
+        builder.setTitle("Treasure Hunt Reset Password")
+        builder.setMessage("To reset your password, we need to send you an email to verify that you are not faking and identity. Please enter your email below.")
+        builder.setView(emailET)
+        builder.setPositiveButton("Send", DialogInterface.OnClickListener { _, _ ->
+            val bodyJson = Gson().toJson(hashMapOf(
+                "email" to emailET.text.toString(),
+            ))
+            CoroutineScope(Dispatchers.IO).launch {
+                val (request, response, result) = Fuel.post("${getString(R.string.host)}/login")
+                    .body(bodyJson)
+                    .header("Content-Type" to "application/json")
+                    .response()
+
+                withContext(Dispatchers.Main) {
+                    runOnUiThread {
+                        val status = response.statusCode
+                        if (status == 200) {
+                            val (bytes, _) = result
+                            if (bytes != null) {
+                                val body: HashMap<String, String> = Gson().fromJson(String(bytes), HashMap::class.java) as HashMap<String, String>
+                                val vcode = body.get("vcode")
+
+                                val vcodeET = EditText(ctx)
+                                vcodeET.hint = "Verification Code"
+                                val builder2 = AlertDialog.Builder(ctx)
+                                builder2.setTitle("Treasure Hunt Reset Password")
+                                builder2.setMessage("Enter the verification code that was emailed to you.")
+                                builder2.setView(vcodeET)
+                                builder2.setPositiveButton("Submit", DialogInterface.OnClickListener { _, _ ->
+                                    if (vcodeET.text.toString() == vcode) {
+                                        val builder3 = AlertDialog.Builder(ctx)
+                                        builder3.setTitle("Treasure Hunt Reset Password")
+                                        builder3.setMessage("Enter your new password.")
+                                        val pwET = EditText(ctx)
+                                        pwET.hint = "New Password"
+                                        builder3.setView(pwET)
+                                    } else {
+                                        Toast.makeText(ctx, "Verification Code Incorrect", Toast.LENGTH_LONG).show()
+                                    }
+                                })
+                                builder2.setNegativeButton("Cancel", DialogInterface.OnClickListener {_, _ -> })
+                            }
+
+                            else {
+                                Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
+                            }
+                        }
+
+                        else if (status == 404) {
+                            Toast.makeText(ctx, "Please enter a valid email", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+            }
+        })
+        builder.setNegativeButton("Cancel", DialogInterface.OnClickListener {_, _ -> })
     }
 
 

@@ -15,6 +15,7 @@ import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.isSuccessful
 import com.google.gson.Gson
 import com.ritwikscompany.treasurehunt.R
+import com.ritwikscompany.treasurehunt.utils.Utils.Utils.isValid
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -124,28 +125,14 @@ class SignUpActivity : AppCompatActivity() {
     }
 
 
-    private fun isValid(emailText: String?): Boolean {
-        val emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+
-        "[a-zA-Z0-9_+&*-]+)*@" +
-                "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
-                "A-Z]{2,7}$"
-
-        val pat = Pattern.compile(emailRegex)
-        if (emailText == null)
-            return false
-
-        return pat.matcher(emailText).matches()
-    }
-
-
     private fun makeDialog() {
         val builder: AlertDialog.Builder = AlertDialog.Builder(ctx)
-        builder?.setTitle("Account Verification")
-        builder?.setMessage("You have received an email to verify your account. Please click the link within the email to verify your account. \n\nNOTE: You will not be able to log in until you verify your account.")
-        builder?.setPositiveButton("OK", DialogInterface.OnClickListener { _, _ ->
+        builder.setTitle("Account Verification")
+        builder.setMessage("You have received an email to verify your account. Please click the link within the email to verify your account. \n\nNOTE: You will not be able to log in until you verify your account.")
+        builder.setPositiveButton("OK", DialogInterface.OnClickListener { _, _ ->
             startActivity(Intent(ctx, LoginActivity::class.java))
         })
-        builder?.show()
+        builder.show()
     }
 
 

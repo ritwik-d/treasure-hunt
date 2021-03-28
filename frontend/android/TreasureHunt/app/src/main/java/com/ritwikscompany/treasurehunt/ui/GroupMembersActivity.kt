@@ -90,7 +90,7 @@ class GroupMembersActivity : AppCompatActivity() {
                                                 }
 
                                                 if (userData.get("user_id") as Int == groupData.get("creator_id").toString().toDouble().toInt()) {
-                                                    recyclerView.adapter = GroupAdminRecyclerView(users, pfps)
+                                                    recyclerView.adapter = GroupAdminRecyclerView(users, pfps, ctx)
                                                 } else {
                                                     recyclerView.adapter = GroupMemberRecyclerView(users, pfps)
                                                 }

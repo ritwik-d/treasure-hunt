@@ -1,5 +1,8 @@
 package com.ritwikscompany.treasurehunt.utils
 
+import android.app.AlertDialog
+import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,7 +15,7 @@ import com.ritwikscompany.treasurehunt.R
 import de.hdodenhof.circleimageview.CircleImageView
 import java.util.*
 
-class GroupAdminRecyclerView(var users: ArrayList<String>, var pfps: ArrayList<Bitmap>):
+class GroupAdminRecyclerView(var users: ArrayList<String>, var pfps: ArrayList<Bitmap>, val context: Context):
     RecyclerView.Adapter<GroupAdminRecyclerView.ViewHolder>() {
     var rows = ArrayList<View>()
 
@@ -52,6 +55,12 @@ class GroupAdminRecyclerView(var users: ArrayList<String>, var pfps: ArrayList<B
 
 
     private fun removeMember(username: String) {
-        println("the button work")
+        val builder = AlertDialog.Builder(this.context)
+        builder.setTitle("Are you sure you want to remove $username?")
+        builder.setPositiveButton("Yes", DialogInterface.OnClickListener {_, _ ->
+            // remove the person for real
+        })
+        builder.setNegativeButton("Cancel", DialogInterface.OnClickListener {_, _ -> })
+        builder.show()
     }
 }

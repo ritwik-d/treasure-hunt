@@ -187,18 +187,22 @@ class User:
         group_data = db.select('select members, creator_id, join_code from user_groups where name = %s', params=(name,), dict_cursor=True)[0]
         user_ids = json.loads(group_data.get('members'))
         creator_id = group_data.get('creator_id')
-        final_data = []
-        for user in user_ids:
-            data = db.select('select username, points from users where user_id = %s', params=(user,), dict_cursor=True)[0]
-            status = None
-            if user == creator_id:
-                status = 'Admin'
-            else:
-                status = 'Member'
-            data['status'] = status
-            final_data.append(data)
+        final_data = list(db.select(f'''select username, points, user_id from users where user_id in ({','.join(user_ids)}) order by points DESC''', dict_cursor=True)) # []
+        admin_index = next((index for (index, d) in enumerate(final_data) if d['user_id'] == creator_id), None)
+        admin_data = final_data[admin_index]
+        admin_data['is_admin'] = 1
+        final_data[admin_index] = admin_data
+        # for user in user_ids:
+        #     data = db.select('select username, points from users where user_id = %s', params=(user,), dict_cursor=True)[0]
+        #     status = None
+        #     if user == creator_id:
+        #         status = 'Admin'
+        #     else:
+        #         status = 'Member'
+        #     data['status'] = status
+        #     final_data.append(data)
 
-        final_data = {'table_layout': sorted(final_data, key = lambda i: i['points'], reverse=True)}
+        final_data = {'table_layout': final_data} # sorted(final_data, key = lambda i: i['points'], reverse=True)
         if self.user_id == creator_id:
             final_data['join_code'] = [{'join_code': group_data.get('join_code')}]
         print(f'final data: <{pprint.pformat(final_data)}>')
