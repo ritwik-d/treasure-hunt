@@ -17,6 +17,7 @@ api:
     leave_group: /leave_group
     login: /login
     register: /register
+    reset_password: /reset_password
     send_email_reset_password: /send_email_reset_password
     update_challenge: /update_challenge
     verify_account: /verify_account/{email_verify_token}

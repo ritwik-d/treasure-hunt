@@ -103,6 +103,11 @@ class Register(BaseModel):
     username: str
 
 
+class ResetPassword(BaseModel):
+    email: str
+    new_password: str
+
+
 class SendEmailResetPassword(BaseModel):
     email: str
 

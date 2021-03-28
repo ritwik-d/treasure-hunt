@@ -305,8 +305,11 @@ class User:
 
 
     @authenticate
-    def reset_password(self):
-        pass
+    def reset_password(self, new_password: str):
+        row_id = db.update('users', {'password': new_password}, {'email': self.email})
+        if row_id is None:
+            return 404
+        return 200
 
 
     @authenticate
