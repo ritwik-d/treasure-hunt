@@ -160,7 +160,12 @@ class GroupPageActivity : AppCompatActivity() {
                                 usernameTV.text = member.get("username") as String
                                 val points: Double = member.get("points") as Double
                                 pointsTV.text = points.toInt().toString()
-                                statusTV.text = member.get("status") as String
+                                if (member.containsKey("is_admin")) {
+                                    statusTV.text = "Admin"
+                                }
+                                else {
+                                    statusTV.text = "Member"
+                                }
 
                                 if (member.get("username") as String == userData.get("username")) {
                                     rankTV.setTextColor(ContextCompat.getColor(ctx, R.color.colorLBHighlight))

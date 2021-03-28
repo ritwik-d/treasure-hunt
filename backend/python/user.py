@@ -187,7 +187,7 @@ class User:
         group_data = db.select('select members, creator_id, join_code from user_groups where name = %s', params=(name,), dict_cursor=True)[0]
         user_ids = json.loads(group_data.get('members'))
         creator_id = group_data.get('creator_id')
-        final_data = list(db.select(f'''select username, points, user_id from users where user_id in ({','.join(user_ids)}) order by points DESC''', dict_cursor=True)) # []
+        final_data = list(db.select(f'''select username, points, user_id from users where user_id in ({','.join(str(i) for i in user_ids)}) order by points DESC''', dict_cursor=True)) # []
         admin_index = next((index for (index, d) in enumerate(final_data) if d['user_id'] == creator_id), None)
         admin_data = final_data[admin_index]
         admin_data['is_admin'] = 1
