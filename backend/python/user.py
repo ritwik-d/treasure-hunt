@@ -160,7 +160,8 @@ class User:
         storage.child(cloud_path).download(local_path)
         try:
             Timer(1, lambda: os.remove(local_path)).start()
-            return FileResponse(local_path)
+            print(f'local path: {local_path}')
+            return local_path
         except:
             return None
 

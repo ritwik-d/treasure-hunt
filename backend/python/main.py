@@ -34,7 +34,10 @@ async def delete_challenge(json: DeleteChallenge, response: Response):
 @app.post(paths.get('download_pfp'))
 async def download_pfp(json: DownloadPfp):
     user = User(pw=json.pw, user_id=json.user_id)
-    return user.download_pfp()
+    try:
+        return FileResponse(user.download_pfp())
+    except:
+        return None
 
 
 @app.post(paths.get('get_challenge_data'))
