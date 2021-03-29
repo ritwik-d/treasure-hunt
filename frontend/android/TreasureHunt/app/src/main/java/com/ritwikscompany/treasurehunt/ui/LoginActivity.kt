@@ -108,7 +108,7 @@ class LoginActivity : AppCompatActivity() {
                                                             Toast.makeText(ctx, "Reset Password Success", Toast.LENGTH_SHORT).show()
                                                         }
                                                         else {
-                                                            Toast.makeText(ctx, "Reset Password Failure", Toast.LENGTH_SHORT).show()
+                                                            Toast.makeText(ctx, "Reset Password Failure", Toast.LENGTH_LONG).show()
                                                         }
                                                     }
                                                 }

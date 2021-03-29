@@ -64,7 +64,7 @@ def verify_account_web(email_verify_token: str):
 def send_email_reset_password(email: str):
     db = DB()
     db.connect()
-    if not email in list(itertools.chain(*db.select('select email from users'))):
+    if not email in list(itertools.chain(*db.select("select email from users where is_verified = 'true'"))):
         return {'status': 404}
 
     vcode = get_rand_string(6)
