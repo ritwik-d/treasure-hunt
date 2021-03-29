@@ -33,9 +33,11 @@ class GroupMembersActivity : AppCompatActivity() {
         this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
         this.groupName = intent.getStringExtra("groupName") as String
 
-        println("userdata: $userData")
-        println("groupName: $groupName")
+        initialize()
+    }
 
+
+    private fun initialize() {
         val bodyJson1 = Gson().toJson(hashMapOf(
             "user_id" to userData.get("user_id") as Int,
             "pw" to userData.get("password") as String,
@@ -55,7 +57,6 @@ class GroupMembersActivity : AppCompatActivity() {
                         if (bytes != null) {
                             val type = object: TypeToken<HashMap<String, Any>>(){}.type
                             val groupData: HashMap<String, Any> = Gson().fromJson(String(bytes), type) as HashMap<String, Any>
-                            println("gorupdata: $groupData")
                             val bodyJson2 = Gson().toJson(hashMapOf<String, Any>(
                                 "user_id" to userData["user_id"] as Int,
                                 "pw" to userData["password"] as String,
@@ -76,8 +77,6 @@ class GroupMembersActivity : AppCompatActivity() {
                                                 val type2 = object: TypeToken<ArrayList<String>>(){}.type
                                                 val users = Gson().fromJson(String(bytes2), type2) as ArrayList<String>
 
-                                                println("users: $users")
-
                                                 val recyclerView = findViewById<RecyclerView>(R.id.gm_rview)
                                                 recyclerView.layoutManager = LinearLayoutManager(ctx)
 
@@ -87,31 +86,7 @@ class GroupMembersActivity : AppCompatActivity() {
                                                 }
 
                                                 if (userData.get("user_id") as Int == groupData.get("creator_id").toString().toDouble().toInt()) {
-                                                    fun removeMemberOnClick(member: String, userData2: HashMap<String, Any>, groupData2: HashMap<String, Any>) {
-                                                        val bodyJson = Gson().toJson(
-                                                            hashMapOf(
-                                                                "user_id" to userData2["user_id"],
-                                                                "pw" to userData2["password"],
-                                                                "username" to member,
-                                                                "group_id" to groupData2["group_id"]
-                                                            )
-                                                        )
-                                                        CoroutineScope(Dispatchers.IO).launch {
-                                                            val (_, response3, _) = Fuel.post("${getString(R.string.host)}/remove_group_member")
-                                                                .body(bodyJson)
-                                                                .header("Content-Type" to "application/json")
-                                                                .response()
-
-                                                            withContext(Dispatchers.Main) {
-                                                                runOnUiThread {
-                                                                    if (response3.statusCode == 400) {
-                                                                        Toast.makeText(ctx, "ERROR", Toast.LENGTH_LONG).show()
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                    recyclerView.adapter = GroupAdminRecyclerView(users, pfps, ctx, ::removeMemberOnClick, userData, groupData)
+                                                    recyclerView.adapter = GroupAdminRecyclerView(users, pfps, ctx, ctx::removeMemberOnClick, userData, groupData)
                                                 } else {
                                                     recyclerView.adapter = GroupMemberRecyclerView(users, pfps)
                                                 }
@@ -137,6 +112,35 @@ class GroupMembersActivity : AppCompatActivity() {
 
                     else if (status == 404) {
                         Toast.makeText(ctx, "ERROR1", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    }
+
+
+    private fun removeMemberOnClick(member: String, userData2: HashMap<String, Any>, groupData2: HashMap<String, Any>) {
+        val bodyJson = Gson().toJson(
+            hashMapOf(
+                "user_id" to userData2["user_id"],
+                "pw" to userData2["password"],
+                "username" to member,
+                "group_id" to groupData2["group_id"]
+            )
+        )
+        CoroutineScope(Dispatchers.IO).launch {
+            val (_, response3, _) = Fuel.post("${getString(R.string.host)}/remove_group_member")
+                .body(bodyJson)
+                .header("Content-Type" to "application/json")
+                .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    if (response3.statusCode == 400) {
+                        Toast.makeText(ctx, "ERROR", Toast.LENGTH_LONG).show()
+                    }
+                    else {
+                        initialize()
                     }
                 }
             }
