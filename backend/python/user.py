@@ -325,7 +325,6 @@ class User:
         return 400
 
 
-    @authenticate
     def reset_password(self, new_password: str):
         db = DB()
         db.connect()
