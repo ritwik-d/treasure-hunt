@@ -154,7 +154,7 @@ class User:
             fb_config = json.loads(f.read())
         firebase = pyrebase.initialize_app(fb_config)
         storage = firebase.storage()
-        cloud_path = config.get('firebase_storage', 'profile_pictures') + self.user_id
+        cloud_path = config.get('firebase_storage', 'profile_pictures') + str(self.user_id)
         local_path = config.get('paths', 'tmp') + f'dpfp{self.user_id}'
         storage.child(cloud_path).download(local_path)
         try:
@@ -367,7 +367,7 @@ class User:
         firebase = pyrebase.initialize_app(fb_config)
         storage = firebase.storage()
 
-        cloud_path = config.get('firebase_storage', 'profile_pictures') + self.user_id
+        cloud_path = config.get('firebase_storage', 'profile_pictures') + str(self.user_id)
         storage.child(cloud_path).put(config.get('paths', 'tmp') + f'upfp{self.user_id}')
 
         os.remove(config.get('paths', 'tmp') + f'upfp{self.user_id}')
