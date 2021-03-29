@@ -62,7 +62,7 @@ def send_email_reset_password(email: str):
         return {'status': 404}
 
     vcode = get_rand_string(6)
-    status = send_email('forgot_password.html', email, 'Treasure Hunt Reset Password', params=(vcode))
+    status = send_email('forgot_password.html', email, 'Treasure Hunt Reset Password', params=(vcode,))
     return {'status': 200, 'body': {'vcode': vcode}}
 
 

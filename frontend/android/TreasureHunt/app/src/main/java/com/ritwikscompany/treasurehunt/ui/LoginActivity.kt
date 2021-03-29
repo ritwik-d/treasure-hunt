@@ -115,11 +115,13 @@ class LoginActivity : AppCompatActivity() {
                                             }
                                         })
                                         builder3.setNegativeButton("Cancel", DialogInterface.OnClickListener {_, _ -> })
+                                        builder3.show()
                                     } else {
                                         Toast.makeText(ctx, "Verification Code Incorrect", Toast.LENGTH_LONG).show()
                                     }
                                 })
                                 builder2.setNegativeButton("Cancel", DialogInterface.OnClickListener {_, _ -> })
+                                builder2.show()
                             }
 
                             else {
@@ -135,6 +137,7 @@ class LoginActivity : AppCompatActivity() {
             }
         })
         builder.setNegativeButton("Cancel", DialogInterface.OnClickListener {_, _ -> })
+        builder.show()
     }
 
 
