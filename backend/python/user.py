@@ -320,7 +320,7 @@ class User:
         db.connect()
         members = json.loads(db.select('select members from user_groups where group_id = %s', params=(group_id,))[0][0])
         members.remove(get_user_id(username, column='username'))
-        row_id = db.update('user_groups', {'members': members}, {'group_id': group_id})
+        row_id = db.update('user_groups', {'members': json.dumps(members)}, {'group_id': group_id})
         if row_id is None:
             return 400
         return 200

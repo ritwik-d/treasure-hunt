@@ -14,8 +14,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ritwikscompany.treasurehunt.R
 import de.hdodenhof.circleimageview.CircleImageView
 import java.util.*
+import kotlin.collections.HashMap
 
-class GroupAdminRecyclerView(var users: ArrayList<String>, var pfps: ArrayList<Bitmap>, val context: Context):
+class GroupAdminRecyclerView(var users: ArrayList<String>, var pfps: ArrayList<Bitmap>, val context: Context, var removeMemberOnClick: (member: String, userData2: HashMap<String, Any>, groupData2: HashMap<String, Any>) -> Unit, var userData: HashMap<String, Any>, var groupData: HashMap<String, Any>):
     RecyclerView.Adapter<GroupAdminRecyclerView.ViewHolder>() {
     var rows = ArrayList<View>()
 
@@ -57,7 +58,7 @@ class GroupAdminRecyclerView(var users: ArrayList<String>, var pfps: ArrayList<B
         val builder = AlertDialog.Builder(this.context)
         builder.setTitle("Are you sure you want to remove $username?")
         builder.setPositiveButton("Yes", DialogInterface.OnClickListener {_, _ ->
-            // remove the person for real
+            removeMemberOnClick(username, this.userData, this.groupData)
         })
         builder.setNegativeButton("Cancel", DialogInterface.OnClickListener {_, _ -> })
         builder.show()

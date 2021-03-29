@@ -60,7 +60,7 @@ class LoginActivity : AppCompatActivity() {
                 "email" to emailET.text.toString(),
             ))
             CoroutineScope(Dispatchers.IO).launch {
-                val (request, response, result) = Fuel.post("${getString(R.string.host)}/login")
+                val (request, response, result) = Fuel.post("${getString(R.string.host)}/send_email_reset_password")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()
@@ -72,7 +72,7 @@ class LoginActivity : AppCompatActivity() {
                             val (bytes, _) = result
                             if (bytes != null) {
                                 val body: HashMap<String, String> = Gson().fromJson(String(bytes), HashMap::class.java) as HashMap<String, String>
-                                val vcode = body.get("vcode")
+                                val vcode = body["vcode"]
 
                                 val vcodeET = EditText(ctx)
                                 vcodeET.hint = "Verification Code"

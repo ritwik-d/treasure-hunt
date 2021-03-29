@@ -3,9 +3,6 @@ package com.ritwikscompany.treasurehunt.ui
 import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Gravity
-import android.view.View
-import android.widget.TableRow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -90,7 +87,31 @@ class GroupMembersActivity : AppCompatActivity() {
                                                 }
 
                                                 if (userData.get("user_id") as Int == groupData.get("creator_id").toString().toDouble().toInt()) {
-                                                    recyclerView.adapter = GroupAdminRecyclerView(users, pfps, ctx)
+                                                    fun removeMemberOnClick(member: String, userData2: HashMap<String, Any>, groupData2: HashMap<String, Any>) {
+                                                        val bodyJson = Gson().toJson(
+                                                            hashMapOf(
+                                                                "user_id" to userData2["user_id"],
+                                                                "pw" to userData2["password"],
+                                                                "username" to member,
+                                                                "group_id" to groupData2["group_id"]
+                                                            )
+                                                        )
+                                                        CoroutineScope(Dispatchers.IO).launch {
+                                                            val (_, response3, _) = Fuel.post("${getString(R.string.host)}/remove_group_member")
+                                                                .body(bodyJson)
+                                                                .header("Content-Type" to "application/json")
+                                                                .response()
+
+                                                            withContext(Dispatchers.Main) {
+                                                                runOnUiThread {
+                                                                    if (response3.statusCode == 400) {
+                                                                        Toast.makeText(ctx, "ERROR", Toast.LENGTH_LONG).show()
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    recyclerView.adapter = GroupAdminRecyclerView(users, pfps, ctx, ::removeMemberOnClick, userData, groupData)
                                                 } else {
                                                     recyclerView.adapter = GroupMemberRecyclerView(users, pfps)
                                                 }
@@ -102,7 +123,7 @@ class GroupMembersActivity : AppCompatActivity() {
                                         }
 
                                         else if (status2 == 400) {
-                                            Toast.makeText(ctx, "ERROR2", Toast.LENGTH_LONG).show()
+                                            Toast.makeText(ctx, "ERROR", Toast.LENGTH_LONG).show()
                                         }
                                     }
                                 }
