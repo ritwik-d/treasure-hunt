@@ -158,7 +158,7 @@ async def update_challenge(json: UpdateChallenge, response: Response):
 
 
 @app.post(paths.get('upload_pfp'))
-async def upload_pfp(image: UploadFile = File(...), user_id: int = Form(...), pw: str = Form(...), response: Response):
+async def upload_pfp(response: Response, image: UploadFile = File(...), user_id: int = Form(...), pw: str = Form(...)):
     user = User(pw=pw, user_id=user_id)
     response.status_code = user.upload_pfp(image)
 
