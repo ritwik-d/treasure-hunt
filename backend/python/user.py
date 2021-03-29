@@ -308,7 +308,7 @@ class User:
     def reset_password(self, new_password: str):
         db = DB()
         db.connect()
-        row_id = db.update('users', {'password': new_password}, {'email': self.email})
+        row_id = db.update('users', {'password': hash_password(self.email, new_password)}, {'email': self.email})
         if row_id is None:
             return 404
         return 200
