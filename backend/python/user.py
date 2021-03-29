@@ -6,6 +6,7 @@ from environment import *
 from html_bodies import *
 import itertools
 import json
+import os
 import pprint
 import pyrebase
 import shutil
