@@ -85,7 +85,7 @@ class GroupMembersActivity : AppCompatActivity() {
                                                     pfps.add(ContextCompat.getDrawable(ctx, R.drawable.no_pfp)!!.toBitmap())
                                                 }
 
-                                                if (userData.get("user_id") as Int == groupData.get("creator_id").toString().toDouble().toInt()) {
+                                                if ((userData.get("user_id") as Int) == (groupData.get("creator_id").toString().toDouble().toInt())) {
                                                     recyclerView.adapter = GroupAdminRecyclerView(users, pfps, ctx, ctx::removeMemberOnClick, userData, groupData)
                                                 } else {
                                                     recyclerView.adapter = GroupMemberRecyclerView(users, pfps)

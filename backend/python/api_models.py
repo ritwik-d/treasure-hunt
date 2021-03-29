@@ -31,6 +31,11 @@ class DeleteChallenge(BaseModel):
     user_id: int
 
 
+class DownloadPfp(BaseModel):
+    pw: str
+    user_id: int
+
+
 class GetChallengeData(BaseModel):
     name: str
     pw: str

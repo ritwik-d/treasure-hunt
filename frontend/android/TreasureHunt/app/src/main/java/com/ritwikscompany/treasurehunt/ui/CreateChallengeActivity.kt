@@ -44,10 +44,6 @@ class CreateChallengeActivity : AppCompatActivity() {
 
     private fun setSpinnerVals() {
         diffSpinner = findViewById(R.id.cc_diff)
-        val diffAdapter: ArrayAdapter<CharSequence> = ArrayAdapter.createFromResource(ctx, R.array.difficulties, android.R.layout.simple_spinner_item)
-        diffAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        diffSpinner.adapter = diffAdapter
-
         groupSpinner = findViewById(R.id.cc_groups)
 
         val bodyJson = Gson().toJson(hashMapOf(

@@ -1,6 +1,6 @@
 from api_models import *
 from environment import *
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, Form, Response
 from user import *
 
 app = FastAPI()
@@ -29,6 +29,12 @@ async def create_group(json: CreateGroup, response: Response):
 async def delete_challenge(json: DeleteChallenge, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
     response.status_code = user.delete_challenge(json.challenge_id)
+
+
+@app.post(paths.get('download_pfp'))
+async def create_group(json: DownloadPfp):
+    user = User(pw=json.pw, user_id=json.user_id)
+    return user.download_pfp(json.name, json.description)
 
 
 @app.post(paths.get('get_challenge_data'))
@@ -149,6 +155,12 @@ async def remove_group_member(json: RemoveGroupMember, response: Response):
 async def update_challenge(json: UpdateChallenge, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
     response.status_code = user.update_challenge(json.challenge_name, json.new_name, json.new_puzzle, json.new_difficulty, json.new_group_name)
+
+
+@app.post(paths.get('upload_pfp'))
+async def upload_pfp(image: UploadFile = File(...), user_id: int = Form(...), pw: str = Form(...), response: Response):
+    user = User(pw=pw, user_id=user_id)
+    response.status_code = user.upload_pfp(image)
 
 
 @app.get(paths.get('verify_account'))

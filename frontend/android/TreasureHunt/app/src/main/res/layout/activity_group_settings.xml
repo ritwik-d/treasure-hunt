@@ -6,4 +6,25 @@
     android:layout_height="match_parent"
     tools:context=".ui.GroupSettingsActivity">
 
+    <TextView
+        android:id="@+id/gs_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textSize="20sp"
+        tools:layout_editor_absoluteY="100dp"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/gs_join_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="175dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

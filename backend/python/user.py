@@ -1,3 +1,5 @@
+from fastapi.responses import FileResponse
+from fastapi import File, UploadFile
 import datetime
 from db import *
 from environment import *
@@ -5,6 +7,9 @@ from html_bodies import *
 import itertools
 import json
 import pprint
+import pyrebase
+import shutil
+from threading import Timer
 from utils import *
 
 
@@ -141,6 +146,22 @@ class User:
         if row_id is None:
             return 400
         return 200
+
+
+    @authenticate
+    def download_pfp(self):
+        with open(config.get('paths', 'firebase_config'), 'r') as f:
+            fb_config = json.loads(f.read())
+        firebase = pyrebase.initialize_app(fb_config)
+        storage = firebase.storage()
+        cloud_path = config.get('firebase_storage', 'profile_pictures') + self.user_id
+        local_path = config.get('paths', 'tmp') + f'dpfp{self.user_id}'
+        storage.child(cloud_path).download(local_path)
+        try:
+            Timer(1, lambda: os.remove(local_path)).start()
+            return FileResponse(local_path)
+        except:
+            return None
 
 
     @authenticate
@@ -335,3 +356,19 @@ class User:
         if row_id is None:
             return 400
         return 200
+
+
+    @authenticate
+    def upload_pfp(self, image: UploadFile = File(...)):
+        with open(config.get('paths', 'tmp') + f'upfp{self.user_id}', 'wb') as f:
+            shutil.copyfileobj(image.file, f)
+        with open(config.get('paths', 'firebase_config'), 'r') as f:
+            fb_config = json.loads(f.read())
+        firebase = pyrebase.initialize_app(fb_config)
+        storage = firebase.storage()
+
+        cloud_path = config.get('firebase_storage', 'profile_pictures') + self.user_id
+        storage.child(cloud_path).put(config.get('paths', 'tmp') + f'upfp{self.user_id}')
+
+        os.remove(config.get('paths', 'tmp') + f'upfp{self.user_id}')
+        return 201

@@ -4,6 +4,7 @@ api:
     create_challenge: /create_challenge
     create_group: /create_group
     delete_challenge: /delete_challenge
+    download_pfp: /download_pfp
     get_challenge_data: /get_challenge_data
     get_challenges: /get_challenges
     get_group_data: /get_group_data
@@ -21,9 +22,11 @@ api:
     reset_password: /reset_password
     send_email_reset_password: /send_email_reset_password
     update_challenge: /update_challenge
+    upload_pfp: /upload_pfp
     verify_account: /verify_account/{email_verify_token}
 firebase_storage:
   db_backups: database_backups/
+  profile_pictures: profile_pictures/
 mysql:
   host: 192.168.1.56
   name: treasure_hunt_db

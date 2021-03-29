@@ -19,7 +19,7 @@ class GroupMemberRecyclerView(var users: ArrayList<String>, var pfps: ArrayList<
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val context = parent.context
         val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.group_member_row_admin, parent, false)
+        val view = inflater.inflate(R.layout.group_member_row_member, parent, false)
         Log.d("TAG", "onCreateViewHolder: $rows")
         return ViewHolder(view)
     }

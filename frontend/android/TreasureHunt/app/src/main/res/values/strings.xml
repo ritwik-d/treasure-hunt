@@ -59,6 +59,7 @@
     <string name="myGroups">My Groups</string>
     <string name="joinCode">Join Code</string>
     <string name="leaveGroup">Leave Group</string>
+    <string name="deleteGroup">Delete Group</string>
     <string name="people">People</string>
     <string name="settings">Settings</string>
 

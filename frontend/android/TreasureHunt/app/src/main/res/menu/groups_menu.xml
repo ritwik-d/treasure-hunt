@@ -4,7 +4,12 @@
 
     <item
         android:id="@+id/menu_leave_group"
-        android:title="@string/leaveGroup"/>
+        android:title="@string/leaveGroup" />
+
+    <item
+        android:id="@+id/menu_delete_group"
+        android:title="@string/deleteGroup"
+        android:visible="false"/>
 
     <item
         android:id="@+id/menu_group_settings"
