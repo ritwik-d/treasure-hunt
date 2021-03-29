@@ -139,6 +139,12 @@ async def register(json: ResetPassword, response: Response):
     response.status_code = user.reset_password(json.new_password)
 
 
+@app.post(paths.get('remove_group_member'))
+async def remove_group_member(json: RemoveGroupMember, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response.status_code = user.remove_group_member(json.group_id, json.username)
+
+
 @app.post(paths.get('update_challenge'))
 async def update_challenge(json: UpdateChallenge, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)

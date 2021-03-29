@@ -103,6 +103,13 @@ class Register(BaseModel):
     username: str
 
 
+class RemoveGroupMember(BaseModel):
+    group_id: int
+    pw: str
+    user_id: int
+    username: str
+
+
 class ResetPassword(BaseModel):
     email: str
     new_password: str

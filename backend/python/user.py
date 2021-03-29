@@ -25,10 +25,10 @@ def get_group_id(gname: str):
         return group_id[0].get('group_id')
 
 
-def get_user_id(email: str):
+def get_user_id(value: str, column='email'):
     db = DB()
     db.connect()
-    user_id = db.select('select user_id from users where email = %s', params=(email,), dict_cursor=True)
+    user_id = db.select(f'select user_id from users where {column} = %s', params=(value,), dict_cursor=True)
     if user_id != tuple():
         return user_id[0].get('user_id')
 
@@ -306,9 +306,23 @@ class User:
 
     @authenticate
     def reset_password(self, new_password: str):
+        db = DB()
+        db.connect()
         row_id = db.update('users', {'password': new_password}, {'email': self.email})
         if row_id is None:
             return 404
+        return 200
+
+
+    @authenticate
+    def remove_group_member(self, group_id: int, username: str):
+        db = DB()
+        db.connect()
+        members = json.loads(db.select('select members from user_groups where group_id = %s', params=(group_id,))[0][0])
+        members.remove(get_user_id(username, column='username'))
+        row_id = db.update('user_groups', {'members': members}, {'group_id': group_id})
+        if row_id is None:
+            return 400
         return 200
 
 

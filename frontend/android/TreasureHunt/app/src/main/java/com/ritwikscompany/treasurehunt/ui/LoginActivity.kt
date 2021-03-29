@@ -5,6 +5,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.InputType
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -86,7 +87,34 @@ class LoginActivity : AppCompatActivity() {
                                         builder3.setMessage("Enter your new password.")
                                         val pwET = EditText(ctx)
                                         pwET.hint = "New Password"
+                                        pwET.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
                                         builder3.setView(pwET)
+                                        builder3.setPositiveButton("Submit", DialogInterface.OnClickListener {_, _ ->
+                                            val bodyJson3 = Gson().toJson(
+                                                hashMapOf(
+                                                    "email" to emailET.text.toString(),
+                                                    "new_password" to pwET.text.toString(),
+                                                )
+                                            )
+                                            CoroutineScope(Dispatchers.IO).launch {
+                                                val (_, response3, _) = Fuel.post("${getString(R.string.host)}/reset_password")
+                                                    .body(bodyJson3)
+                                                    .header("Content-Type" to "application/json")
+                                                    .response()
+
+                                                withContext(Dispatchers.Main) {
+                                                    runOnUiThread {
+                                                        if (response3.statusCode == 200) {
+                                                            Toast.makeText(ctx, "Reset Password Success", Toast.LENGTH_SHORT).show()
+                                                        }
+                                                        else {
+                                                            Toast.makeText(ctx, "Reset Password Failure", Toast.LENGTH_SHORT).show()
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        })
+                                        builder3.setNegativeButton("Cancel", DialogInterface.OnClickListener {_, _ -> })
                                     } else {
                                         Toast.makeText(ctx, "Verification Code Incorrect", Toast.LENGTH_LONG).show()
                                     }
