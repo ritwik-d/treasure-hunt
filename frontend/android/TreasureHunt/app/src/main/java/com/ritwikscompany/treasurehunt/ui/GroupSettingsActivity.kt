@@ -16,12 +16,12 @@ import kotlinx.coroutines.withContext
 class GroupSettingsActivity : AppCompatActivity() {
 
     private val ctx = this@GroupSettingsActivity
-    private var joinCode = TextView(ctx)
-    private var name = TextView(ctx)
-    private var checkBox = CheckBox(ctx)
-    private var minPoints = EditText(ctx)
-    private var saveButton = Button(ctx)
-    private var discButton = Button(ctx)
+    private lateinit var joinCode: TextView
+    private lateinit var name: TextView
+    private lateinit var checkBox: CheckBox
+    private lateinit var minPoints: EditText
+    private lateinit var saveButton: Button
+    private lateinit var discButton: Button
     private var userData = HashMap<String, Any>()
     private var groupName = String()
 
@@ -63,18 +63,18 @@ class GroupSettingsActivity : AppCompatActivity() {
                             val type = object: TypeToken<HashMap<String, Any>>(){}.type
                             val groupData = Gson().fromJson(String(bytes), type) as HashMap<String, Any>
 
-                            joinCode.text = groupData.get("join_code") as String
-                            name.text = groupName
+                            joinCode.text = "Join Code: ${groupData.get("join_code") as String}"
+                            name.text = "Group Name: $groupName"
                             checkBox.isChecked = groupData.get("allow_members_code") == "true"
-                            val minPoints2: String = (groupData.get("minimum_points") as Int).toString() as String
+                            val minPoints2: String = (groupData.get("minimum_points") as Double).toInt().toString()
                             minPoints.setText(minPoints2)
 
                             discButton.setOnClickListener {
-                                discOnClick(groupData.get("join_code") as String, groupData.get("name") as String, groupData.get("allow_members_code") == "true", groupData.get("minimum_points") as Int)
+                                discOnClick(groupData.get("join_code") as String, groupData.get("name") as String, groupData.get("allow_members_code") == "true", (groupData.get("minimum_points") as Double).toInt())
                             }
 
                             saveButton.setOnClickListener {
-                                saveOnClick(groupData.get("allow_members_code") == "true", groupData.get("minimum_points") as Int, groupData.get("group_id") as Int)
+                                saveOnClick(groupData.get("allow_members_code") == "true", (groupData.get("minimum_points") as Double).toInt(), (groupData.get("group_id") as Double).toInt())
                             }
                         }
 
@@ -93,8 +93,8 @@ class GroupSettingsActivity : AppCompatActivity() {
 
 
     private fun discOnClick(joinCode2: String, name2: String, isChecked2: Boolean, minPoints2: Int) {
-        joinCode.text = joinCode2
-        name.text = name2
+        joinCode.text = "Join Code: $joinCode2"
+        name.text = "Group Name: $name2"
         checkBox.isChecked = isChecked2
         minPoints.setText(minPoints2.toString())
     }

@@ -41,6 +41,7 @@ class DB:
             cursor.execute(sql, params)
         else:
             cursor.execute(sql)
+        print(f'select sql: {sql}, params: <{params}>')
         results = cursor.fetchall()
         return results
 
@@ -53,7 +54,6 @@ class DB:
             cursor = self.db.cursor()
             columns = params.keys()
             sql = f"""INSERT INTO {table_name} ({', '.join(columns)}) VALUES ({', '.join(['%s' for i in columns])})"""
-            print(f'insert sql: {sql}')
             cursor.execute(sql, tuple(params.values()))
             return cursor.lastrowid
         except Exception as e:
@@ -69,7 +69,7 @@ class DB:
             return None
         cursor = self.db.cursor()
         sql = f"""UPDATE {table_name} set {', '.join([f'{k} = %s' for k in update_params])} WHERE {', '.join([f'{k} = %s' for k in where_params])}"""
-        print(f'update sql: {sql}')
+        print(f'update sql: {sql}, params: {tuple(list(update_params.values()) + list(where_params.values()))}')
         cursor.execute(sql, tuple(list(update_params.values()) + list(where_params.values())))
         if aff_rows:
             return self.db.affected_rows()
