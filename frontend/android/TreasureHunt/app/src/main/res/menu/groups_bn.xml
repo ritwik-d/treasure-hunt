@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/bn_my_groups"
+        android:title="@string/myGroups"
+        android:icon="@drawable/ic_baseline_groups_24" />
+
+    <item
+        android:id="@+id/bn_join_group"
+        android:title="@string/joinGroup"
+        android:icon="@drawable/add_person" />
+
+    <item
+        android:id="@+id/bn_create_group"
+        android:title="@string/createGroup"
+        android:icon="@drawable/ic_baseline_group_add_24" />
+
+</menu>

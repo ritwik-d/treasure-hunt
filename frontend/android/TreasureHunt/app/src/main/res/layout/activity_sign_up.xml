@@ -23,7 +23,7 @@
         android:id="@+id/su_cancel"
         android:layout_width="150dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="209dp"
+        android:layout_marginBottom="220dp"
         android:text="@string/cancel"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -11,9 +11,8 @@ api:
     get_groups: /get_groups
     get_group_members: /get_group_members
     get_group_row: /get_group_row
+    get_group_settings: /get_group_settings
     get_user_challenges: /get_user_challenges
-    get_user_data: /get_user_data
-    get_users: /get_users
     join_group: /join_group
     leave_group: /leave_group
     login: /login
@@ -22,6 +21,7 @@ api:
     reset_password: /reset_password
     send_email_reset_password: /send_email_reset_password
     update_challenge: /update_challenge
+    update_group_settings: /update_group_settings
     upload_pfp: /upload_pfp
     verify_account: /verify_account/{email_verify_token}
 firebase_storage:

@@ -10,4 +10,7 @@
     <color name="colorMain">#b25a38</color>
     <color name="colorLBHighlight">#e18c00</color>
     <color name="colorForgotPw">#0078FF</color>
+    <color name="colorFAB">#ff004d</color>
+    <color name="colorDiscard">#C2C2C2</color>
+    <color name="colorSave">#32c428</color>
 </resources>

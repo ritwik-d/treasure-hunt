@@ -88,23 +88,18 @@ async def get_group_row(json: GetGroupRow, response: Response):
     return response_2.get('body')
 
 
-@app.post(paths.get('get_user_challenges'))
-async def get_user_challenges(json: GetUserChallenges, response: Response):
+@app.post(paths.get('get_group_settings'))
+async def get_group_row(json: GetGroupSettings, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
-    response_2 = user.get_user_challenges()
+    response_2 = user.get_group_settings(json.group_name)
     response.status_code = response_2.get('status')
     return response_2.get('body')
 
 
-@app.post(paths.get('get_user_data'))
-async def get_user_data(json: GetUserData):
+@app.post(paths.get('get_user_challenges'))
+async def get_user_challenges(json: GetUserChallenges, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
-    return user.get_user_data()
-
-
-@app.post(paths.get('get_users'))
-async def get_users(json: GetUsers, response: Response):
-    response_2 = get_users()
+    response_2 = user.get_user_challenges()
     response.status_code = response_2.get('status')
     return response_2.get('body')
 
@@ -157,7 +152,13 @@ async def remove_group_member(json: RemoveGroupMember, response: Response):
 @app.post(paths.get('update_challenge'))
 async def update_challenge(json: UpdateChallenge, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
-    response.status_code = user.update_challenge(json.challenge_name, json.new_name, json.new_puzzle, json.new_difficulty, json.new_group_name)
+    response.status_code = user.update_challenge(json.challenge_id, json.new_latitude, json.new_longitude, json.new_puzzle, json.new_difficulty, json.new_group_name)
+
+
+@app.post(paths.get('update_group_settings'))
+async def update_group_settings(json: UpdateGroupSettings, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response.status_code = user.update_group_settings(json.group_id, json.allow_members_code, json.min_points)
 
 
 @app.post(paths.get('upload_pfp'))

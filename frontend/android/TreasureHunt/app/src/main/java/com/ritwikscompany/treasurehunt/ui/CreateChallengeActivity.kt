@@ -37,6 +37,10 @@ class CreateChallengeActivity : AppCompatActivity() {
 
         checkMark = com.ritwikscompany.treasurehunt.utils.Utils.getCheckMark(ctx)!!
 
+        findViewById<Button>(R.id.cc_create).setOnClickListener {
+            createOnClick(0.1, 0.2)
+        }
+
         verifyFields()
         setSpinnerVals()
     }

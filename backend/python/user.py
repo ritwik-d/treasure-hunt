@@ -243,17 +243,20 @@ class User:
 
 
     @authenticate
+    def get_group_settings(self, group_name: str):
+        db = DB()
+        db.connect()
+        group_id = get_group_id(group_name)
+        info = db.select('select allow_members_code, join_code, minimum_points, name from user_groups where group_id = %s', params=(group_id,), dict_cursor=True)[0]
+        info['group_id'] = group_id
+        return {'status': 200, 'body': info}
+
+
+    @authenticate
     def get_user_challenges(self):
         db = DB()
         db.connect()
         return {'body': list(db.select('select * from challenges where creator_id = %s', params=(self.user_id,), dict_cursor=True)), 'status': 200}
-
-
-    @authenticate
-    def get_user_data(self):
-        db = DB()
-        db.connect()
-        return db.select('select * from users from user_id = %s', params=(self.user_id,), dict_cursor=True)[0]
 
 
     @authenticate
@@ -349,11 +352,25 @@ class User:
 
 
     @authenticate
-    def update_challenge(self, challenge_name: str, new_name: str, new_puzzle: str, new_difficulty: str, new_group_name: str):
+    def update_challenge(self, challenge_id: int, new_latitude: float, new_longitude: float, new_puzzle: str, new_difficulty: str, new_group_name: str):
         db = DB()
         db.connect()
         new_group_id = get_group_id(new_group_name)
-        row_id = db.update('challenges', {'difficulty': new_difficulty, 'group_id': new_group_id, 'name': new_name, 'puzzle': new_puzzle}, {'challenge_name': challenge_name})
+        row_id = db.update('challenges', {'latitude': new_latitude, 'longitude': new_longitude, 'difficulty': new_difficulty, 'group_id': new_group_id, 'name': new_name, 'puzzle': new_puzzle}, {'challenge_id': challenge_id})
+        if row_id is None:
+            return 400
+        return 200
+
+
+    @authenticate
+    def update_group_settings(self, group_id: int, allow_members_code: int, min_points: int):
+        db = DB()
+        db.connect()
+        row_id = None
+        if allow_members_code == 0:
+            row_id = db.update('user_groups', {'allow_members_code': 'false', 'minimum_points': min_points}, {'group_id': group_id})
+        else:
+            row_id = db.update('user_groups', {'allow_members_code': 'true', 'minimum_points': min_points}, {'group_id': group_id})
         if row_id is None:
             return 400
         return 200

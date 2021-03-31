@@ -5,4 +5,8 @@
         android:id="@+id/menu_log_out"
         android:title="@string/logOut" />
 
+    <item
+        android:id="@+id/menu_upload_pfp"
+        android:title="@string/uploadPfp" />
+
 </menu>

@@ -41,7 +41,7 @@ class GroupPageActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.groups_menu, menu)
+        inflater.inflate(R.menu.group_page_menu, menu)
         if ((userData["user_id"] as Int) == 10) {
             menu!!.findItem(R.id.menu_delete_group).isVisible = true
         }

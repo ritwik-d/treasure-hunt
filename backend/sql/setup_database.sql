@@ -33,12 +33,14 @@ create unique index uix_username on users(username);
 -- create a table of groups
 create table user_groups (
   group_id bigint unsigned not null auto_increment primary key,
+  allow_members_code enum ('true', 'false') not null default 'false',
   creator_id bigint unsigned not null,
   date_created datetime not null default current_timestamp,
   date_updated datetime not null default current_timestamp on update current_timestamp,
   description varchar(500),
   join_code char(6) not null,
   members json not null,
+  minimum_points smallint not null default 0,
   name varchar(50) not null,
   status enum ('active', 'deleted') not null default 'active',
   foreign key (creator_id) references users(user_id)

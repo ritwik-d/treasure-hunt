@@ -34,6 +34,10 @@ class GroupAdminRecyclerView(var users: ArrayList<String>, var pfps: ArrayList<B
         holder.memberTV.text = users[position]
         holder.pfpCIV.setImageBitmap(pfps[position])
 
+        if (this.userData.get("username") == holder.memberTV.text.toString()) {
+            holder.removeMemberButton.visibility = View.INVISIBLE
+        }
+
         holder.removeMemberButton.setOnClickListener {
             removeMember(holder.memberTV.text.toString())
         }

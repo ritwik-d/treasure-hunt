@@ -10,11 +10,14 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.isSuccessful
+import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.ritwikscompany.treasurehunt.R
+import com.ritwikscompany.treasurehunt.utils.UndoSnackbarListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -183,6 +186,10 @@ class MyChallengesActivity : AppCompatActivity() {
 
 
     private fun trashOnClick(challengeId: Int) {
+        val undoSnackBar = Snackbar.make(CoordinatorLayout(ctx), "1 item deleted", Snackbar.LENGTH_LONG)
+        undoSnackBar.setAction("UNDO", UndoSnackbarListener())
+        undoSnackBar.show()
+
         val bodyJson = Gson().toJson(hashMapOf(
             "user_id" to userData.get("user_id") as Int,
             "pw" to userData.get("password"),

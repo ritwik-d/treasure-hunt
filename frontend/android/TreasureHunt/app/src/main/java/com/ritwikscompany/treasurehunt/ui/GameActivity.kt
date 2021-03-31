@@ -64,7 +64,6 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback,
     private var ex_type = ""
     private val ctx = this@GameActivity
     private var userData = HashMap<String, Any>()
-    private var challengeData = HashMap<String, Any>()
     private var challengeName = ""
     private lateinit var latlng: LatLng
 
@@ -113,20 +112,22 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback,
         challengeName = intent.getStringExtra("challengeName") as String
         userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
 
-        val buttonBack = findViewById<ImageButton>(R.id.imageButton2)
+        val buttonBack = findViewById<ImageButton>(R.id.game_back)
         buttonBack.setOnClickListener {
             finish()
         }
-        val buttonHome = findViewById<ImageButton>(R.id.imageButton)
+        val buttonHome = findViewById<ImageButton>(R.id.game_home)
         buttonHome.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(ctx, MainActivity::class.java).apply {
+                putExtra("userData", userData)
+            }
             startActivity(intent)
         }
 
         val bodyJson = Gson().toJson(hashMapOf(
-                "user_id" to userData.get("user_id"),
-                "pw" to userData.get("password"),
-                "name" to challengeName
+            "user_id" to userData.get("user_id"),
+            "pw" to userData.get("password"),
+            "name" to challengeName
         ))
         CoroutineScope(Dispatchers.IO).launch {
             val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_challenge_data")
@@ -141,7 +142,143 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback,
                         val (bytes, _) = result
                         if (bytes != null) {
                             val type = object: TypeToken<HashMap<String, Any>>(){}.type
-                            challengeData = Gson().fromJson(String(bytes), type) as HashMap<String, Any>
+                            val challengeData: HashMap<String, Any> = Gson().fromJson(String(bytes), type) as HashMap<String, Any>
+                            println("challengedata: $challengeData")
+
+                            findViewById<TextView>(R.id.game_puzzle).text = "Puzzle: ${challengeData["puzzle"] as String}"
+
+                            val start = findViewById<Button>(R.id.game_start_challenge)
+                            start.setOnClickListener {
+                                val builder: AlertDialog.Builder = AlertDialog.Builder(ctx)
+                                val array = ctx.resources.getStringArray(R.array.exerciseTypes)
+
+                                builder?.setTitle("How are you exercising?")
+                                builder?.setItems(array) { _, which ->
+                                    println(which)
+                                    ex_type = when (which) {
+                                        0 -> "bike"
+                                        1 -> "run"
+                                        2 -> "walk"
+                                        else -> "walk"
+                                    }
+                                    println(ex_type)
+                                }
+                                val dialog: AlertDialog? = builder.create()
+                                dialog?.show()
+
+
+                                val buttonHere = findViewById<Button>(R.id.game_buttonhere)
+                                val lat = challengeData.get("latitude") as Double
+                                val long = challengeData.get("longitude") as Double
+
+                                latlng = LatLng(lat, long)
+
+                                // makes buttonHere visible
+                                buttonHere.visibility = View.VISIBLE
+                                start.visibility = View.INVISIBLE
+                                // start time
+                                val startTime: Long = System.currentTimeMillis()
+                                // start location
+
+                                if (!ctx::lastLocation.isInitialized){
+                                    lastLocation = Location("Self")
+                                    lastLocation.latitude = lat
+                                    lastLocation.longitude = long
+                                }
+
+                                val startLocation: Location = lastLocation
+                                buttonHere.setOnClickListener {
+                                    val results = FloatArray(1)
+
+                                    Location.distanceBetween(
+                                            lastLocation.latitude,
+                                            lastLocation.longitude,
+                                            latlng.latitude,
+                                            latlng.longitude,
+                                            results
+                                    )
+
+                                    if (results[0] <= 50) {
+                                        // end time
+                                        val endTime: Long = System.currentTimeMillis()
+                                        // elapsed time (seconds)
+                                        // dividing by 1000 is to convert milliseconds into seconds
+                                        val elapsed: Int = (endTime - startTime).toInt() / 1000
+                                        // distance traveled
+                                        val results2 = FloatArray(1)
+                                        latlng.let { it1 ->
+                                            Location.distanceBetween(
+                                                    startLocation.latitude,
+                                                    startLocation.longitude,
+                                                    latlng.latitude,
+                                                    it1.longitude,
+                                                    results2
+                                            )
+                                        }
+                                        println("meters: ${results[0]}")
+                                        println("elapsed: $elapsed")
+                                        // converts seconds to hours
+                                        val hours = elapsed / 3600
+                                        println(hours)
+                                        // converts meters to miles
+                                        val miles = results[0].toInt() / 1609
+                                        // calculates miles per hour
+                                        val mph = miles.toDouble() / hours.toDouble()
+
+                                        when {
+                                            (mph > 20.toDouble()) and (ex_type == "run") -> {
+                                                Toast.makeText(ctx, "Your speed is unreasonable for running", Toast.LENGTH_LONG).show()
+                                                val intent = Intent(ctx, PickChallengeActivity::class.java).apply {
+                                                    putExtra("userData", userData)
+                                                }
+                                                startActivity(intent)
+                                            }
+                                            (mph > 100.toDouble()) and (ex_type == "bike") -> {
+                                                Toast.makeText(ctx, "Your speed is unreasonable for biking", Toast.LENGTH_LONG).show()
+                                                val intent = Intent(ctx, PickChallengeActivity::class.java).apply {
+                                                    putExtra("userData", userData)
+                                                }
+                                                startActivity(intent)
+                                            }
+                                            (mph > 5.toDouble()) and (ex_type == "walk") -> {
+                                                Toast.makeText(ctx, "Your speed is unreasonable for walking", Toast.LENGTH_LONG).show()
+                                                val intent = Intent(ctx, PickChallengeActivity::class.java).apply {
+                                                    putExtra("userData", userData)
+                                                }
+                                                startActivity(intent)
+                                            }
+                                            else -> {
+                                                completeChallenge(challengeData)
+                                            }
+                                        }
+                                    }
+
+                                    else {
+                                        val msg = "You did not get it, Try again"
+                                        Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show()
+                                    }
+
+                                }
+                                val mapFragment = supportFragmentManager
+                                        .findFragmentById(R.id.game_map) as SupportMapFragment
+                                mapFragment.getMapAsync(ctx)
+                                fusedLocationClient = LocationServices.getFusedLocationProviderClient(ctx)
+
+                                startLocationUpdates()
+
+                                // Notifications
+                                notificationManager =
+                                        getSystemService(
+                                                Context.NOTIFICATION_SERVICE
+                                        ) as NotificationManager
+
+                                createNotificationChannel(
+                                        channelId,
+                                        "Treasure Hunt",
+                                        "Treasure Hunt Channel"
+                                )
+
+                            }
                         }
 
                         else {
@@ -155,146 +292,10 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback,
                 }
             }
         }
-
-        println("challengedata: $challengeData")
-        findViewById<TextView>(R.id.puzzle).text = "Puzzle: ${challengeData["puzzle"] as String}"
-
-        val start = findViewById<Button>(R.id.start_challenge)
-        start.setOnClickListener {
-            val builder: AlertDialog.Builder = AlertDialog.Builder(ctx)
-            val array = ctx.resources.getStringArray(R.array.exerciseTypes)
-
-            builder?.setTitle("How are you exercising?")
-            builder?.setItems(array) { _, which ->
-                println(which)
-                ex_type = when (which) {
-                    0 -> "bike"
-                    1 -> "run"
-                    2 -> "walk"
-                    else -> "walk"
-                }
-                println(ex_type)
-            }
-            val dialog: AlertDialog? = builder.create()
-            dialog?.show()
-
-
-            val buttonHere = findViewById<Button>(R.id.buttonhere)
-            val lat = challengeData.get("latitude") as Double
-            val long = challengeData.get("longitude") as Double
-
-            latlng = LatLng(lat, long)
-
-            // makes buttonHere visible
-            buttonHere.visibility = View.VISIBLE
-            start.visibility = View.INVISIBLE
-            // start time
-            val startTime: Long = System.currentTimeMillis()
-            // start location
-
-            if (!ctx::lastLocation.isInitialized){
-                lastLocation = Location("Self")
-                lastLocation.latitude = lat
-                lastLocation.longitude = long
-            }
-
-            val startLocation: Location = lastLocation
-            buttonHere.setOnClickListener {
-                val results = FloatArray(1)
-
-                Location.distanceBetween(
-                    lastLocation.latitude,
-                    lastLocation.longitude,
-                    latlng.latitude,
-                    latlng.longitude,
-                    results
-                )
-
-                if (results[0] <= 50) {
-                    // end time
-                    val endTime: Long = System.currentTimeMillis()
-                    // elapsed time (seconds)
-                    // dividing by 1000 is to convert milliseconds into seconds
-                    val elapsed: Int = (endTime - startTime).toInt() / 1000
-                    // distance traveled
-                    val results2 = FloatArray(1)
-                    latlng?.let { it1 ->
-                        Location.distanceBetween(
-                            startLocation.latitude,
-                            startLocation.longitude,
-                            latlng.latitude,
-                            it1.longitude,
-                            results2
-                        )
-                    }
-                    println("meters: ${results[0]}")
-                    println("elapsed: $elapsed")
-                    // converts seconds to hours
-                    val hours = elapsed / 3600
-                    println(hours)
-                    // converts meters to miles
-                    val miles = results[0].toInt() / 1609
-                    // calculates miles per hour
-                    val mph = miles.toDouble() / hours.toDouble()
-
-                    when {
-                        (mph > 20.toDouble()) and (ex_type == "run") -> {
-                            Toast.makeText(ctx, "Your speed is unreasonable for running", Toast.LENGTH_LONG).show()
-                            val intent = Intent(ctx, PickChallengeActivity::class.java).apply {
-                                putExtra("userData", userData)
-                            }
-                            startActivity(intent)
-                        }
-                        (mph > 100.toDouble()) and (ex_type == "bike") -> {
-                            Toast.makeText(ctx, "Your speed is unreasonable for biking", Toast.LENGTH_LONG).show()
-                            val intent = Intent(ctx, PickChallengeActivity::class.java).apply {
-                                putExtra("userData", userData)
-                            }
-                            startActivity(intent)
-                        }
-                        (mph > 5.toDouble()) and (ex_type == "walk") -> {
-                            Toast.makeText(ctx, "Your speed is unreasonable for walking", Toast.LENGTH_LONG).show()
-                            val intent = Intent(ctx, PickChallengeActivity::class.java).apply {
-                                putExtra("userData", userData)
-                            }
-                            startActivity(intent)
-                        }
-                        else -> {
-                            completeChallenge()
-                        }
-                    }
-                }
-
-                else {
-                    val msg = "You did not get it, Try again"
-                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-                }
-
-            }
-            val mapFragment = supportFragmentManager
-                    .findFragmentById(R.id.map) as SupportMapFragment
-            mapFragment.getMapAsync(this)
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
-            startLocationUpdates()
-
-            // Notifications
-            notificationManager =
-                    getSystemService(
-                            Context.NOTIFICATION_SERVICE
-                    ) as NotificationManager
-
-            createNotificationChannel(
-                    channelId,
-                    "Treasure Hunt",
-                    "Treasure Hunt Channel"
-            )
-
-        }
     }
 
 
-    private fun completeChallenge() {
+    private fun completeChallenge(challengeData: HashMap<String, Any>) {
         val challengeId: Int = challengeData.get("challenge_id") as Int
 
         val bodyJson = Gson().toJson(hashMapOf(

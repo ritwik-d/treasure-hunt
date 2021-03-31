@@ -63,11 +63,6 @@ class GetUserChallenges(BaseModel):
     user_id: int
 
 
-class GetUserData(BaseModel):
-    pw: str
-    user_id: int
-
-
 class GetGroupMembers(BaseModel):
     group_id: int
     pw: str
@@ -80,8 +75,10 @@ class GetGroupRow(BaseModel):
     user_id: int
 
 
-class GetUsers(BaseModel):
-    pass
+class GetGroupSettings(BaseModel):
+    group_name: str
+    pw: str
+    user_id: int
 
 
 class JoinGroup(BaseModel):
@@ -127,8 +124,17 @@ class SendEmailResetPassword(BaseModel):
 class UpdateChallenge(BaseModel):
     pw: str
     user_id: str
-    challenge_name: str
-    new_name: str
+    challenge_id: int
+    new_latitude: float
+    new_longitude: float
     new_puzzle: str
     new_difficulty: str
     new_group_name: str
+
+
+class UpdateGroupSettings(BaseModel):
+    pw: str
+    user_id: str
+    group_id: int
+    allow_members_code: int
+    min_points: int

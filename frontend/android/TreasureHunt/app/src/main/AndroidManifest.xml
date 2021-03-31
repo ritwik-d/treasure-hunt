@@ -17,9 +17,6 @@
         <activity android:name=".ui.GroupMembersActivity" />
         <activity android:name=".ui.GameActivity" />
         <activity android:name=".ui.GroupPageActivity" />
-        <activity android:name=".ui.MyGroupsActivity" />
-        <activity android:name=".ui.JoinGroupActivity" />
-        <activity android:name=".ui.CreateGroupActivity" />
         <activity android:name=".ui.EditChallengeActivity" />
         <activity android:name=".ui.CreateChallengeActivity" />
         <activity android:name=".ui.MyChallengesActivity" />
