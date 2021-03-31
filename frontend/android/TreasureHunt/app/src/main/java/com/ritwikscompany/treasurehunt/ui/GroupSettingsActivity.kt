@@ -2,6 +2,7 @@ package com.ritwikscompany.treasurehunt.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.*
 import com.github.kittinunf.fuel.Fuel
 import com.google.gson.Gson
@@ -62,18 +63,28 @@ class GroupSettingsActivity : AppCompatActivity() {
                             val type = object: TypeToken<HashMap<String, Any>>(){}.type
                             val groupData = Gson().fromJson(String(bytes), type) as HashMap<String, Any>
 
-                            joinCode.text = "Join Code: ${groupData.get("join_code") as String}"
                             name.text = "Group Name: $groupName"
-                            checkBox.isChecked = groupData.get("allow_members_code") == "true"
-                            val minPoints2: String = (groupData.get("minimum_points") as Double).toInt().toString()
-                            minPoints.setText(minPoints2)
-
-                            discButton.setOnClickListener {
-                                discOnClick(groupData.get("join_code") as String, groupData.get("name") as String, groupData.get("allow_members_code") == "true", (groupData.get("minimum_points") as Double).toInt())
+                            if ((userData["user_id"] as Int == groupData["creator_id"]) or (groupData["allow_members_code"] == "true")) {
+                                joinCode.text = "Join Code: ${groupData.get("join_code") as String}"
                             }
+                            if (userData["user_id"] as Int == groupData["creator_id"]) {
+                                checkBox.visibility = View.VISIBLE
+                                minPoints.visibility = View.VISIBLE
+                                discButton.visibility = View.VISIBLE
+                                saveButton.visibility = View.VISIBLE
+                                findViewById<TextView>(R.id.textView4).visibility = View.VISIBLE
 
-                            saveButton.setOnClickListener {
-                                saveOnClick(checkBox.isChecked, minPoints.text.toString().toInt(), (groupData.get("group_id") as Double).toInt())
+                                checkBox.isChecked = groupData.get("allow_members_code") == "true"
+                                val minPoints2: String = (groupData.get("minimum_points") as Double).toInt().toString()
+                                minPoints.setText(minPoints2)
+
+                                discButton.setOnClickListener {
+                                    discOnClick(groupData.get("join_code") as String, groupData.get("name") as String, groupData.get("allow_members_code") == "true", (groupData.get("minimum_points") as Double).toInt())
+                                }
+
+                                saveButton.setOnClickListener {
+                                    saveOnClick(checkBox.isChecked, minPoints.text.toString().toInt(), (groupData.get("group_id") as Double).toInt())
+                                }
                             }
                         }
 

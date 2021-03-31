@@ -113,7 +113,7 @@ class EditChallengeActivity : AppCompatActivity() {
             )
         )
         CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, _) = Fuel.post("${getString(R.string.host)}/register")
+            val (_, response, _) = Fuel.post("${getString(R.string.host)}/update_challenge")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()

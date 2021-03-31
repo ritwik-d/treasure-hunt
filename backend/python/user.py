@@ -247,7 +247,7 @@ class User:
         db = DB()
         db.connect()
         group_id = get_group_id(group_name)
-        info = db.select('select allow_members_code, join_code, minimum_points, name from user_groups where group_id = %s', params=(group_id,), dict_cursor=True)[0]
+        info = db.select('select allow_members_code, join_code, minimum_points, name, creator_id from user_groups where group_id = %s', params=(group_id,), dict_cursor=True)[0]
         info['group_id'] = group_id
         return {'status': 200, 'body': info}
 
