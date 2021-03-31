@@ -1,33 +1,44 @@
 package com.ritwikscompany.treasurehunt.ui
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.github.kittinunf.fuel.Fuel
 import com.google.gson.Gson
 import com.ritwikscompany.treasurehunt.R
+import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 import java.io.File
+
 
 class HomeActivity : AppCompatActivity() {
 
     private val ctx = this@HomeActivity
-    private val PICK_IMAGE_REQUEST: Int = 234
     private var userData = HashMap<String, Any>()
+    private val REQUEST_GALLERY = 200
+    private val PERMISSION_REQUEST_CODE = 1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
@@ -55,13 +66,6 @@ class HomeActivity : AppCompatActivity() {
     }
 
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.home_menu, menu)
-        return true
-    }
-
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_log_out -> {
@@ -74,52 +78,123 @@ class HomeActivity : AppCompatActivity() {
                     type = "image/*"
                     action = Intent.ACTION_GET_CONTENT
                 }
-                startActivityForResult(Intent.createChooser(intent, "Select an Image"), PICK_IMAGE_REQUEST)
+                startActivityForResult(Intent.createChooser(intent, "Select an Image"), PERMISSION_REQUEST_CODE)
             }
         }
         return true
     }
 
 
+    private fun requestPermissions() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this@HomeActivity,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            Toast.makeText(
+                    this,
+                    "Please give us permission to access your files.",
+                    Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            ActivityCompat.requestPermissions(
+                    this@HomeActivity, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    PERMISSION_REQUEST_CODE)
+        }
+    }
+
+
+    private fun convertToByteArray(filePath: String): ByteArray {
+        val image = File(filePath)
+        val bmOptions = BitmapFactory.Options()
+        var bitmap = BitmapFactory.decodeFile(image.absolutePath, bmOptions)
+        val pfpView = findViewById<CircleImageView>(R.id.home_pfp)
+        bitmap = Bitmap.createScaledBitmap(
+                bitmap, pfpView.getWidth(),
+                pfpView.getHeight(), true
+        )
+
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 30, baos)
+        val data = baos.toByteArray()
+        return data
+    }
+
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        val pfp: CircleImageView = findViewById(R.id.home_pfp)
+        if (requestCode == REQUEST_GALLERY && resultCode == RESULT_OK) {
+            val filePath = getRealPathFromUri(data!!.data, this@HomeActivity)
+            val image = convertToByteArray(filePath!!)
 
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.data != null) {
-            val imageBytes = ctx.contentResolver.openInputStream(data.data!!)!!.buffered().use { it.readBytes() }
-            val bodyJson = Gson().toJson(
-                    hashMapOf(
-                        "image" to imageBytes,
-                        "pw" to userData.get("password"),
-                        "user_id" to userData.get("user_id")
-                    )
-            )
-            CoroutineScope(Dispatchers.IO).launch {
-                val (_, response, _) = Fuel.post("${getString(R.string.host)}/upload_pfp")
-                        .body(bodyJson)
-                        .header("Content-Type" to "application/json")
-                        .response()
 
-                withContext(Dispatchers.Main) {
-                    runOnUiThread {
-                        if (response.statusCode == 201) {
-                            Toast.makeText(ctx, "Image Upload Success", Toast.LENGTH_SHORT).show()
-                        }
-                        else {
-                            Toast.makeText(ctx, "Image Upload Failure", Toast.LENGTH_LONG).show()
-                        }
-                    }
+        }
+    }
+
+
+    @SuppressLint("Recycle")
+    private fun getRealPathFromUri(uri: Uri?, activity: Activity): String? {
+        val proj = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor: Cursor? = activity.contentResolver.query(
+                uri!!, proj, null,
+                null, null
+        )
+        return if (cursor == null) {
+            uri.path
+        } else {
+            cursor.moveToFirst()
+            val id: Int = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+            cursor.getString(id)
+        }
+    }
+
+
+    private fun checkPermissions(): Boolean {
+        val result = ContextCompat.checkSelfPermission(
+                this@HomeActivity,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+        return result == PackageManager.PERMISSION_GRANTED
+    }
+
+
+    private fun filePicker() {
+
+        //.Now Permission Working
+        Toast.makeText(this@HomeActivity, "File Picker Call", Toast.LENGTH_SHORT).show()
+        //Let's Pick File
+        val openGallery = Intent(Intent.ACTION_PICK)
+        openGallery.type = "image/*"
+        startActivityForResult(openGallery, REQUEST_GALLERY)
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.home_menu, menu)
+        return true
+    }
+
+
+    private fun uploadPFP() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkPermissions()) {
+                filePicker()
+            } else {
+                requestPermissions()
+                if (checkPermissions()) {
+                    filePicker()
                 }
             }
+        } else {
+            filePicker()
         }
     }
 
 
     private fun setProfilePicture() {
         val bodyJson = Gson().toJson(
-            hashMapOf(
-                "pw" to userData.get("password"),
-                "user_id" to userData.get("user_id")
-            )
+                hashMapOf(
+                        "pw" to userData.get("password"),
+                        "user_id" to userData.get("user_id")
+                )
         )
         CoroutineScope(Dispatchers.IO).launch {
             val (request, response, result) = Fuel.post("${getString(R.string.host)}/download_pfp")

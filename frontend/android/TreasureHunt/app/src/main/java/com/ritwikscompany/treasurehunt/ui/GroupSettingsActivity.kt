@@ -64,10 +64,12 @@ class GroupSettingsActivity : AppCompatActivity() {
                             val groupData = Gson().fromJson(String(bytes), type) as HashMap<String, Any>
 
                             name.text = "Group Name: $groupName"
-                            if ((userData["user_id"] as Int == groupData["creator_id"]) or (groupData["allow_members_code"] == "true")) {
+                            println("groupdata: $groupData")
+                            println("userdata: $userData")
+                            if ((userData["user_id"] as Int == (groupData["creator_id"] as Double).toInt()) or (groupData["allow_members_code"] == "true")) {
                                 joinCode.text = "Join Code: ${groupData.get("join_code") as String}"
                             }
-                            if (userData["user_id"] as Int == groupData["creator_id"]) {
+                            if (userData["user_id"] as Int == (groupData["creator_id"] as Double).toInt()) {
                                 checkBox.visibility = View.VISIBLE
                                 minPoints.visibility = View.VISIBLE
                                 discButton.visibility = View.VISIBLE
