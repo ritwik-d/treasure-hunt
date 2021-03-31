@@ -356,7 +356,7 @@ class User:
         db = DB()
         db.connect()
         new_group_id = get_group_id(new_group_name)
-        row_id = db.update('challenges', {'latitude': new_latitude, 'longitude': new_longitude, 'difficulty': new_difficulty, 'group_id': new_group_id, 'name': new_name, 'puzzle': new_puzzle}, {'challenge_id': challenge_id})
+        row_id = db.update('challenges', {'latitude': new_latitude, 'longitude': new_longitude, 'difficulty': new_difficulty, 'group_id': new_group_id, 'puzzle': new_puzzle}, {'challenge_id': challenge_id})
         if row_id is None:
             return 400
         return 200
