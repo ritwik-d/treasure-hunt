@@ -51,15 +51,11 @@ class EditChallengeActivity : AppCompatActivity() {
         nameTV.text = challengeData.get("name") as String
 
         val diffArray = ctx.resources.getStringArray(R.array.difficulties).toMutableList()
-        val diffArray2 = diffArray.toMutableList()
-        val diff = (challengeData.get("difficulty") as String).toUpperCase(Locale.ROOT)
-        diffArray2[0] = diff
-        diffArray2[diffArray.indexOf(diff)] = diffArray[0]
 
         val adapter = ArrayAdapter(
             ctx,
             android.R.layout.simple_spinner_item,
-            diffArray2
+            diffArray
         )
         spinnerDiff.adapter = adapter
 

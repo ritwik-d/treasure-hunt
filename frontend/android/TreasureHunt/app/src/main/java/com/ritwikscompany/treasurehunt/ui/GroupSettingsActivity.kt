@@ -1,6 +1,5 @@
 package com.ritwikscompany.treasurehunt.ui
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.*
@@ -74,7 +73,7 @@ class GroupSettingsActivity : AppCompatActivity() {
                             }
 
                             saveButton.setOnClickListener {
-                                saveOnClick(groupData.get("allow_members_code") == "true", (groupData.get("minimum_points") as Double).toInt(), (groupData.get("group_id") as Double).toInt())
+                                saveOnClick(checkBox.isChecked, minPoints.text.toString().toInt(), (groupData.get("group_id") as Double).toInt())
                             }
                         }
 
@@ -126,6 +125,7 @@ class GroupSettingsActivity : AppCompatActivity() {
             withContext(Dispatchers.Main) {
                 runOnUiThread {
                     if (response.statusCode == 200) {
+                        discButton.isEnabled = false
                         Toast.makeText(ctx, "Save Successful", Toast.LENGTH_SHORT).show()
                     }
                     else {
