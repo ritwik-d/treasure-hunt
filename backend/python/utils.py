@@ -23,7 +23,7 @@ class ChatDB:
 
 
     def send_message(self, user_id: int, message: str):
-        self.rdb.hmset(self.group_id, user_id, message)
+        self.rdb.hmset(str(self.group_id), str(user_id), message)
 
 
     def get_messages(self):
