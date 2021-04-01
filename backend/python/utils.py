@@ -1,3 +1,4 @@
+import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from environment import *
@@ -23,14 +24,15 @@ class ChatDB:
 
 
     def send_message(self, user_id: int, message: str):
-        self.rdb.hmset(str(self.group_id), str(user_id), message)
+        key = json.dumps({'datetime': datetime.datetime.now(), 'user_id': user_id})
+        self.rdb.hset(str(self.group_id), key, message)
 
 
     def get_messages(self):
         messages1 = self.rdb.hgetall(self.group_id)
         messages = {}
         for sender in messages1:
-            messages[int(sender.decode('utf-8'))] = messages1.get(sender).decode('utf-8')
+            messages[sender.decode('utf-8')] = messages1.get(sender).decode('utf-8')
         return messages
 
 
