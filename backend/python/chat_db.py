@@ -15,5 +15,5 @@ class ChatDB:
 
 
 x = ChatDB(10)
-x.send_message(5 'myfirstmessage')
+x.send_message(5, 'myfirstmessage')
 print(x.get_messages())
