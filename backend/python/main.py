@@ -149,6 +149,22 @@ async def remove_group_member(json: RemoveGroupMember, response: Response):
     response.status_code = user.remove_group_member(json.group_id, json.username)
 
 
+@app.post(paths.get('send_message'))
+async def send_message(json: SendMessage, response: Repsonse):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response_2 = user.send_message(json.group_id, json.message)
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
+
+
+@app.post(paths.get('get_messages'))
+async def get_messages(json: GetMessages, response: Repsonse):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response_2 = user.get_messages(json.group_id)
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
+
+
 @app.post(paths.get('update_challenge'))
 async def update_challenge(json: UpdateChallenge, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)

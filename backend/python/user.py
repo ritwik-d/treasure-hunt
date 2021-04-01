@@ -340,6 +340,19 @@ class User:
 
 
     @authenticate
+    def send_message(self, group_id: int, message: str):
+        chat_db = ChatDB(group_id)
+        chat_db.send_message(self.user_id, message)
+        return {'body': chat_db.get_messages(), 'status': 201}
+
+
+    @authenticate
+    def get_messages(self, group_id: int):
+        chat_db = ChatDB(group_id)
+        return {'body': chat_db.get_messages(), 'status': 200}
+
+
+    @authenticate
     def remove_group_member(self, group_id: int, username: str):
         db = DB()
         db.connect()

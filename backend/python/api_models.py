@@ -121,6 +121,19 @@ class SendEmailResetPassword(BaseModel):
     email: str
 
 
+class SendMessage(BaseModel):
+    pw: str
+    user_id: int
+    group_id: int
+    message: str
+
+
+class GetMessages(BaseModel):
+    pw: str
+    user_id: int
+    group_id: int
+
+
 class UpdateChallenge(BaseModel):
     pw: str
     user_id: str

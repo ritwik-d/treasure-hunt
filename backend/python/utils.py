@@ -7,6 +7,31 @@ import mimetypes
 import smtplib
 import random
 import string
+import redis
+
+redis_connections = {}
+
+class ChatDB:
+    def __init__(self, group_id: int):
+        global redis_connections
+        if redis_connections.get('rdb'):
+            self.rdb = redis_connections.get('rdb')
+        else:
+            self.rdb = redis.Redis()
+            redis_connections['rdb'] = self.rdb
+        self.group_id = group_id
+
+
+    def send_message(self, user_id: int, message: str):
+        self.rdb.hset(self.group_id, user_id, message)
+
+
+    def get_messages(self):
+        messages1 = self.rdb.hgetall(self.group_id)
+        messages = {}
+        for sender in messages1:
+            messages[int(sender.decode('utf-8'))] = messages1.get(sender).decode('utf-8')
+        return messages
 
 
 def get_jwt(user_id: int):
