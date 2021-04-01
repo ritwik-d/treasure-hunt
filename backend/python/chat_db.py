@@ -6,11 +6,11 @@ class ChatDB:
         self.group_id = group_id
 
 
-    def send_message(user_id: int, message: str):
+    def send_message(self, user_id: int, message: str):
         self.rdb.hset(self.group_id, user_id, message)
 
 
-    def get_messages():
+    def get_messages(self):
         return self.rdb.hgetall(self.group_id)
 
 
