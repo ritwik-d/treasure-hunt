@@ -24,7 +24,7 @@ class ChatDB:
 
 
     def send_message(self, user_id: int, message: str):
-        key = json.dumps({'datetime': datetime.datetime.now(), 'user_id': user_id})
+        key = json.dumps({'datetime': str(datetime.datetime.now()), 'user_id': user_id})
         self.rdb.hset(str(self.group_id), key, message)
 
 
