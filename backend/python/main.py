@@ -150,7 +150,7 @@ async def remove_group_member(json: RemoveGroupMember, response: Response):
 
 
 @app.post(paths.get('send_message'))
-async def send_message(json: SendMessage, response: Repsonse):
+async def send_message(json: SendMessage, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
     response_2 = user.send_message(json.group_id, json.message)
     response.status_code = response_2.get('status')
@@ -158,7 +158,7 @@ async def send_message(json: SendMessage, response: Repsonse):
 
 
 @app.post(paths.get('get_messages'))
-async def get_messages(json: GetMessages, response: Repsonse):
+async def get_messages(json: GetMessages, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
     response_2 = user.get_messages(json.group_id)
     response.status_code = response_2.get('status')
