@@ -4,17 +4,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.ImageButton
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.ritwikscompany.treasurehunt.R
 
-class MyChallengesRVA(var challenges: ArrayList<String>, var checkClickedListener: CheckClickedListener): RecyclerView.Adapter<MyChallengesRVA.ViewHolder>() {
+class MyChallengesRVA(var challenges: ArrayList<String>, var deleteOnClick: (challengeName: String) -> Unit, var editOnClick: (challengeName: String) -> Unit, var minusButton: FloatingActionButton, var checkedChallenges: ArrayList<String> = arrayListOf<String>()): RecyclerView.Adapter<MyChallengesRVA.ViewHolder>() {
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        val checkBox = itemView.findViewById<CheckBox>(R.id.rowCheckBox)
-    }
-
-
-    interface CheckClickedListener {
-        fun onChecked(checkBox: CheckBox, isChecked: Boolean)
+        val checkBox: CheckBox = itemView.findViewById(R.id.rowCheckBox)
+        val trashButton: ImageButton = itemView.findViewById(R.id.row_delete_challenge)
+        val editButton: ImageButton = itemView.findViewById(R.id.row_edit_challenge)
     }
 
 
@@ -29,12 +28,36 @@ class MyChallengesRVA(var challenges: ArrayList<String>, var checkClickedListene
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.checkBox.text = this.challenges[position]
         holder.checkBox.setOnClickListener {
-            checkClickedListener.onChecked(holder.checkBox, holder.checkBox.isChecked)
+            checkBoxOnClick(holder.checkBox)
+        }
+        holder.trashButton.setOnClickListener {
+            deleteOnClick(this.challenges[position])
+            this.checkedChallenges.remove(this.challenges[position])
+            if (this.checkedChallenges.size == 0) {
+                this.minusButton.visibility = View.INVISIBLE
+            }
+        }
+        holder.editButton.setOnClickListener {
+            editOnClick(this.challenges[position])
         }
     }
 
 
     override fun getItemCount(): Int {
         return challenges.size
+    }
+
+
+    private fun checkBoxOnClick(checkBox: CheckBox) {
+        if (checkBox.isChecked) {
+            this.checkedChallenges.add(checkBox.text.toString())
+            this.minusButton.visibility = View.VISIBLE
+        }
+        else {
+            this.checkedChallenges.remove(checkBox.text.toString())
+            if (this.checkedChallenges.size == 0) {
+                this.minusButton.visibility = View.INVISIBLE
+            }
+        }
     }
 }

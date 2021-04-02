@@ -37,12 +37,12 @@ class CreateChallengeActivity : AppCompatActivity() {
 
         checkMark = com.ritwikscompany.treasurehunt.utils.Utils.getCheckMark(ctx)!!
 
+        verifyFields()
+        setSpinnerVals()
+
         findViewById<Button>(R.id.cc_create).setOnClickListener {
             createOnClick(0.1, 0.2)
         }
-
-        verifyFields()
-        setSpinnerVals()
     }
 
 
@@ -174,13 +174,6 @@ class CreateChallengeActivity : AppCompatActivity() {
                             Toast.makeText(
                                     ctx,
                                     "A challenge has already been created with this name",
-                                    Toast.LENGTH_LONG
-                            ).show()
-                        }
-                        404 -> {
-                            Toast.makeText(
-                                    ctx,
-                                    "You have already created 3 challenges",
                                     Toast.LENGTH_LONG
                             ).show()
                         }

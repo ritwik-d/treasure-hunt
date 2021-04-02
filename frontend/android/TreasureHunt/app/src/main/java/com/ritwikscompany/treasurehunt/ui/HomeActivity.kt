@@ -86,16 +86,16 @@ class HomeActivity : AppCompatActivity() {
 
 
     private fun requestPermissions() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this@HomeActivity,
+        if (ActivityCompat.shouldShowRequestPermissionRationale(ctx,
                         Manifest.permission.READ_EXTERNAL_STORAGE)) {
             Toast.makeText(
-                    this,
+                    ctx,
                     "Please give us permission to access your files.",
                     Toast.LENGTH_SHORT
             ).show()
         } else {
             ActivityCompat.requestPermissions(
-                    this@HomeActivity, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    ctx, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
                     PERMISSION_REQUEST_CODE)
         }
     }
@@ -107,8 +107,8 @@ class HomeActivity : AppCompatActivity() {
         var bitmap = BitmapFactory.decodeFile(image.absolutePath, bmOptions)
         val pfpView = findViewById<CircleImageView>(R.id.home_pfp)
         bitmap = Bitmap.createScaledBitmap(
-                bitmap, pfpView.getWidth(),
-                pfpView.getHeight(), true
+                bitmap, pfpView.width,
+                pfpView.height, true
         )
 
         val baos = ByteArrayOutputStream()
@@ -122,7 +122,8 @@ class HomeActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         val pfp: CircleImageView = findViewById(R.id.home_pfp)
         if (requestCode == REQUEST_GALLERY && resultCode == RESULT_OK) {
-            val filePath = getRealPathFromUri(data!!.data, this@HomeActivity)
+            val filePath = getRealPathFromUri(data!!.data, ctx
+)
             val image = convertToByteArray(filePath!!)
 
 
@@ -149,7 +150,7 @@ class HomeActivity : AppCompatActivity() {
 
     private fun checkPermissions(): Boolean {
         val result = ContextCompat.checkSelfPermission(
-                this@HomeActivity,
+                ctx,
                 Manifest.permission.READ_EXTERNAL_STORAGE)
         return result == PackageManager.PERMISSION_GRANTED
     }
@@ -158,7 +159,8 @@ class HomeActivity : AppCompatActivity() {
     private fun filePicker() {
 
         //.Now Permission Working
-        Toast.makeText(this@HomeActivity, "File Picker Call", Toast.LENGTH_SHORT).show()
+        Toast.makeText(ctx
+, "File Picker Call", Toast.LENGTH_SHORT).show()
         //Let's Pick File
         val openGallery = Intent(Intent.ACTION_PICK)
         openGallery.type = "image/*"
@@ -170,22 +172,6 @@ class HomeActivity : AppCompatActivity() {
         val inflater = menuInflater
         inflater.inflate(R.menu.home_menu, menu)
         return true
-    }
-
-
-    private fun uploadPFP() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (checkPermissions()) {
-                filePicker()
-            } else {
-                requestPermissions()
-                if (checkPermissions()) {
-                    filePicker()
-                }
-            }
-        } else {
-            filePicker()
-        }
     }
 
 

@@ -35,6 +35,7 @@
     <!--   challenges -->
 
     <string name="createChallenge">Create Challenge</string>
+    <string name="deleteChallenge">Delete Challenge</string>
     <string name="editChallenge">Edit Challenge</string>
     <string name="noChallenges">You have no challenges!</string>
     <string name="puzzle">Puzzle</string>

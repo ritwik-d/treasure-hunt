@@ -96,8 +96,6 @@ class User:
     def create_challenge(self, difficulty: str, latitude: float, longitude: float, name: str, puzzle: str, group_name=None):
         db = DB()
         db.connect()
-        if len(db.select('select challenge_id from challenges where creator_id = %s', params=(self.user_id,))) == 3:
-            return 404
         row = {
             'creator_id': self.user_id,
             'difficulty': difficulty,

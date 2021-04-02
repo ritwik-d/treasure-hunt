@@ -4,20 +4,18 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.view.View.INVISIBLE
-import android.view.View.VISIBLE
-import android.widget.Button
-import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
-import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.isSuccessful
-import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.ritwikscompany.treasurehunt.R
-import com.ritwikscompany.treasurehunt.utils.UndoSnackbarListener
+import com.ritwikscompany.treasurehunt.utils.MyChallengesRVA
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,53 +24,25 @@ import kotlinx.coroutines.withContext
 class MyChallengesActivity : AppCompatActivity() {
 
     private val ctx = this@MyChallengesActivity
-
-    private lateinit var name1: TextView
-    private lateinit var edit1: ImageButton
-    private lateinit var trash1: ImageButton
-    private lateinit var name2: TextView
-    private lateinit var edit2: ImageButton
-    private lateinit var trash2: ImageButton
-    private lateinit var name3: TextView
-    private lateinit var edit3: ImageButton
-    private lateinit var trash3: ImageButton
+    private lateinit var minusButton: FloatingActionButton
 
     private var userData = HashMap<String, Any>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_challenges)
-        this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
 
-        name1 = findViewById(R.id.mc_name_1)
-        edit1 = findViewById(R.id.mc_edit_1)
-        trash1 = findViewById(R.id.mc_trash_1)
-        name2 = findViewById(R.id.mc_name_2)
-        edit2 = findViewById(R.id.mc_edit_2)
-        trash2 = findViewById(R.id.mc_trash_2)
-        name3 = findViewById(R.id.mc_name_3)
-        edit3 = findViewById(R.id.mc_edit_3)
-        trash3 = findViewById(R.id.mc_trash_3)
+        this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
+        this.minusButton = findViewById(R.id.mc_del_challenge)
 
         initialize()
 
-        val fab: View = findViewById(R.id.mc_create_challenge)
-        fab.setOnClickListener {
+        findViewById<FloatingActionButton>(R.id.mc_create_challenge).setOnClickListener {
             createChallengeOnClick()
         }
     }
 
 
     private fun initialize() {
-        name1.visibility = INVISIBLE
-        name2.visibility = INVISIBLE
-        name3.visibility = INVISIBLE
-        edit1.visibility = INVISIBLE
-        edit2.visibility = INVISIBLE
-        edit3.visibility = INVISIBLE
-        trash1.visibility = INVISIBLE
-        trash2.visibility = INVISIBLE
-        trash3.visibility = INVISIBLE
-
         val bodyJson = Gson().toJson(hashMapOf<String, Any>(
             "user_id" to userData.get("user_id") as Int,
             "pw" to userData.get("password") as String
@@ -91,21 +61,48 @@ class MyChallengesActivity : AppCompatActivity() {
                         if (bytes != null) {
                             val type = object: TypeToken<MutableList<HashMap<String, Any>>>(){}.type
                             val userChallenges = Gson().fromJson(String(bytes), type) as MutableList<HashMap<String, Any>>
-                            println(userChallenges.javaClass.name)
-                            println(userChallenges)
+                            if (userChallenges.size == 0) {
+                                findViewById<TextView>(R.id.mc_no_chal).visibility = View.VISIBLE
+                            }
+                            else {
+                                val challengeNames = ArrayList<String>()
+                                for (challenge in userChallenges) {
+                                    challengeNames.add(challenge.get("name") as String)
+                                }
 
-                            when (userChallenges.size) {
-                                0 -> {
-                                    findViewById<TextView>(R.id.mc_no_chal).visibility = VISIBLE
-                                }
-                                1 -> {
-                                    challengeSizeOne(userChallenges)
-                                }
-                                2 -> {
-                                    challengeSizeTwo(userChallenges)
-                                }
-                                3 -> {
-                                    challengeSizeThree(userChallenges)
+                                val rview = findViewById<RecyclerView>(R.id.mc_rview)
+                                val adapter = MyChallengesRVA(challengeNames,
+                                        { challengeName ->
+                                            val builder = AlertDialog.Builder(ctx)
+                                            builder.setTitle("Are you sure you want to delete $challengeName?")
+                                            builder.setPositiveButton("Yes") { _, _ ->
+                                                val challengeId = (userChallenges[challengeNames.indexOf(challengeName)]["challenge_id"] as Double).toInt()
+                                                deleteChallenge(challengeId)
+                                            }
+                                            builder.setNegativeButton("No") {_, _ -> }
+                                            builder.show()
+                                        },
+                                        { challengeName ->
+                                            val challengeData = userChallenges[challengeNames.indexOf(challengeName)]
+                                            editChallenge(challengeData)
+                                        }, minusButton)
+                                rview.layoutManager = LinearLayoutManager(ctx)
+                                rview.adapter = adapter
+
+                                minusButton.setOnClickListener {
+                                    val builder = AlertDialog.Builder(ctx)
+                                    builder.setTitle("Are you sure you want to do this?")
+                                    builder.setPositiveButton("Yes") { _, _ ->
+                                        for (challengeName in adapter.checkedChallenges) {
+                                            val challengeId = (userChallenges[challengeNames.indexOf(challengeName)]["challenge_id"] as Double).toInt()
+                                            deleteChallenge(challengeId)
+                                        }
+                                        adapter.checkedChallenges = ArrayList()
+                                        minusButton.visibility = View.INVISIBLE
+                                        initialize()
+                                    }
+                                    builder.setNegativeButton("No") {_, _ -> }
+                                    builder.show()
                                 }
                             }
                         }
@@ -124,82 +121,17 @@ class MyChallengesActivity : AppCompatActivity() {
     }
 
 
-    private fun challengeSizeOne(challenges: MutableList<HashMap<String, Any>>) {
-        name1.visibility = VISIBLE
-        edit1.visibility = VISIBLE
-        trash1.visibility = VISIBLE
-
-        name1.text = challenges[0].get("name").toString()
-        edit1.setOnClickListener {
-            editOnClick(challenges[0])
-        }
-
-        trash1.setOnClickListener {
-            trashOnClick(challenges[0].get("challenge_id").toString().toDouble().toInt())
-        }
-    }
-
-
-    private fun challengeSizeTwo(challenges: MutableList<HashMap<String, Any>>) {
-        challengeSizeOne(challenges)
-
-        name2.visibility = VISIBLE
-        edit2.visibility = VISIBLE
-        trash2.visibility = VISIBLE
-
-        name2.text = challenges[1].get("name").toString()
-        edit2.setOnClickListener {
-            editOnClick(challenges[1])
-        }
-
-        trash2.setOnClickListener {
-            trashOnClick(challenges[1].get("challenge_id").toString().toDouble().toInt())
-        }
-    }
-
-
-    private fun challengeSizeThree(challenges: MutableList<HashMap<String, Any>>) {
-        challengeSizeTwo(challenges)
-
-        name3.visibility = VISIBLE
-        edit3.visibility = VISIBLE
-        trash3.visibility = VISIBLE
-
-        name3.text = challenges[2].get("name").toString()
-        edit3.setOnClickListener {
-            editOnClick(challenges[2])
-        }
-
-        trash3.setOnClickListener {
-            trashOnClick(challenges[2].get("challenge_id").toString().toDouble().toInt())
-        }
-    }
-
-
-    private fun editOnClick(challengeData: HashMap<String, Any>) {
-        val intent = Intent(ctx, EditChallengeActivity::class.java).apply {
-            putExtra("userData", userData)
-            putExtra("challengeData", challengeData)
-        }
-        startActivity(intent)
-    }
-
-
-    private fun trashOnClick(challengeId: Int) {
-        val undoSnackBar = Snackbar.make(CoordinatorLayout(ctx), "1 item deleted", Snackbar.LENGTH_LONG)
-        undoSnackBar.setAction("UNDO", UndoSnackbarListener())
-        undoSnackBar.show()
-
+    private fun deleteChallenge(challengeId: Int) {
         val bodyJson = Gson().toJson(hashMapOf(
-            "user_id" to userData.get("user_id") as Int,
-            "pw" to userData.get("password"),
-            "challenge_id" to challengeId
+                "user_id" to userData.get("user_id") as Int,
+                "pw" to userData.get("password"),
+                "challenge_id" to challengeId
         ))
         CoroutineScope(Dispatchers.IO).launch {
             val (request, response, result) = Fuel.post("${getString(R.string.host)}/delete_challenge")
-                .body(bodyJson)
-                .header("Content-Type" to "application/json")
-                .response()
+                    .body(bodyJson)
+                    .header("Content-Type" to "application/json")
+                    .response()
 
             withContext(Dispatchers.Main) {
                 runOnUiThread {
@@ -211,9 +143,9 @@ class MyChallengesActivity : AppCompatActivity() {
 
                         else if (status == 400) {
                             Toast.makeText(
-                                ctx,
-                                "ERROR",
-                                Toast.LENGTH_LONG
+                                    ctx,
+                                    "ERROR",
+                                    Toast.LENGTH_LONG
                             ).show()
                         }
                     }
@@ -224,6 +156,15 @@ class MyChallengesActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+
+    private fun editChallenge(challengeData: HashMap<String, Any>) {
+        val intent = Intent(ctx, EditChallengeActivity::class.java).apply {
+            putExtra("userData", userData)
+            putExtra("challengeData", challengeData)
+        }
+        startActivity(intent)
     }
 
 

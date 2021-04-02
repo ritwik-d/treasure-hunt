@@ -15,7 +15,6 @@ import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.isSuccessful
 import com.google.gson.Gson
 import com.ritwikscompany.treasurehunt.R
-import com.ritwikscompany.treasurehunt.utils.Account
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
