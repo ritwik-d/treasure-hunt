@@ -185,7 +185,7 @@ class User:
             groups[i[0]] = i[1]
         print(f'groups: {groups}\ngroups1: {groups1}')
         final = {}
-        pub_chals = list(itertools.chain(*db.select('select name from challenges where user_groups = %s and creator_id <> %s', params=(json.dumps([]), self.user_id))))
+        pub_chals = list(itertools.chain(*db.select('select name from challenges where user_groups = cast(%s as json) and creator_id <> %s', params=('[]', self.user_id))))
         final['Public'] = pub_chals
 
         for group in groups:
