@@ -120,24 +120,29 @@ class CreateChallengeActivity : AppCompatActivity() {
                         if (bytes != null) {
                             val type = object: TypeToken<MutableList<String>>(){}.type
                             val groups = Gson().fromJson(String(bytes), type) as MutableList<String>
-                            val adapter = AddGroupsRVA(groups as ArrayList<String>)
-
-                            val rv = RecyclerView(ctx)
-                            rv.layoutManager = LinearLayoutManager(ctx)
-                            rv.adapter = adapter
-
-                            val builder = AlertDialog.Builder(ctx)
-                            builder.setTitle("Add Groups")
-                            builder.setMessage("NOTE: If you do not specify any group(s), the challenge will be public")
-                            builder.setView(rv)
-                            builder.setPositiveButton("Finish") { _, _ ->
-                                val addedGroups = (rv.adapter as AddGroupsRVA).checkedGroups
-                                createChallenge(latitude, longitude, addedGroups)
+                            if (groups.size == 0) {
+                                createChallenge(latitude, longitude)
                             }
-                            builder.setNegativeButton("Cancel") { builder1, _ ->
-                                builder1.cancel()
+                            else {
+                                val adapter = AddGroupsRVA(groups as ArrayList<String>)
+
+                                val rv = RecyclerView(ctx)
+                                rv.layoutManager = LinearLayoutManager(ctx)
+                                rv.adapter = adapter
+
+                                val builder = AlertDialog.Builder(ctx)
+                                builder.setTitle("Add Groups")
+                                builder.setMessage("NOTE: If you do not specify any group(s), the challenge will be public\n\n")
+                                builder.setView(rv)
+                                builder.setPositiveButton("Finish") { _, _ ->
+                                    val addedGroups = (rv.adapter as AddGroupsRVA).checkedGroups
+                                    createChallenge(latitude, longitude, addedGroups)
+                                }
+                                builder.setNegativeButton("Cancel") { builder1, _ ->
+                                    builder1.cancel()
+                                }
+                                builder.show()
                             }
-                            builder.show()
                         }
 
                         else {
@@ -154,7 +159,7 @@ class CreateChallengeActivity : AppCompatActivity() {
     }
 
 
-    private fun createChallenge(latitude: Double, longitude: Double, groups: ArrayList<String>) {
+    private fun createChallenge(latitude: Double, longitude: Double, groups: ArrayList<String> = arrayListOf()) {
         diffSpinner = findViewById(R.id.cc_diff)
         val bodyJson = Gson().toJson(hashMapOf(
             "user_id" to userData["user_id"],

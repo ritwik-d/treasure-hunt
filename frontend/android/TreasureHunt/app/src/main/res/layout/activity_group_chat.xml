@@ -3,63 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:fillViewport="true"
     android:layout_height="match_parent"
     tools:context=".ui.GroupChatActivity">
 
-    <View
-        android:id="@+id/chat_view"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="680dp"
-        android:layout_marginBottom="1dp"
-        android:background="#e0e0e0"
-        app:layout_constraintBottom_toTopOf="@+id/gc_chat_box"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <RelativeLayout
-        android:id="@+id/gc_chat_box"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chat_view">
-
-
-        <EditText
-            android:id="@+id/gc_message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_toStartOf="@+id/gc_send"
-            android:layout_toLeftOf="@+id/gc_send"
-            android:background="@android:color/transparent"
-            android:hint="@string/messageHint"
-            android:inputType="text"
-            android:maxLines="6" />
-
-        <ImageButton
-            android:id="@+id/gc_send"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:background="?attr/selectableItemBackground"
-            android:src="@drawable/ic_baseline_send_24" />
-
-    </RelativeLayout>
-
     <ScrollView
         android:id="@+id/gc_sv"
-        android:layout_width="0dp"
-        android:layout_height="674dp"
-        app:layout_constraintBottom_toTopOf="@+id/gc_chat_box"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="100dp"
+        android:layout_marginTop="40dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:id="@+id/gc_linear_layout"
@@ -68,5 +26,33 @@
             android:orientation="vertical" />
 
     </ScrollView>
+
+    <ImageButton
+        android:id="@+id/gc_send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="1dp"
+        android:layout_marginRight="1dp"
+        android:layout_marginBottom="26dp"
+        android:backgroundTint="@color/white"
+        android:src="@drawable/ic_baseline_send_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/gc_message" />
+
+    <EditText
+        android:id="@+id/gc_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginBottom="26dp"
+        android:ems="10"
+        android:hint="@string/messageHint"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/gc_send"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

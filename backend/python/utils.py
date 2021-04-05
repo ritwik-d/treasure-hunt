@@ -24,15 +24,16 @@ class ChatDB:
 
 
     def send_message(self, user_id: int, message: str):
-        key = json.dumps({'datetime': str(datetime.datetime.now()), 'user_id': user_id})
-        self.rdb.hset(str(self.group_id), key, message)
+        self.rdb.rpush(str(self.group_id), json.dumps({
+            'timestamp': datetime.datetime.now(),
+            'message': message,
+            'user_id': user_id
+        }))
 
 
     def get_messages(self):
-        messages1 = self.rdb.hgetall(self.group_id)
-        messages = {}
-        for sender in messages1:
-            messages[sender.decode('utf-8')] = messages1.get(sender).decode('utf-8')
+        messages = [json.loads(message) for message in self.rdb.lrange(str(self.group_id), 0, -1)]
+        print(f'messages: {messages}')
         return messages
 
 

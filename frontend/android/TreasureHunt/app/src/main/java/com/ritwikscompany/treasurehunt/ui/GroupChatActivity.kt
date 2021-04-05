@@ -2,8 +2,12 @@ package com.ritwikscompany.treasurehunt.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
+import android.util.Log
+import android.view.LayoutInflater
+import android.widget.*
+import androidx.core.view.isInvisible
 import com.github.kittinunf.fuel.Fuel
+import com.google.android.material.tabs.TabLayout
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.ritwikscompany.treasurehunt.R
@@ -16,6 +20,7 @@ class GroupChatActivity : AppCompatActivity() {
 
     private var userData = HashMap<String, Any>()
     private var groupName = String()
+    private lateinit var linearLayout: LinearLayout
     private val ctx = this@GroupChatActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,6 +29,7 @@ class GroupChatActivity : AppCompatActivity() {
 
         this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
         this.groupName = intent.getStringExtra("groupName") as String
+        this.linearLayout = findViewById(R.id.gc_linear_layout)
 
         val bodyJson = Gson().toJson(hashMapOf(
             "user_id" to userData["user_id"],
@@ -31,7 +37,7 @@ class GroupChatActivity : AppCompatActivity() {
             "group_name" to groupName
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_group_row")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/get_group_row")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
@@ -44,9 +50,15 @@ class GroupChatActivity : AppCompatActivity() {
                         if (bytes != null) {
                             val type = object: TypeToken<HashMap<String, Any>>(){}.type
                             val groupData = Gson().fromJson(String(bytes), type) as HashMap<String, Any>
-
                             val groupId: Int = (groupData["group_id"] as Double).toInt()
+                            val messageET = findViewById<EditText>(R.id.gc_message)
 
+                            findViewById<ImageButton>(R.id.gc_send).setOnClickListener {
+                                val message = messageET.text.toString()
+                                sendMessage(groupId, message)
+                            }
+
+                            getMessagesFinal(groupId)
                         }
 
                         else {
@@ -56,6 +68,20 @@ class GroupChatActivity : AppCompatActivity() {
 
                     else if (status == 404) {
                         Toast.makeText(ctx, "Log In Failure", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    }
+
+
+    private fun getMessagesFinal(groupId: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            while (true) {
+                Thread.sleep(1000)
+                withContext(Dispatchers.Main) {
+                    runOnUiThread {
+                        getMessages(groupId)
                     }
                 }
             }
@@ -83,6 +109,19 @@ class GroupChatActivity : AppCompatActivity() {
                         if (bytes != null) {
                             val type = object: TypeToken<HashMap<String, String>>(){}.type
                             val messages = Gson().fromJson(String(bytes), type) as HashMap<String, String>
+
+
+                            linearLayout.removeAllViews()
+                            val typeHash = object: TypeToken<HashMap<String, Any>>(){}.type
+                            val inflater = LayoutInflater.from(ctx)
+
+                            messages.forEach { (json, message) ->
+                                val viewGroup = inflater.inflate(R.layout.row_chat_user_pov, linearLayout, false)
+                                val jsonHash: HashMap<String, Any> = Gson().fromJson(json, typeHash) as HashMap<String, Any>
+                                viewGroup.findViewById<TextView>(R.id.chat_timestamp).text = jsonHash["datetime"] as String
+                                viewGroup.findViewById<TextView>(R.id.chat_message).text = message
+                                linearLayout.addView(viewGroup)
+                            }
                         }
 
                         else {

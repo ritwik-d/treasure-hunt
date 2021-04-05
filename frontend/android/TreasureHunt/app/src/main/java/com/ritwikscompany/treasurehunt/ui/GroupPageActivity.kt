@@ -72,7 +72,11 @@ class GroupPageActivity : AppCompatActivity() {
             }
 
             R.id.menu_group_chat -> {
-
+                val intent = Intent(ctx, GroupChatActivity::class.java).apply {
+                    putExtra("userData", userData)
+                    putExtra("groupName", groupName)
+                }
+                startActivity(intent)
             }
         }
         return true
