@@ -189,7 +189,7 @@ class User:
         final['Public'] = pub_chals
 
         for group in groups:
-            group_chals = list(itertools.chain(*db.select('select name from challenges where JSON_CONTAINS(user_groups, %s) and creator_id <> %s', params=(group, self.user_id))))
+            group_chals = list(itertools.chain(*db.select('select name from challenges where JSON_CONTAINS(user_groups, %s) and creator_id <> %s', params=(str(group), self.user_id))))
             final[groups[group]] = group_chals
         return {'body': final, 'status': 200}
 
