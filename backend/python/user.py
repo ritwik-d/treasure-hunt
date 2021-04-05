@@ -93,19 +93,22 @@ class User:
 
 
     @authenticate
-    def create_challenge(self, difficulty: str, latitude: float, longitude: float, name: str, puzzle: str, group_name=None):
+    def create_challenge(self, difficulty: str, latitude: float, longitude: float, name: str, puzzle: str, groups: list):
         db = DB()
         db.connect()
+        groups_final = []
+        for group_name in groups:
+            groups_final.append(get_group_id(group_name))
         row = {
             'creator_id': self.user_id,
             'difficulty': difficulty,
             'latitude': latitude,
             'longitude': longitude,
             'name': name,
-            'puzzle': puzzle
+            'puzzle': puzzle,
+            'user_groups': json.dumps(groups_final)
         }
-        if not group_name is None:
-            row['group_id'] = get_group_id(group_name)
+
         row_id = db.insert('challenges', row)
         if row_id is None:
             return 400
@@ -176,16 +179,16 @@ class User:
     def get_challenges(self):
         db = DB()
         db.connect()
-        groups1 = db.select(f"select group_id, name from user_groups where JSON_CONTAINS(members, '{self.user_id}')")
+        groups1 = db.select(f"select groups, name from user_groups where JSON_CONTAINS(members, '{self.user_id}')")
         groups = {}
         for i in groups1:
             groups[i[0]] = i[1]
         final = {}
-        pub_chals = list(itertools.chain(*db.select('select name from challenges where group_id is null and creator_id <> %s', params=(self.user_id,))))
+        pub_chals = list(itertools.chain(*db.select('select name from challenges where user_groups = %s and creator_id <> %s', params=(json.dumps([]), self.user_id))))
         final['Public'] = pub_chals
 
         for group in groups:
-            group_chals = list(itertools.chain(*db.select('select name from challenges where group_id = %s and creator_id <> %s', params=(group, self.user_id))))
+            group_chals = list(itertools.chain(*db.select('select name from challenges where JSON_CONTAINS(user_groups, %s) and creator_id <> %s', params=(group, self.user_id))))
             final[groups[group]] = group_chals
         return {'body': final, 'status': 200}
 
@@ -215,9 +218,6 @@ class User:
         final_data[admin_index] = admin_data
 
         final_data = {'table_layout': final_data}
-        if self.user_id == creator_id:
-            final_data['join_code'] = [{'join_code': group_data.get('join_code')}]
-        print(f'final data: <{pprint.pformat(final_data)}>')
         return {'status': 200, 'body': final_data}
 
 
@@ -251,10 +251,45 @@ class User:
 
 
     @authenticate
+    def get_invitations(self):
+        db = DB()
+        db.connect()
+        invites1 = db.select('select from_id, group_id from invitations where to_id = %s', params=(self.user_id,), dict_cursor=True)
+        invites = []
+        for invite in invites1:
+            invite['from_username'] = db.select('select username from users where user_id = %s', params=(invite.get('from_id'),))
+            invite['group_name'] = db.select('select name from user_groups where group_id = %s', params=(invite.get('group_id')))
+            invites.append(invite)
+
+        return {'body': invites, 'status': 200}
+
+
+    @authenticate
     def get_user_challenges(self):
         db = DB()
         db.connect()
         return {'body': list(db.select('select * from challenges where creator_id = %s', params=(self.user_id,), dict_cursor=True)), 'status': 200}
+
+
+    @authenticate
+    def invite_user(self, group_name: str, to_username: str):
+        db = DB()
+        db.connect()
+        if len(db.select('select count(*) from users where username = %s', params=(to_username,))) != 1:
+            return 404
+
+        to_id = get_user_id(to_username, 'username')
+        group_id = get_group_id(group_name)
+        if len(db.select('select * from invitations where to_id = %s and group_id = %s', params=(to_id, group_id))) != 0:
+            return 400
+
+        row = {
+            'from_id': self.user_id,
+            'to_id': to_id,
+            'group_id': group_id
+        }
+        row_id = db.insert('invitations', row)
+        return 200
 
 
     @authenticate

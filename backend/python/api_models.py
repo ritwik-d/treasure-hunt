@@ -9,7 +9,7 @@ class CompleteChallenge(BaseModel):
 
 class CreateChallenge(BaseModel):
     difficulty: str
-    group_name: Optional[str] = None
+    groups: list
     latitude: float
     longitude: float
     name: str

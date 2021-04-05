@@ -16,7 +16,7 @@ async def complete_challenge(json: CompleteChallenge, response: Response):
 @app.post(paths.get('create_challenge'))
 async def create_challenge(json: CreateChallenge, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
-    response.status_code = user.create_challenge(json.difficulty, json.latitude, json.longitude, json.name, json.puzzle, group_name=json.group_name)
+    response.status_code = user.create_challenge(json.difficulty, json.latitude, json.longitude, json.name, json.puzzle, groups=json.groups)
 
 
 @app.post(paths.get('create_group'))

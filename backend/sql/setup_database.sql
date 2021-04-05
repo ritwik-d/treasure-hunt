@@ -57,7 +57,7 @@ create table challenges (
   date_updated datetime not null default current_timestamp on update current_timestamp,
   difficulty enum ('easy', 'medium', 'hard') not null,
   creator_id bigint unsigned not null,
-  group_id bigint unsigned,
+  user_groups json not null,
   latitude double(10, 10) not null,
   longitude double(10, 10) not null,
   name varchar(25) not null,

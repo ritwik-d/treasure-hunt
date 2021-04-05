@@ -70,6 +70,10 @@ class GroupPageActivity : AppCompatActivity() {
                 }
                 startActivity(intent)
             }
+
+            R.id.menu_group_chat -> {
+
+            }
         }
         return true
     }

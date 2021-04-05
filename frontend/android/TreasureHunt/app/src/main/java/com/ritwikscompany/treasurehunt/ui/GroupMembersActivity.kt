@@ -3,8 +3,12 @@ package com.ritwikscompany.treasurehunt.ui
 import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,6 +38,33 @@ class GroupMembersActivity : AppCompatActivity() {
         this.groupName = intent.getStringExtra("groupName") as String
 
         initialize()
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.group_members_menu, menu)
+        return true
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_add_person -> {
+                val builder = AlertDialog.Builder(ctx)
+                builder.setTitle("Add Group Member")
+                builder.setMessage("Enter the username of the person you would like to invite.")
+                val unameET = EditText(ctx)
+                unameET.hint = getString(R.string.username)
+                builder.setPositiveButton("Submit") { _, _ ->
+
+                }
+                builder.setNegativeButton("Cancel") { builder1, _ ->
+                    builder1.cancel()
+                }
+            }
+        }
+        return true
     }
 
 

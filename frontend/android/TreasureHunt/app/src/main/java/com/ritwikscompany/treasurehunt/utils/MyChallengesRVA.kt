@@ -1,5 +1,6 @@
 package com.ritwikscompany.treasurehunt.utils
 
+import android.animation.ObjectAnimator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +10,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.ritwikscompany.treasurehunt.R
 
-class MyChallengesRVA(var challenges: ArrayList<String>, var deleteOnClick: (challengeName: String) -> Unit, var editOnClick: (challengeName: String) -> Unit, var minusButton: FloatingActionButton, var checkedChallenges: ArrayList<String> = arrayListOf<String>()): RecyclerView.Adapter<MyChallengesRVA.ViewHolder>() {
+
+class MyChallengesRVA(
+    var challenges: ArrayList<String>,
+    var deleteOnClick: (challengeName: String) -> Unit,
+    var editOnClick: (challengeName: String) -> Unit,
+    var minusButton: FloatingActionButton,
+    var checkedChallenges: ArrayList<String> = arrayListOf<String>()
+): RecyclerView.Adapter<MyChallengesRVA.ViewHolder>() {
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         val checkBox: CheckBox = itemView.findViewById(R.id.rowCheckBox)
         val trashButton: ImageButton = itemView.findViewById(R.id.row_delete_challenge)
@@ -52,10 +60,16 @@ class MyChallengesRVA(var challenges: ArrayList<String>, var deleteOnClick: (cha
         if (checkBox.isChecked) {
             this.checkedChallenges.add(checkBox.text.toString())
             this.minusButton.visibility = View.VISIBLE
+            val animation = ObjectAnimator.ofFloat(this.minusButton, "translationY", -175f)
+            animation.duration = 1000
+            animation.start()
         }
         else {
             this.checkedChallenges.remove(checkBox.text.toString())
             if (this.checkedChallenges.size == 0) {
+                val animation = ObjectAnimator.ofFloat(this.minusButton, "translationY", 175f)
+                animation.duration = 1000
+                animation.start()
                 this.minusButton.visibility = View.INVISIBLE
             }
         }

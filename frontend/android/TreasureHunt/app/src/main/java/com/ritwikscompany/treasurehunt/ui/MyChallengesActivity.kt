@@ -1,5 +1,6 @@
 package com.ritwikscompany.treasurehunt.ui
 
+import android.animation.ObjectAnimator
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -79,7 +80,9 @@ class MyChallengesActivity : AppCompatActivity() {
                                                 val challengeId = (userChallenges[challengeNames.indexOf(challengeName)]["challenge_id"] as Double).toInt()
                                                 deleteChallenge(challengeId)
                                             }
-                                            builder.setNegativeButton("No") {_, _ -> }
+                                            builder.setNegativeButton("No") {builder1, _ ->
+                                                builder1.cancel()
+                                            }
                                             builder.show()
                                         },
                                         { challengeName ->
@@ -98,6 +101,9 @@ class MyChallengesActivity : AppCompatActivity() {
                                             deleteChallenge(challengeId)
                                         }
                                         adapter.checkedChallenges = ArrayList()
+                                        val animation = ObjectAnimator.ofFloat(minusButton, "translationY", 175f)
+                                        animation.duration = 1000
+                                        animation.start()
                                         minusButton.visibility = View.INVISIBLE
                                         initialize()
                                     }

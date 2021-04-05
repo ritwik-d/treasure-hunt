@@ -15,12 +15,18 @@
         android:id="@+id/menu_group_settings"
         android:title="@string/settings"
         android:icon="@drawable/settings"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/menu_group_members"
         android:title="@string/people"
         android:icon="@drawable/people"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_group_chat"
+        android:title="@string/groupChat"
+        android:icon="@drawable/ic_baseline_chat_24"
+        app:showAsAction="always" />
 
 </menu>

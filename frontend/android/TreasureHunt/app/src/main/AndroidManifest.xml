@@ -2,10 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ritwikscompany.treasurehunt">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
@@ -16,6 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TreasureHunt"
         android:usesCleartextTraffic="true">
+        <activity android:name=".ui.GroupChatActivity" />
         <activity android:name=".ui.GroupSettingsActivity" />
         <activity android:name=".ui.GroupMembersActivity" />
         <activity android:name=".ui.GameActivity" />
@@ -31,7 +32,6 @@
         <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

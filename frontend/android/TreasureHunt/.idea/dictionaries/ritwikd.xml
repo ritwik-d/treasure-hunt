@@ -2,6 +2,7 @@
   <dictionary name="ritwikd">
     <words>
       <w>buttonhere</w>
+      <w>cardview</w>
       <w>grps</w>
       <w>gson</w>
       <w>latlng</w>
@@ -13,6 +14,7 @@
       <w>snackbar</w>
       <w>thesecondone</w>
       <w>treasurehunt</w>
+      <w>uname</w>
       <w>vals</w>
       <w>vcode</w>
     </words>

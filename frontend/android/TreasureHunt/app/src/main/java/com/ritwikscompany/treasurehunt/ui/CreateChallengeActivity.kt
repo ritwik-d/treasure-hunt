@@ -1,29 +1,35 @@
 package com.ritwikscompany.treasurehunt.ui
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.Gravity
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.kittinunf.fuel.Fuel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.ritwikscompany.treasurehunt.R
+import com.ritwikscompany.treasurehunt.utils.AddGroupsRVA
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class CreateChallengeActivity : AppCompatActivity() {
 
     private val ctx = this@CreateChallengeActivity
-    private var userData = hashMapOf<String, Any>()
+    private var userData: HashMap<String, Any> = hashMapOf()
     private lateinit var diffSpinner: Spinner
-    private lateinit var groupSpinner: Spinner
     private lateinit var puzzleET: EditText
     private lateinit var nameET: EditText
     private lateinit var puzzle: String
@@ -38,54 +44,9 @@ class CreateChallengeActivity : AppCompatActivity() {
         checkMark = com.ritwikscompany.treasurehunt.utils.Utils.getCheckMark(ctx)!!
 
         verifyFields()
-        setSpinnerVals()
 
         findViewById<Button>(R.id.cc_create).setOnClickListener {
             createOnClick(0.1, 0.2)
-        }
-    }
-
-
-    private fun setSpinnerVals() {
-        diffSpinner = findViewById(R.id.cc_diff)
-        groupSpinner = findViewById(R.id.cc_groups)
-
-        val bodyJson = Gson().toJson(hashMapOf(
-            "user_id" to userData.get("user_id"),
-            "pw" to userData.get("password")
-        ))
-        CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_groups")
-                .body(bodyJson)
-                .header("Content-Type" to "application/json")
-                .response()
-
-            withContext(Dispatchers.Main) {
-                runOnUiThread {
-                    val status = response.statusCode
-                    if (status == 200) {
-                        val (bytes, _) = result
-                        if (bytes != null) {
-                            val type = object: TypeToken<MutableList<String>>(){}.type
-                            val groups1 = Gson().fromJson(String(bytes), type) as MutableList<String>
-                            groups1.add("Public")
-                            val groups = groups1.toTypedArray()
-
-                            val groupAdapter: ArrayAdapter<CharSequence> = ArrayAdapter(ctx, android.R.layout.simple_spinner_item, groups)
-                            groupAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                            groupSpinner.adapter = groupAdapter
-                        }
-
-                        else {
-                            Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
-                        }
-                    }
-
-                    else if (status == 400) {
-                        Toast.makeText(ctx, "ERROR", Toast.LENGTH_LONG).show()
-                    }
-                }
-            }
         }
     }
 
@@ -141,22 +102,70 @@ class CreateChallengeActivity : AppCompatActivity() {
 
 
     private fun createOnClick(latitude: Double, longitude: Double) {
-        var group: String? = groupSpinner.selectedItem.toString()
-        if (group == "Public") {
-            group = null
-        }
+        val rv = RecyclerView(ctx)
         val bodyJson = Gson().toJson(hashMapOf(
-            "user_id" to userData.get("user_id"),
-            "pw" to userData.get("password"),
+            "user_id" to userData["user_id"],
+            "pw" to userData["password"]
+        ))
+        CoroutineScope(Dispatchers.IO).launch {
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/get_groups")
+                .body(bodyJson)
+                .header("Content-Type" to "application/json")
+                .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    val status = response.statusCode
+                    if (status == 200) {
+                        val (bytes, _) = result
+                        if (bytes != null) {
+                            val type = object: TypeToken<MutableList<String>>(){}.type
+                            val groups = Gson().fromJson(String(bytes), type) as MutableList<String>
+
+                            val adapter = AddGroupsRVA(groups as ArrayList<String>)
+                            rv.adapter = adapter
+                            rv.layoutManager = LinearLayoutManager(ctx)
+
+                            val builder = AlertDialog.Builder(ctx)
+                            builder.setTitle("Add Groups")
+                            builder.setMessage("NOTE: If you do not specify any group(s), the challenge will be public")
+                            builder.setView(rv)
+                            builder.setPositiveButton("Finish") { _, _ ->
+                                val addedGroups = (rv.adapter as AddGroupsRVA).checkedGroups
+                                createChallenge(latitude, longitude, addedGroups)
+                            }
+                            builder.setNegativeButton("Cancel") { builder1, _ ->
+                                builder1.cancel()
+                            }
+                        }
+
+                        else {
+                            Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
+                        }
+                    }
+
+                    else if (status == 400) {
+                        Toast.makeText(ctx, "ERROR", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    }
+
+
+    private fun createChallenge(latitude: Double, longitude: Double, groups: ArrayList<String>) {
+        val bodyJson = Gson().toJson(hashMapOf(
+            "user_id" to userData["user_id"],
+            "pw" to userData["password"],
             "latitude" to latitude,
             "longitude" to longitude,
             "difficulty" to diffSpinner.selectedItem.toString().toLowerCase(Locale.ROOT),
-            "group_name" to group,
+            "groups" to groups,
             "name" to name,
             "puzzle" to puzzle
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/create_challenge")
+            val (_, response, _) = Fuel.post("${getString(R.string.host)}/create_challenge")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()
