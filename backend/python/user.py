@@ -83,7 +83,7 @@ class User:
 
 
     @authenticate
-    def accept_invitation(self, nvitation_id: int):
+    def accept_invitation(self, invitation_id: int):
         db = DB()
         db.connect()
         group_id = db.select('select group_id from invitations where invitation_id = %s', params=(invitation_id,), dict_cursor=True)[0].get('group_id')
