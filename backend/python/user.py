@@ -216,10 +216,14 @@ class User:
 
 
     @authenticate
-    def get_groups(self):
+    def get_groups(self, is_admin: int):
         db = DB()
         db.connect()
-        groups1 = db.select(f"select name from user_groups where JSON_CONTAINS(members, '{self.user_id}')")
+        group1 = None
+        if is_admin == 0:
+            groups1 = db.select(f"select name from user_groups where JSON_CONTAINS(members, '{self.user_id}')")
+        else:
+            groups1 = db.select(f"select name from user_groups where (creator_id = {self.user_id}) or (JSON_CONTAINS(members, '{self.user_id}') and allow_members_code = 'true')")
         groups = []
         for i in groups1:
             groups.append(i[0])

@@ -79,7 +79,7 @@ async def get_group_data(json: GetGroupData, response: Response):
 @app.post(paths.get('get_groups'))
 async def get_groups(json: GetGroups, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
-    response_2 = user.get_groups()
+    response_2 = user.get_groups(json.is_admin)
     response.status_code = response_2.get('status')
     return response_2.get('body')
 

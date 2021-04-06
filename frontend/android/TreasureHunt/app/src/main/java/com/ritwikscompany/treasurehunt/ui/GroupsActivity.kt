@@ -121,7 +121,8 @@ class GroupsActivity : AppCompatActivity() {
             R.id.menu_invite -> {
                 val bodyJson = Gson().toJson(hashMapOf(
                     "user_id" to userData["user_id"],
-                    "pw" to userData["password"]
+                    "pw" to userData["password"],
+                    "is_admin" to 1
                 ))
                 CoroutineScope(Dispatchers.IO).launch {
                     val (_, response, result) = Fuel.post("${getString(R.string.host)}/get_groups")

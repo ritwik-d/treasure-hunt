@@ -66,6 +66,7 @@ class GetGroupData(BaseModel):
 
 
 class GetGroups(BaseModel):
+    is_admin: Optional[int] = 0
     pw: str
     user_id: int
 
