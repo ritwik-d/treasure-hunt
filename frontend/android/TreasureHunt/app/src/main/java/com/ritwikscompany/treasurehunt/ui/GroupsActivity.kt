@@ -203,8 +203,6 @@ class GroupsActivity : AppCompatActivity() {
             withContext(Dispatchers.Main) {
                 runOnUiThread {
                     val (bytes, _) = result
-                    println("result: $result")
-                    println("bytes: $bytes")
                     if (bytes != null) {
                         when ((Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, Double>>(){}.type) as HashMap<String, Double>)["status"]!!.toInt()) {
                             200 -> {
