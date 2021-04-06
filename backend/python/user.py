@@ -308,7 +308,7 @@ class User:
         if len(db.select('select * from invitations where to_id = %s and group_id = %s', params=(to_id, group_id))) != 0:
             return 400
 
-        if self.user_id in json.loads(db.select('select * from user_groups where group_id = %s', params=(group_id,), dict_cursor=True)[0].get('members')):
+        if self.user_id in json.loads(db.select('select members from user_groups where group_id = %s', params=(group_id,), dict_cursor=True)[0].get('members')):
             return 401
 
         row = {

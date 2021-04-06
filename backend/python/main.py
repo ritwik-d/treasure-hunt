@@ -125,9 +125,11 @@ async def get_user_challenges(json: GetUserChallenges, response: Response):
 
 
 @app.post(paths.get('invite_user'))
-async def delete_challenge(json: InviteUser, response: Response):
+async def invite_user(json: InviteUser, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
-    response.status_code = user.invite_user(json.group_name, json.to_username)
+    scode = user.invite_user(json.group_name, json.to_username)
+    response.status_code = scode
+    return {'status': scode}
 
 
 @app.post(paths.get('join_group'))

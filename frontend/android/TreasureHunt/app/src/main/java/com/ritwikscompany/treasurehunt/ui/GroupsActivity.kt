@@ -195,25 +195,45 @@ class GroupsActivity : AppCompatActivity() {
             "to_username" to username
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, _) = Fuel.post("${getString(R.string.host)}/invite_user")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/invite_user")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
 
             withContext(Dispatchers.Main) {
                 runOnUiThread {
-                    when (response.statusCode) {
-                        200 -> {
-                            Toast.makeText(ctx, "Invitation Successful", Toast.LENGTH_SHORT).show()
+                    if (response.statusCode == 200) {
+                        Toast.makeText(ctx, "Invitation Successful", Toast.LENGTH_SHORT).show()
+                    }
+                    else {
+                        val (bytes, _) = result
+                        if (bytes != null) {
+                            when ((Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, Double>>(){}.type) as HashMap<String, Double>)["status"]!!.toInt()) {
+                                400 -> {
+                                    Toast.makeText(
+                                        ctx,
+                                        "$username has already been invited to $groupName",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                                404 -> {
+                                    Toast.makeText(
+                                        ctx,
+                                        "There is no such player with username $username",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                                401 -> {
+                                    Toast.makeText(
+                                        ctx,
+                                        "$username has already joined/created $groupName",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                            }
                         }
-                        400 -> {
-                            Toast.makeText(ctx, "$username has already been invited to $groupName", Toast.LENGTH_LONG).show()
-                        }
-                        404 -> {
-                            Toast.makeText(ctx, "There is no such player with username $username", Toast.LENGTH_LONG).show()
-                        }
-                        401 -> {
-                            Toast.makeText(ctx, "$username has already joined/created $groupName", Toast.LENGTH_LONG).show()
+                        else {
+                            Toast.makeText(ctx, "Network Error", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
