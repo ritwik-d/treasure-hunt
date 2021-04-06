@@ -257,11 +257,13 @@ class User:
         db.connect()
         invites1 = db.select('select from_id, group_id from invitations where to_id = %s', params=(self.user_id,), dict_cursor=True)
         invites = []
-        for invite in invites1:
-            invite['from_username'] = db.select('select username from users where user_id = %s', params=(invite.get('from_id'),))
-            invite['group_name'] = db.select('select name from user_groups where group_id = %s', params=(invite.get('group_id')))
+        for invite1 in invites1:
+            invite = {}
+            invite['from_username'] = db.select('select username from users where user_id = %s', params=(invite1.get('from_id'),))[0][0]
+            invite['group_name'] = db.select('select name from user_groups where group_id = %s', params=(invite1.get('group_id'),))[0][0]
             invites.append(invite)
 
+        print(f'invites: {invites}')
         return {'body': invites, 'status': 200}
 
 

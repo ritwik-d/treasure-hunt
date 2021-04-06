@@ -17,4 +17,9 @@
         android:title="@string/createGroup"
         android:icon="@drawable/ic_baseline_group_add_24" />
 
+    <item
+        android:id="@+id/bn_invitations"
+        android:title="@string/invitations"
+        android:icon="@drawable/ic_baseline_mail_24" />
+
 </menu>

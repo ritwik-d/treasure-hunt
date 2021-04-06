@@ -89,9 +89,17 @@ async def get_group_row(json: GetGroupRow, response: Response):
 
 
 @app.post(paths.get('get_group_settings'))
-async def get_group_row(json: GetGroupSettings, response: Response):
+async def get_group_settings(json: GetGroupSettings, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
     response_2 = user.get_group_settings(json.group_name)
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
+
+
+@app.post(paths.get('get_invitations'))
+async def get_challenge_data(json: GetInvitations, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response_2 = user.get_invitations()
     response.status_code = response_2.get('status')
     return response_2.get('body')
 

@@ -2,14 +2,20 @@ package com.ritwikscompany.treasurehunt.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.kittinunf.fuel.Fuel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.ritwikscompany.treasurehunt.R
+import com.ritwikscompany.treasurehunt.utils.InvitationsRVA
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,18 +30,12 @@ class GroupsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_groups)
         userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
+    }
 
-//        findViewById<Button>(R.id.groups_create_group).setOnClickListener {
-//            createGroupOnClick()
-//        }
-//
-//        findViewById<Button>(R.id.groups_join_group).setOnClickListener {
-//            joinGroupOnClick()
-//        }
-//
-//        findViewById<Button>(R.id.groups_my_groups).setOnClickListener {
-//            myGroupsOnClick()
-//        }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.groups_menu, menu)
 
         val lview = findViewById<ListView>(R.id.mg_lview)
         val jgCode = findViewById<EditText>(R.id.jg_code)
@@ -43,6 +43,7 @@ class GroupsActivity : AppCompatActivity() {
         val cgDesc = findViewById<EditText>(R.id.cg_desc)
         val cgName = findViewById<EditText>(R.id.cg_name)
         val cgCreate = findViewById<Button>(R.id.cg_create)
+        val invRview = findViewById<RecyclerView>(R.id.inv_rview)
 
         initializeListView()
 
@@ -64,6 +65,8 @@ class GroupsActivity : AppCompatActivity() {
                     cgDesc.visibility = View.VISIBLE
                     cgName.visibility = View.VISIBLE
                     cgCreate.visibility = View.VISIBLE
+                    invRview.visibility = View.INVISIBLE
+                    menu!!.findItem(R.id.menu_invite).isVisible = false
                 }
                 R.id.bn_join_group -> {
                     lview.visibility = View.INVISIBLE
@@ -72,6 +75,8 @@ class GroupsActivity : AppCompatActivity() {
                     cgDesc.visibility = View.INVISIBLE
                     cgName.visibility = View.INVISIBLE
                     cgCreate.visibility = View.INVISIBLE
+                    invRview.visibility = View.INVISIBLE
+                    menu!!.findItem(R.id.menu_invite).isVisible = false
                 }
                 R.id.bn_my_groups -> {
                     lview.visibility = View.VISIBLE
@@ -80,37 +85,78 @@ class GroupsActivity : AppCompatActivity() {
                     cgDesc.visibility = View.INVISIBLE
                     cgName.visibility = View.INVISIBLE
                     cgCreate.visibility = View.INVISIBLE
+                    invRview.visibility = View.INVISIBLE
+                    menu!!.findItem(R.id.menu_invite).isVisible = false
 
                     initializeListView()
+                }
+                R.id.bn_invitations -> {
+                    lview.visibility = View.INVISIBLE
+                    jgCode.visibility = View.INVISIBLE
+                    jgJoin.visibility = View.INVISIBLE
+                    cgDesc.visibility = View.INVISIBLE
+                    cgName.visibility = View.INVISIBLE
+                    cgCreate.visibility = View.INVISIBLE
+                    invRview.visibility = View.VISIBLE
+                    menu!!.findItem(R.id.menu_invite).isVisible = true
+                    initializeRview(invRview)
                 }
             }
             true
         }
+        return true
     }
 
 
-//    private fun createGroupOnClick() {
-//        val intent = Intent(ctx, CreateGroupActivity::class.java).apply {
-//            putExtra("userData", userData)
-//        }
-//        startActivity(intent)
-//    }
-//
-//
-//    private fun joinGroupOnClick() {
-//        val intent = Intent(ctx, JoinGroupActivity::class.java).apply {
-//            putExtra("userData", userData)
-//        }
-//        startActivity(intent)
-//    }
-//
-//
-//    private fun myGroupsOnClick() {
-//        val intent = Intent(ctx, MyGroupsActivity::class.java).apply {
-//            putExtra("userData", userData)
-//        }
-//        startActivity(intent)
-//    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_invite -> {
+            }
+        }
+        return true
+    }
+
+
+    private fun initializeRview(invRview: RecyclerView) {
+        val bodyJson = Gson().toJson(hashMapOf<String, Any>(
+            "user_id" to userData.get("user_id") as Int,
+            "pw" to userData.get("password") as String
+        ))
+        CoroutineScope(Dispatchers.IO).launch {
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_invitations")
+                .body(bodyJson)
+                .header("Content-Type" to "application/json")
+                .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    val status = response.statusCode
+                    if (status == 200) {
+                        val (bytes, _) = result
+                        if (bytes != null) {
+                            val type = object: TypeToken<ArrayList<HashMap<String, String>>>(){}.type
+                            val invitations = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, String>>
+
+                            invRview.layoutManager = LinearLayoutManager(ctx)
+                            invRview.adapter = InvitationsRVA(invitations, { groupName ->
+
+                            }, { groupName ->
+
+                            })
+                        }
+
+                        else {
+                            Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
+                        }
+                    }
+
+                    else if (status == 404) {
+                        Toast.makeText(ctx, "ERROR", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    }
 
 
     private fun createGroupOnClick() {

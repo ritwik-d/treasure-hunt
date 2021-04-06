@@ -81,6 +81,11 @@ class GetGroupSettings(BaseModel):
     user_id: int
 
 
+class GetInvitations(BaseModel):
+    pw: str
+    user_id: int
+
+
 class JoinGroup(BaseModel):
     join_code: str
     pw: str

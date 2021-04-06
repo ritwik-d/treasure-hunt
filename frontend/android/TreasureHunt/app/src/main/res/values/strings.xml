@@ -75,6 +75,8 @@
     <string name="messageHint">Enter Message</string>
     <string name="invite">Invite</string>
     <string name="invitations">Invitations</string>
+    <string name="from">From:</string>
+    <string name="group">Group:</string>
 
     <!--   leaderboard -->
 
