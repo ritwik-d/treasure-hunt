@@ -300,7 +300,7 @@ class User:
     def invite_user(self, group_name: str, to_username: str):
         db = DB()
         db.connect()
-        if len(db.select('select count(*) from users where username = %s', params=(to_username,))) != 1:
+        if db.select('select count(*) from users where username = %s', params=(to_username,)) != 1:
             return 404
 
         to_id = get_user_id(to_username, 'username')
