@@ -1,13 +1,16 @@
 package com.ritwikscompany.treasurehunt.ui
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.kittinunf.fuel.Fuel
@@ -15,6 +18,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.ritwikscompany.treasurehunt.R
+import com.ritwikscompany.treasurehunt.utils.AddGroupsRVA
 import com.ritwikscompany.treasurehunt.utils.InvitationsRVA
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -99,6 +103,7 @@ class GroupsActivity : AppCompatActivity() {
                     cgCreate.visibility = View.INVISIBLE
                     invRview.visibility = View.VISIBLE
                     menu!!.findItem(R.id.menu_invite).isVisible = true
+
                     initializeRview(invRview)
                 }
             }
@@ -111,9 +116,103 @@ class GroupsActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_invite -> {
+                val bodyJson = Gson().toJson(hashMapOf(
+                    "user_id" to userData["user_id"],
+                    "pw" to userData["password"]
+                ))
+                CoroutineScope(Dispatchers.IO).launch {
+                    val (_, response, result) = Fuel.post("${getString(R.string.host)}/get_groups")
+                        .body(bodyJson)
+                        .header("Content-Type" to "application/json")
+                        .response()
+
+                    withContext(Dispatchers.Main) {
+                        runOnUiThread {
+                            val status = response.statusCode
+                            if (status == 200) {
+                                val (bytes, _) = result
+                                if (bytes != null) {
+                                    val type = object: TypeToken<ArrayList<String>>(){}.type
+                                    val groups = Gson().fromJson(String(bytes), type) as ArrayList<String>
+
+                                    val builder = AlertDialog.Builder(ctx)
+                                    val alertView = layoutInflater.inflate(R.layout.dialog_invite, null)
+                                    val radioGroup = alertView.findViewById<RadioGroup>(R.id.di_rgroup)
+                                    val usernameET = alertView.findViewById<EditText>(R.id.di_username)
+
+                                    for (groupName in groups) {
+                                        val radioButton = RadioButton(ctx)
+                                        radioButton.text = groupName
+                                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                                            radioButton.id = View.generateViewId()
+                                        } else {
+                                            radioButton.id = groups.indexOf(groupName) + 999
+                                        }
+                                        radioButton.setTextColor(Color.BLACK)
+                                        radioGroup.addView(radioButton)
+                                    }
+
+                                    builder.setTitle("Create Invitation")
+                                    builder.setMessage("Enter the username of the person you would like to invite.\n\n")
+                                    builder.setView(alertView)
+                                    builder.setPositiveButton("Invite") { _, _ ->
+                                        val groupName = radioGroup.findViewById<RadioButton>(radioGroup.checkedRadioButtonId).text.toString()
+                                        val username = usernameET.text.toString()
+
+                                        inviteUser(groupName, username)
+                                    }
+                                    builder.setNegativeButton("Cancel") { builder1, _ ->
+                                        builder1.cancel()
+                                    }
+                                    builder.show()
+                                }
+
+                                else {
+                                    Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
+                                }
+                            }
+
+                            else if (status == 400) {
+                                Toast.makeText(ctx, "ERROR", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    }
+                }
             }
         }
         return true
+    }
+
+
+    private fun inviteUser(groupName: String, username: String) {
+        val bodyJson = Gson().toJson(hashMapOf(
+            "user_id" to userData["user_id"],
+            "pw" to userData["password"],
+            "group_name" to groupName,
+            "to_username" to username
+        ))
+        CoroutineScope(Dispatchers.IO).launch {
+            val (_, response, _) = Fuel.post("${getString(R.string.host)}/invite_user")
+                .body(bodyJson)
+                .header("Content-Type" to "application/json")
+                .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    when (response.statusCode) {
+                        200 -> {
+                            Toast.makeText(ctx, "Invitation Successful", Toast.LENGTH_SHORT).show()
+                        }
+                        400 -> {
+                            Toast.makeText(ctx, "$username has already been invited to $groupName", Toast.LENGTH_LONG).show()
+                        }
+                        404 -> {
+                            Toast.makeText(ctx, "There is no such player with username $username", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+            }
+        }
     }
 
 

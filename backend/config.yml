@@ -15,6 +15,7 @@ api:
     get_invitations: /get_invitations
     get_messages: /get_messages
     get_user_challenges: /get_user_challenges
+    invite_user: /invite_user
     join_group: /join_group
     leave_group: /leave_group
     login: /login
