@@ -24,6 +24,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 class GroupsActivity : AppCompatActivity() {
@@ -241,9 +244,9 @@ class GroupsActivity : AppCompatActivity() {
 
                             invRview.layoutManager = LinearLayoutManager(ctx)
                             invRview.adapter = InvitationsRVA(invitations, { invitationId ->
-
+                                operateInvitation(invitationId, invRview)
                             }, { invitationId ->
-
+                                operateInvitation(invitationId, invRview,"decline")
                             })
                         }
 
@@ -254,6 +257,38 @@ class GroupsActivity : AppCompatActivity() {
 
                     else if (status == 404) {
                         Toast.makeText(ctx, "ERROR", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    }
+
+
+    private fun operateInvitation(invitationId: Int, rview: RecyclerView, operation: String = "accept") {
+        val bodyJson = Gson().toJson(hashMapOf(
+            "user_id" to userData["user_id"],
+            "pw" to userData["password"],
+            "invitation_id" to invitationId
+        ))
+        CoroutineScope(Dispatchers.IO).launch {
+            val (_, response, _) = Fuel.post("${getString(R.string.host)}/${operation}_invitation")
+                .body(bodyJson)
+                .header("Content-Type" to "application/json")
+                .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    when (response.statusCode) {
+                        200 -> {
+                            initializeRview(rview)
+                        }
+                        400 -> {
+                            Toast.makeText(
+                                ctx,
+                                "ERROR",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
                     }
                 }
             }
