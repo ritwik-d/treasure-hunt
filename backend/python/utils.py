@@ -33,7 +33,6 @@ class ChatDB:
 
     def get_messages(self):
         messages = [json.loads(message) for message in self.rdb.lrange(str(self.group_id), 0, -1)]
-        print(f'messages: {messages}')
         return messages
 
 

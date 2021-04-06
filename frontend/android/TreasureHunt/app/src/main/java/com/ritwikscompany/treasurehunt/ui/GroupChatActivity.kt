@@ -112,11 +112,13 @@ class GroupChatActivity : AppCompatActivity() {
                         if (bytes != null) {
                             val type = object: TypeToken<ArrayList<HashMap<String, String>>>(){}.type
                             val messages = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, String>>
+                            println("messages: $messages")
 
                             linearLayout.removeAllViews()
                             val inflater = LayoutInflater.from(ctx)
 
                             for (message in messages) {
+                                println("message: $message")
                                 val viewGroup: View =
 
                                 if (message["username"] as String == (userData["username"] as String)) {
@@ -130,7 +132,7 @@ class GroupChatActivity : AppCompatActivity() {
                                 viewGroup.findViewById<TextView>(R.id.chat_timestamp).text = message["timestamp"] as String
                                 viewGroup.findViewById<TextView>(R.id.chat_message).text = message["message"] as String
 
-                                if (message["username"] as String == (userData["username"] as String)) {
+                                if (message["username"] as String != (userData["username"] as String)) {
                                     viewGroup.findViewById<TextView>(R.id.chat_uname).text = message["username"]
                                 }
 
