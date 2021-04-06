@@ -128,7 +128,6 @@ async def get_user_challenges(json: GetUserChallenges, response: Response):
 async def invite_user(json: InviteUser, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
     scode = user.invite_user(json.group_name, json.to_username)
-    print({'status': scode})
     return {'status': scode}
 
 
