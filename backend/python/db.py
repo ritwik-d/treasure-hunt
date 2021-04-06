@@ -88,7 +88,7 @@ class DB:
         return cursor.lastrowid
 
 
-    def execute_sql(sql: str, params=None):
+    def execute_sql(self, sql: str, params=None):
         if self.db is None:
             return None
         cursor = self.db.cursor()
