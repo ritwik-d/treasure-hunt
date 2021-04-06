@@ -202,41 +202,43 @@ class GroupsActivity : AppCompatActivity() {
 
             withContext(Dispatchers.Main) {
                 runOnUiThread {
-                    if (response.statusCode == 200) {
-                        Toast.makeText(ctx, "Invitation Successful", Toast.LENGTH_SHORT).show()
-                    }
-                    else {
-                        val (bytes, _) = result
-                        println("result: $result")
-                        println("bytes: $bytes")
-                        if (bytes != null) {
-                            when ((Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, Double>>(){}.type) as HashMap<String, Double>)["status"]!!.toInt()) {
-                                400 -> {
-                                    Toast.makeText(
-                                        ctx,
-                                        "$username has already been invited to $groupName",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                }
-                                404 -> {
-                                    Toast.makeText(
-                                        ctx,
-                                        "There is no such player with username $username",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                }
-                                401 -> {
-                                    Toast.makeText(
-                                        ctx,
-                                        "$username has already joined/created $groupName",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                }
+                    val (bytes, _) = result
+                    println("result: $result")
+                    println("bytes: $bytes")
+                    if (bytes != null) {
+                        when ((Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, Double>>(){}.type) as HashMap<String, Double>)["status"]!!.toInt()) {
+                            200 -> {
+                                Toast.makeText(
+                                    ctx,
+                                    "Invitation Successful",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                            400 -> {
+                                Toast.makeText(
+                                    ctx,
+                                    "$username has already been invited to $groupName",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                            404 -> {
+                                Toast.makeText(
+                                    ctx,
+                                    "There is no such player with username $username",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                            401 -> {
+                                Toast.makeText(
+                                    ctx,
+                                    "$username has already joined/created $groupName",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             }
                         }
-                        else {
-                            Toast.makeText(ctx, "Network Error", Toast.LENGTH_SHORT).show()
-                        }
+                    }
+                    else {
+                        Toast.makeText(ctx, "Network Error", Toast.LENGTH_SHORT).show()
                     }
                 }
             }

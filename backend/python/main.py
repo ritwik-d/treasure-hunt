@@ -129,8 +129,6 @@ async def invite_user(json: InviteUser, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
     scode = user.invite_user(json.group_name, json.to_username)
     print({'status': scode})
-    if scode == 200:
-        response.status_code = scode
     return {'status': scode}
 
 
