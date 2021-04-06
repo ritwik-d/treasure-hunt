@@ -315,7 +315,7 @@ class User:
         members = json.loads(db.select('select members from user_groups where group_id = %s', params=(group_id,), dict_cursor=True)[0].get('members'))
         members.remove(self.user_id)
         row_id = db.update('user_groups', {'members': json.dumps(members)}, {'group_id': group_id})
-        
+
         if row_id is None:
             return 404
         row_id = db.execute_sql('delete from challenges where creator_id = %s and JSON_CONTAINS(user_groups, %s)', params=(self.user_id, str(group_id)))
@@ -380,8 +380,10 @@ class User:
 
     @authenticate
     def send_message(self, group_id: int, message: str):
+        db = DB()
+        db.connect()
         chat_db = ChatDB(group_id)
-        chat_db.send_message(self.user_id, message)
+        chat_db.send_message(db.select('select username from users where user_id = %s', params=(self.user_id,), dict_cursor=True)[0].get('username'), message)
         return {'body': chat_db.get_messages(), 'status': 201}
 
 
