@@ -23,11 +23,11 @@ class ChatDB:
         self.group_id = group_id
 
 
-    def send_message(self, user_id: int, message: str):
+    def send_message(self, username: str, message: str):
         self.rdb.rpush(str(self.group_id), json.dumps({
             'timestamp': str(datetime.datetime.now()),
             'message': message,
-            'user_id': user_id
+            'username': username
         }))
 
 

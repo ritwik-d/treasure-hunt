@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.core.view.isInvisible
 import com.github.kittinunf.fuel.Fuel
@@ -15,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.w3c.dom.Text
 
 class GroupChatActivity : AppCompatActivity() {
 
@@ -107,19 +110,30 @@ class GroupChatActivity : AppCompatActivity() {
                     if (status == 200) {
                         val (bytes, _) = result
                         if (bytes != null) {
-                            val type = object: TypeToken<HashMap<String, String>>(){}.type
-                            val messages = Gson().fromJson(String(bytes), type) as HashMap<String, String>
-
+                            val type = object: TypeToken<ArrayList<HashMap<String, String>>>(){}.type
+                            val messages = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, String>>
 
                             linearLayout.removeAllViews()
-                            val typeHash = object: TypeToken<HashMap<String, Any>>(){}.type
                             val inflater = LayoutInflater.from(ctx)
 
-                            messages.forEach { (json, message) ->
-                                val viewGroup = inflater.inflate(R.layout.row_chat_user_pov, linearLayout, false)
-                                val jsonHash: HashMap<String, Any> = Gson().fromJson(json, typeHash) as HashMap<String, Any>
-                                viewGroup.findViewById<TextView>(R.id.chat_timestamp).text = jsonHash["datetime"] as String
-                                viewGroup.findViewById<TextView>(R.id.chat_message).text = message
+                            for (message in messages) {
+                                val viewGroup: View =
+
+                                if (message["username"] as String == (userData["username"] as String)) {
+                                    inflater.inflate(R.layout.row_chat_user_pov, linearLayout, false)
+                                }
+
+                                else {
+                                    inflater.inflate(R.layout.row_chat_other_pov, linearLayout, false)
+                                }
+
+                                viewGroup.findViewById<TextView>(R.id.chat_timestamp).text = message["timestamp"] as String
+                                viewGroup.findViewById<TextView>(R.id.chat_message).text = message["message"] as String
+
+                                if (message["username"] as String == (userData["username"] as String)) {
+                                    viewGroup.findViewById<TextView>(R.id.chat_uname).text = message["username"]
+                                }
+
                                 linearLayout.addView(viewGroup)
                             }
                         }
@@ -127,10 +141,6 @@ class GroupChatActivity : AppCompatActivity() {
                         else {
                             Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
                         }
-                    }
-
-                    else if (status == 404) {
-                        Toast.makeText(ctx, "Log In Failure", Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -157,8 +167,8 @@ class GroupChatActivity : AppCompatActivity() {
                     if (status == 200) {
                         val (bytes, _) = result
                         if (bytes != null) {
-                            val type = object: TypeToken<HashMap<String, String>>(){}.type
-                            val messages = Gson().fromJson(String(bytes), type) as HashMap<String, String>
+                            val type = object: TypeToken<ArrayList<HashMap<String, Any>>>(){}.type
+                            val messages = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, Any>>
 
                         }
 
