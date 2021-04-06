@@ -209,6 +209,9 @@ class GroupsActivity : AppCompatActivity() {
                         404 -> {
                             Toast.makeText(ctx, "There is no such player with username $username", Toast.LENGTH_LONG).show()
                         }
+                        401 -> {
+                            Toast.makeText(ctx, "$username has already joined/created $groupName", Toast.LENGTH_LONG).show()
+                        }
                     }
                 }
             }
@@ -233,13 +236,13 @@ class GroupsActivity : AppCompatActivity() {
                     if (status == 200) {
                         val (bytes, _) = result
                         if (bytes != null) {
-                            val type = object: TypeToken<ArrayList<HashMap<String, String>>>(){}.type
-                            val invitations = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, String>>
+                            val type = object: TypeToken<ArrayList<HashMap<String, Any>>>(){}.type
+                            val invitations = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, Any>>
 
                             invRview.layoutManager = LinearLayoutManager(ctx)
-                            invRview.adapter = InvitationsRVA(invitations, { groupName ->
+                            invRview.adapter = InvitationsRVA(invitations, { invitationId ->
 
-                            }, { groupName ->
+                            }, { invitationId ->
 
                             })
                         }

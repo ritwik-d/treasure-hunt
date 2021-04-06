@@ -9,9 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ritwikscompany.treasurehunt.R
 
 class InvitationsRVA(
-    var invitations: ArrayList<HashMap<String, String>>,
-    var acceptOnClick: (groupName: String) -> Unit,
-    var declineOnClick: (groupName: String) -> Unit
+    var invitations: ArrayList<HashMap<String, Any>>,
+    var acceptOnClick: (invitationId: Int) -> Unit,
+    var declineOnClick: (invitationId: Int) -> Unit
 ): RecyclerView.Adapter<InvitationsRVA.ViewHolder>() {
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         val groupName: TextView = itemView.findViewById(R.id.row_invite_group)
@@ -29,13 +29,13 @@ class InvitationsRVA(
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.groupName.text = this.invitations[position]["group_name"]
-        holder.fromName.text = this.invitations[position]["from_username"]
+        holder.groupName.text = this.invitations[position]["group_name"] as String
+        holder.fromName.text = this.invitations[position]["from_username"] as String
         holder.acceptButton.setOnClickListener {
-            acceptOnClick(this.invitations[position]["group_name"] as String)
+            acceptOnClick((this.invitations[position]["invitation_id"] as Double).toInt())
         }
         holder.declineButton.setOnClickListener {
-            declineOnClick(this.invitations[position]["group_name"] as String)
+            declineOnClick((this.invitations[position]["invitation_id"] as Double).toInt())
         }
     }
 

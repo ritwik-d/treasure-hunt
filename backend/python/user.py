@@ -83,6 +83,27 @@ class User:
 
 
     @authenticate
+    def accept_invitation(invitation_id: int):
+        db = DB()
+        db.connect()
+        group_id = db.select('select group_id from invitations where invitation_id = %s', params=(invitation_id,), dict_cursor=True)[0].get('group_id')
+        row_id = db.update('user_groups', {'members': db.select("select JSON_ARRAY_APPEND(members, '$', %s) as 'result' from user_groups where group_id = %s", params=(self.user_id, group_id), dict_cursor=True)[0].get('result')}, {'group_id': group_id})
+        if row_id is None:
+            return 400
+
+        db.delete('invitations', {'invitation_id': invitation_id})
+        return 200
+
+
+    @authenticate
+    def decline_invitation(invitation_id: int):
+        db = DB()
+        db.connect()
+        db.delete('invitations', {'invitation_id': invitation_id})
+        return 200
+
+
+    @authenticate
     def complete_challenge(self, challenge_id: int):
         db = DB()
         db.connect()
@@ -255,10 +276,11 @@ class User:
     def get_invitations(self):
         db = DB()
         db.connect()
-        invites1 = db.select('select from_id, group_id from invitations where to_id = %s', params=(self.user_id,), dict_cursor=True)
+        invites1 = db.select('select from_id, group_id, invitation_id from invitations where to_id = %s', params=(self.user_id,), dict_cursor=True)
         invites = []
         for invite1 in invites1:
             invite = {}
+            invite['invitation_id'] = invite1.get('invitation_id')
             invite['from_username'] = db.select('select username from users where user_id = %s', params=(invite1.get('from_id'),))[0][0]
             invite['group_name'] = db.select('select name from user_groups where group_id = %s', params=(invite1.get('group_id'),))[0][0]
             invites.append(invite)
@@ -285,6 +307,9 @@ class User:
         group_id = get_group_id(group_name)
         if len(db.select('select * from invitations where to_id = %s and group_id = %s', params=(to_id, group_id))) != 0:
             return 400
+
+        if self.user_id in json.loads(db.select('select * from user_groups where group_id = %s', params=(group_id,), dict_cursor=True)[0].get('members')):
+            return 401
 
         row = {
             'from_id': self.user_id,

@@ -7,6 +7,18 @@ app = FastAPI()
 paths = config.get('api', 'paths')
 
 
+@app.post(paths.get('accept_invitation'))
+async def accept_invitation(json: AcceptInvitation, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response.status_code = user.accept_invitation(json.invitation_id)
+
+
+@app.post(paths.get('decline_invitation'))
+async def decline_invitation(json: DeclineInvitation, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response.status_code = user.decline_invitation(json.invitation_id)
+
+
 @app.post(paths.get('complete_challenge'))
 async def complete_challenge(json: CompleteChallenge, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)

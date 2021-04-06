@@ -1,6 +1,18 @@
 from pydantic import BaseModel
 from typing import Optional
 
+class AcceptInvitation(BaseModel):
+    invitation_id: int
+    pw: str
+    user_id: int
+
+
+class DeclineInvitation(BaseModel):
+    invitation_id: int
+    pw: str
+    user_id: int
+
+
 class CompleteChallenge(BaseModel):
     challenge_id: int
     pw: str

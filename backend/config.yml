@@ -1,8 +1,10 @@
 api:
   paths:
+    accept_invitation: /accept_invitation
     complete_challenge: /complete_challenge
     create_challenge: /create_challenge
     create_group: /create_group
+    decline_invitation: /decline_invitation
     delete_challenge: /delete_challenge
     download_pfp: /download_pfp
     get_challenge_data: /get_challenge_data
