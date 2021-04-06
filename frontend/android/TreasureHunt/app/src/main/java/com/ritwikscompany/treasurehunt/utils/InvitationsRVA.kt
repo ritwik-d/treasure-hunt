@@ -30,7 +30,7 @@ class InvitationsRVA(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.groupName.text = this.invitations[position]["group_name"]
-        holder.fromName.text = this.invitations[position]["from_name"]
+        holder.fromName.text = this.invitations[position]["from_username"]
         holder.acceptButton.setOnClickListener {
             acceptOnClick(this.invitations[position]["group_name"] as String)
         }
