@@ -156,19 +156,31 @@ class GroupsActivity : AppCompatActivity() {
                                         radioGroup.addView(radioButton)
                                     }
 
-                                    builder.setTitle("Create Invitation")
-                                    builder.setMessage("Enter the username of the person you would like to invite.\n\n")
-                                    builder.setView(alertView)
-                                    builder.setPositiveButton("Invite") { _, _ ->
-                                        val groupName = radioGroup.findViewById<RadioButton>(radioGroup.checkedRadioButtonId).text.toString()
-                                        val username = usernameET.text.toString()
+                                    if (radioGroup.childCount == 0) {
+                                        val builder2 = AlertDialog.Builder(ctx)
+                                        builder2.setTitle("Invitation Creation Failed")
+                                        builder2.setMessage("You are not part of any groups, therefore you cannot invite anyone to a group.")
+                                        builder2.setPositiveButton("OK") { builder3, _ ->
+                                            builder3.cancel()
+                                        }
+                                        builder2.show()
+                                    }
+                                    else {
+                                        builder.setTitle("Create Invitation")
+                                        builder.setMessage("Enter the username of the person you would like to invite.\n\n")
+                                        builder.setView(alertView)
+                                        builder.setPositiveButton("Invite") { _, _ ->
+                                            val groupName =
+                                                radioGroup.findViewById<RadioButton>(radioGroup.checkedRadioButtonId).text.toString()
+                                            val username = usernameET.text.toString()
 
-                                        inviteUser(groupName, username)
+                                            inviteUser(groupName, username)
+                                        }
+                                        builder.setNegativeButton("Cancel") { builder1, _ ->
+                                            builder1.cancel()
+                                        }
+                                        builder.show()
                                     }
-                                    builder.setNegativeButton("Cancel") { builder1, _ ->
-                                        builder1.cancel()
-                                    }
-                                    builder.show()
                                 }
 
                                 else {
