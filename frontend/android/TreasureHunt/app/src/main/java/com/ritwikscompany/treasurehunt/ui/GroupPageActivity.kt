@@ -35,6 +35,7 @@ class GroupPageActivity : AppCompatActivity() {
         this.groupName = intent.getStringExtra("groupName") as String
         this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
 
+        title = groupName
         initializeTableLayout()
     }
 
@@ -83,18 +84,20 @@ class GroupPageActivity : AppCompatActivity() {
     private fun leaveGroup() {
         val builder: AlertDialog.Builder = AlertDialog.Builder(ctx)
 
-        builder?.setTitle("Are you sure you want to leave $groupName?")
-        builder?.setPositiveButton("Yes", DialogInterface.OnClickListener { _, _ ->
-            val bodyJson = Gson().toJson(hashMapOf(
+        builder.setTitle("Are you sure you want to leave $groupName?")
+        builder.setPositiveButton("Yes") { _, _ ->
+            val bodyJson = Gson().toJson(
+                hashMapOf(
                     "user_id" to userData.get("user_id"),
                     "pw" to userData.get("password"),
                     "group_name" to groupName
-            ))
+                )
+            )
             CoroutineScope(Dispatchers.IO).launch {
                 val (request, response, result) = Fuel.post("${getString(R.string.host)}/leave_group")
-                        .body(bodyJson)
-                        .header("Content-Type" to "application/json")
-                        .response()
+                    .body(bodyJson)
+                    .header("Content-Type" to "application/json")
+                    .response()
 
                 withContext(Dispatchers.Main) {
                     runOnUiThread {
@@ -107,18 +110,18 @@ class GroupPageActivity : AppCompatActivity() {
                             }
                             404 -> {
                                 Toast.makeText(
-                                        ctx,
-                                        "ERROR",
-                                        Toast.LENGTH_LONG
+                                    ctx,
+                                    "ERROR",
+                                    Toast.LENGTH_LONG
                                 ).show()
                             }
                         }
                     }
                 }
             }
-        })
-        builder?.setNegativeButton("No", DialogInterface.OnClickListener {_, _ -> })
-        builder?.show()
+        }
+        builder.setNegativeButton("No") { _, _ -> }
+        builder.show()
     }
 
 
@@ -143,8 +146,7 @@ class GroupPageActivity : AppCompatActivity() {
                         if (bytes != null) {
                             val type = object: TypeToken<HashMap<String, List<HashMap<String, Any>>>>(){}.type
                             val data: HashMap<String, List<HashMap<String, Any>>> = Gson().fromJson(String(bytes), type) as HashMap<String, List<HashMap<String, Any>>>
-                            val tableData: List<HashMap<String, Any>> = data.get("table_layout")!!
-                            println("tableData: $tableData")
+                            val tableData: List<HashMap<String, Any>> = data["table_layout"]!!
                             for ((rank: Int, member: HashMap<String, Any>) in (tableData).withIndex()) {
                                 val titles = tableLayout!!.findViewById<TableRow>(R.id.gp_titles)
                                 val row = TableRow(ctx)
@@ -165,8 +167,8 @@ class GroupPageActivity : AppCompatActivity() {
                                 statusTV.gravity = CENTER
 
                                 rankTV.text = (rank + 1).toString()
-                                usernameTV.text = member.get("username") as String
-                                val points: Double = member.get("points") as Double
+                                usernameTV.text = member["username"] as String
+                                val points: Double = member["points"] as Double
                                 pointsTV.text = points.toInt().toString()
                                 if (member.containsKey("is_admin")) {
                                     statusTV.text = "Admin"
@@ -175,7 +177,7 @@ class GroupPageActivity : AppCompatActivity() {
                                     statusTV.text = "Member"
                                 }
 
-                                if (member.get("username") as String == userData.get("username")) {
+                                if (member["username"] as String == userData["username"]) {
                                     rankTV.setTextColor(ContextCompat.getColor(ctx, R.color.colorLBHighlight))
                                     usernameTV.setTextColor(ContextCompat.getColor(ctx, R.color.colorLBHighlight))
                                     pointsTV.setTextColor(ContextCompat.getColor(ctx, R.color.colorLBHighlight))

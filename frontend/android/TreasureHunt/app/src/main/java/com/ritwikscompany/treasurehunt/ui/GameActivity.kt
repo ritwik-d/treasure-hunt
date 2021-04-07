@@ -55,6 +55,8 @@ class GameActivity : AppCompatActivity() {
         challengeName = intent.getStringExtra("challengeName") as String
         userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
 
+        title = challengeName
+
         val bodyJson = Gson().toJson(hashMapOf(
             "user_id" to userData.get("user_id"),
             "pw" to userData.get("password"),

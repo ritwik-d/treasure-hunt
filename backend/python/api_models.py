@@ -113,6 +113,7 @@ class JoinGroup(BaseModel):
 
 
 class LeaveGroup(BaseModel):
+    new_admin: Optional[str] = None
     group_name: str
     pw: str
     user_id: int
