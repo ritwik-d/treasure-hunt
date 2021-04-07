@@ -1,20 +1,27 @@
 package com.ritwikscompany.treasurehunt.ui
 
 import android.app.AlertDialog
-import android.content.DialogInterface
+import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity.CENTER
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.kittinunf.fuel.Fuel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.ritwikscompany.treasurehunt.R
+import com.ritwikscompany.treasurehunt.utils.GroupAdminRecyclerView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -81,7 +88,7 @@ class GroupPageActivity : AppCompatActivity() {
     }
 
 
-    private fun leaveGroup() {
+    private fun leaveGroup(newAdmin: String? = null) {
         val builder: AlertDialog.Builder = AlertDialog.Builder(ctx)
 
         builder.setTitle("Are you sure you want to leave $groupName?")
@@ -90,7 +97,8 @@ class GroupPageActivity : AppCompatActivity() {
                 hashMapOf(
                     "user_id" to userData.get("user_id"),
                     "pw" to userData.get("password"),
-                    "group_name" to groupName
+                    "group_name" to groupName,
+                    "new_admin" to newAdmin
                 )
             )
             CoroutineScope(Dispatchers.IO).launch {
@@ -109,11 +117,7 @@ class GroupPageActivity : AppCompatActivity() {
                                 startActivity(intent)
                             }
                             404 -> {
-                                Toast.makeText(
-                                    ctx,
-                                    "ERROR",
-                                    Toast.LENGTH_LONG
-                                ).show()
+                                adminLeaveFinal()
                             }
                         }
                     }
@@ -122,6 +126,111 @@ class GroupPageActivity : AppCompatActivity() {
         }
         builder.setNegativeButton("No") { _, _ -> }
         builder.show()
+    }
+
+
+    private fun adminLeaveFinal() {
+        val bodyJson = Gson().toJson(hashMapOf(
+            "user_id" to userData["user_id"] as Int,
+            "pw" to userData["password"] as String,
+            "group_name" to groupName
+        ))
+        CoroutineScope(Dispatchers.IO).launch {
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_group_row")
+                .body(bodyJson)
+                .header("Content-Type" to "application/json")
+                .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    val status = response.statusCode
+                    if (status == 200) {
+                        val (bytes, _) = result
+                        if (bytes != null) {
+                            val type = object: TypeToken<HashMap<String, Any>>(){}.type
+                            val groupData = Gson().fromJson(String(bytes), type) as HashMap<String, Any>
+                            val groupId = (groupData["group_id"] as Double).toInt()
+
+                            adminLeave(groupId)
+                        }
+
+                        else {
+                            Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
+                        }
+                    }
+
+                    else if (status == 404) {
+                        Toast.makeText(ctx, "ERROR", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    }
+
+
+    private fun adminLeave(groupId: Int) {
+        val bodyJson = Gson().toJson(hashMapOf<String, Any>(
+            "user_id" to userData["user_id"] as Int,
+            "pw" to userData["password"] as String,
+            "group_id" to groupId
+        ))
+        CoroutineScope(Dispatchers.IO).launch {
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_group_members")
+                .body(bodyJson)
+                .header("Content-Type" to "application/json")
+                .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    val status = response.statusCode
+                    if (status == 200) {
+                        val (bytes, _) = result
+                        if (bytes != null) {
+                            val type = object: TypeToken<ArrayList<String>>(){}.type
+                            val members = Gson().fromJson(String(bytes), type) as ArrayList<String>
+                            members.remove(userData["username"])
+
+                            val alertView = layoutInflater.inflate(R.layout.dialog_new_admin, null)
+                            val radioGroup = alertView.findViewById<RadioGroup>(R.id.dna_rgroup)
+
+                            for (member in members) {
+                                val radioButton = RadioButton(ctx)
+                                radioButton.text = member
+                                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                                    radioButton.id = View.generateViewId()
+                                } else {
+                                    radioButton.id = members.indexOf(member) + 999
+                                }
+                                radioButton.setTextColor(Color.BLACK)
+
+                                radioGroup.addView(radioButton)
+                            }
+
+                            AlertDialog.Builder(ctx)
+                                .setTitle("Assign a New Admin")
+                                .setMessage("For the admin of a group to leave a group, they need to assign a new admin.")
+                                .setView(alertView)
+                                .setPositiveButton("Assign") { _, _ ->
+                                    val newAdmin = radioGroup.findViewById<RadioButton>(radioGroup.checkedRadioButtonId).text.toString()
+                                    leaveGroup(newAdmin)
+                                }
+                                .setPositiveButton(getString(R.string.cancel)) { builder, _ ->
+                                    builder.cancel()
+                                }
+                                .show()
+                        }
+
+                        else {
+                            Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
+                        }
+                    }
+
+                    else if (status == 400) {
+                        Toast.makeText(ctx, "ERROR", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
     }
 
 
