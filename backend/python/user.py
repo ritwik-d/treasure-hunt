@@ -193,6 +193,7 @@ class User:
         db = DB()
         db.connect()
         data = db.select('select * from challenges where name = %s', params=(name,), dict_cursor=True)[0]
+        data['creator_name'] = db.select('select username from users where user_id = %s', params=(data['creator_id'],))[0][0]
         return {'body': data, 'status': 200}
 
 

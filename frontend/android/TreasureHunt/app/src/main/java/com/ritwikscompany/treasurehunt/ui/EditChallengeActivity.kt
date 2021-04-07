@@ -49,7 +49,6 @@ class EditChallengeActivity : AppCompatActivity() {
 
         puzzleET.setText(challengeData.get("puzzle") as String)
         nameTV.text = challengeData.get("name") as String
-        actionBar!!.title = challengeData["name"] as String
 
         val diffArray = ctx.resources.getStringArray(R.array.difficulties).toMutableList()
 
