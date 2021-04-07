@@ -159,7 +159,7 @@ class GroupsActivity: AppCompatActivity() {
                                     if (radioGroup.childCount == 0) {
                                         val builder2 = AlertDialog.Builder(ctx)
                                         builder2.setTitle("Invitation Creation Failed")
-                                        builder2.setMessage("You are not part of any groups, therefore you cannot invite anyone to a group.")
+                                        builder2.setMessage("You are not privileged to invite anyone to a group.")
                                         builder2.setPositiveButton("OK") { builder3, _ ->
                                             builder3.cancel()
                                         }
