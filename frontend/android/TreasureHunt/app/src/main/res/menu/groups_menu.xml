@@ -7,7 +7,6 @@
         android:title="@string/invite"
         android:icon="@drawable/ic_baseline_add_box_24"
         android:visible="false"
-        android:iconTint="@color/black"
         app:showAsAction="ifRoom" />
 
 </menu>
