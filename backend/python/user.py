@@ -340,14 +340,17 @@ class User:
 
 
     @authenticate
-    def leave_group(self, group_name: str):
+    def leave_group(self, group_name: str, new_admin):
         db = DB()
         db.connect()
         group_id = get_group_id(group_name)
         info = db.select('select members, creator_id from user_groups where group_id = %s', params=(group_id,), dict_cursor=True)[0]
         creator_id = info.get('creator_id')
-        if self.user_id == creator_id:
+        if (self.user_id == creator_id) and (new_admin is None):
             return 404
+        elif (self.user_id == creator_id) and (not new_admin is None):
+            new_admin_id = get_user_id(new_admin, 'username')
+            db.update('user_groups', {'creator_id': new_admin_id}, {'group_id': group_id})
         members = json.loads(info.get('members'))
         members.remove(self.user_id)
         row_id = db.update('user_groups', {'members': json.dumps(members)}, {'group_id': group_id})
