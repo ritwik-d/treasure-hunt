@@ -29,7 +29,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 
-class GroupsActivity : AppCompatActivity() {
+class GroupsActivity: AppCompatActivity() {
 
     private val ctx = this@GroupsActivity
     private var userData = HashMap<String, Any>()
