@@ -357,7 +357,7 @@ class User:
 
         if row_id is None:
             return 404
-        row_id = db.execute_sql(f'delete from challenges where creator_id = {self.user_id} and JSON_CONTAINS(user_groups, {str(group_id)})')
+        row_id = db.execute_sql(f"delete from challenges where creator_id = {self.user_id} and JSON_CONTAINS(user_groups, '{str(group_id)}')")
         if row_id is None:
             return 404
 
