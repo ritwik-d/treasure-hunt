@@ -24,6 +24,9 @@ class AddGroupsRVA(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.checkBox.text = this.groups[position]
+        if (holder.checkBox.text.toString() in checkedGroups) {
+            holder.checkBox.isChecked = true
+        }
         holder.checkBox.setOnClickListener {
             if (holder.checkBox.isChecked) {
                 this.checkedGroups.add(this.groups[position])

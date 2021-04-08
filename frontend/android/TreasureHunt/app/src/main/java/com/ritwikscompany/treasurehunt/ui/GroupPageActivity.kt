@@ -88,11 +88,8 @@ class GroupPageActivity : AppCompatActivity() {
     }
 
 
-    private fun leaveGroup(newAdmin: String? = null) {
-        val builder: AlertDialog.Builder = AlertDialog.Builder(ctx)
-
-        builder.setTitle("Are you sure you want to leave $groupName?")
-        builder.setPositiveButton("Yes") { _, _ ->
+    private fun leaveGroup(newAdmin: String? = null, ask: Boolean = true) {
+        fun leaveFR() {
             val bodyJson = Gson().toJson(
                 hashMapOf(
                     "user_id" to userData.get("user_id"),
@@ -102,7 +99,7 @@ class GroupPageActivity : AppCompatActivity() {
                 )
             )
             CoroutineScope(Dispatchers.IO).launch {
-                val (request, response, result) = Fuel.post("${getString(R.string.host)}/leave_group")
+                val (_, response, _) = Fuel.post("${getString(R.string.host)}/leave_group")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()
@@ -124,8 +121,19 @@ class GroupPageActivity : AppCompatActivity() {
                 }
             }
         }
-        builder.setNegativeButton("No") { _, _ -> }
-        builder.show()
+
+        if (ask) {
+            val builder: AlertDialog.Builder = AlertDialog.Builder(ctx)
+            builder.setTitle("Are you sure you want to leave $groupName?")
+            builder.setPositiveButton("Yes") { _, _ ->
+                leaveFR()
+            }
+            builder.setNegativeButton("No") { _, _ -> }
+            builder.show()
+        }
+        else {
+            leaveFR()
+        }
     }
 
 
@@ -208,13 +216,13 @@ class GroupPageActivity : AppCompatActivity() {
 
                             AlertDialog.Builder(ctx)
                                 .setTitle("Assign a New Admin")
-                                .setMessage("For the admin of a group to leave a group, they need to assign a new admin.")
+                                .setMessage("For the admin of a group to leave a group, they need to assign a new admin.\n\n")
                                 .setView(alertView)
-                                .setPositiveButton("Assign") { _, _ ->
+                                .setPositiveButton("Assign & Leave") { _, _ ->
                                     val newAdmin = radioGroup.findViewById<RadioButton>(radioGroup.checkedRadioButtonId).text.toString()
-                                    leaveGroup(newAdmin)
+                                    leaveGroup(newAdmin, false)
                                 }
-                                .setPositiveButton(getString(R.string.cancel)) { builder, _ ->
+                                .setNegativeButton(getString(R.string.cancel)) { builder, _ ->
                                     builder.cancel()
                                 }
                                 .show()
