@@ -102,9 +102,9 @@ class EditChallengeActivity : AppCompatActivity() {
     private fun updateChallenge(latitude: Double, longitude: Double) {
         val bodyJson = Gson().toJson(
             hashMapOf(
-                "pw" to userData.get("password"),
-                "user_id" to userData.get("user_id"),
-                "challenge_id" to challengeData.get("challenge_id"),
+                "pw" to userData["password"],
+                "user_id" to userData["user_id"],
+                "challenge_id" to challengeData["challenge_id"],
                 "new_latitude" to latitude,
                 "new_longitude" to longitude,
                 "new_puzzle" to puzzleET.text.toString(),
