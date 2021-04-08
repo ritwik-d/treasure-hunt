@@ -47,8 +47,8 @@ class EditChallengeActivity : AppCompatActivity() {
         spinnerDiff = findViewById(R.id.ec_difficulty)
         spinnerGroups = findViewById(R.id.ec_groups)
 
-        puzzleET.setText(challengeData.get("puzzle") as String)
-        nameTV.text = challengeData.get("name") as String
+        puzzleET.setText(challengeData["puzzle"] as String)
+        nameTV.text = challengeData["name"] as String
 
         val diffArray = ctx.resources.getStringArray(R.array.difficulties).toMutableList()
 
@@ -60,8 +60,8 @@ class EditChallengeActivity : AppCompatActivity() {
         spinnerDiff.adapter = adapter
 
         val bodyJson = Gson().toJson(hashMapOf(
-            "user_id" to userData.get("user_id"),
-            "pw" to userData.get("password")
+            "user_id" to userData["user_id"],
+            "pw" to userData["password"]
         ))
         CoroutineScope(Dispatchers.IO).launch {
             val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_groups")
