@@ -64,7 +64,7 @@ class EditChallengeActivity : AppCompatActivity() {
             "pw" to userData["password"]
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_groups")
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/get_groups")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()
@@ -113,7 +113,7 @@ class EditChallengeActivity : AppCompatActivity() {
             )
         )
         CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, _) = Fuel.post("${getString(R.string.host)}/update_challenge")
+            val (_, response, _) = Fuel.post("${getString(R.string.host)}/api/update_challenge")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()

@@ -183,7 +183,7 @@ class HomeActivity : AppCompatActivity() {
                 )
         )
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/download_pfp")
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/download_pfp")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()

@@ -63,7 +63,7 @@ class GameActivity : AppCompatActivity() {
             "name" to challengeName
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_challenge_data")
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/get_challenge_data")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()
@@ -103,7 +103,7 @@ class GameActivity : AppCompatActivity() {
             "challenge_id" to challengeId
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/complete_challenge")
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/complete_challenge")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()

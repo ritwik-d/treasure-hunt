@@ -51,7 +51,7 @@ class MyChallengesActivity : AppCompatActivity() {
             "pw" to userData.get("password") as String
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, result) = Fuel.post("${getString(R.string.host)}/get_user_challenges")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_user_challenges")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()
@@ -142,7 +142,7 @@ class MyChallengesActivity : AppCompatActivity() {
                 "challenge_id" to challengeId
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, _) = Fuel.post("${getString(R.string.host)}/delete_challenge")
+            val (_, response, _) = Fuel.post("${getString(R.string.host)}/api/delete_challenge")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()

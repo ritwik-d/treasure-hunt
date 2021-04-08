@@ -125,7 +125,7 @@ class GroupsActivity: AppCompatActivity() {
                     "is_admin" to 1
                 ))
                 CoroutineScope(Dispatchers.IO).launch {
-                    val (_, response, result) = Fuel.post("${getString(R.string.host)}/get_groups")
+                    val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_groups")
                         .body(bodyJson)
                         .header("Content-Type" to "application/json")
                         .response()
@@ -208,7 +208,7 @@ class GroupsActivity: AppCompatActivity() {
             "to_username" to username
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, result) = Fuel.post("${getString(R.string.host)}/invite_user")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/invite_user")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
@@ -263,7 +263,7 @@ class GroupsActivity: AppCompatActivity() {
             "pw" to userData.get("password") as String
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_invitations")
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/get_invitations")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
@@ -306,7 +306,7 @@ class GroupsActivity: AppCompatActivity() {
             "invitation_id" to invitationId
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, _) = Fuel.post("${getString(R.string.host)}/${operation}_invitation")
+            val (_, response, _) = Fuel.post("${getString(R.string.host)}/api/${operation}_invitation")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
@@ -360,7 +360,7 @@ class GroupsActivity: AppCompatActivity() {
             "description" to groupDesc
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/create_group")
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/create_group")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
@@ -397,7 +397,7 @@ class GroupsActivity: AppCompatActivity() {
             "join_code" to joinCode
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/join_group")
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/join_group")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
@@ -433,7 +433,7 @@ class GroupsActivity: AppCompatActivity() {
             "pw" to userData.get("password")
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_groups")
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/get_groups")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
