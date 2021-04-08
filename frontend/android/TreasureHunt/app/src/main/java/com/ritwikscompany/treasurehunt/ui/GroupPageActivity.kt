@@ -218,7 +218,7 @@ class GroupPageActivity : AppCompatActivity() {
                                 .setTitle("Assign a New Admin")
                                 .setMessage("For the admin of a group to leave a group, they need to assign a new admin.\n\n")
                                 .setView(alertView)
-                                .setPositiveButton("Assign") { _, _ ->
+                                .setPositiveButton("Assign & Leave") { _, _ ->
                                     val newAdmin = radioGroup.findViewById<RadioButton>(radioGroup.checkedRadioButtonId).text.toString()
                                     leaveGroup(newAdmin, false)
                                 }

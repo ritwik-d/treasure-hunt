@@ -26,6 +26,7 @@ class MyChallengesActivity : AppCompatActivity() {
 
     private val ctx = this@MyChallengesActivity
     private lateinit var minusButton: FloatingActionButton
+    private lateinit var plusButton: FloatingActionButton
 
     private var userData = HashMap<String, Any>()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,10 +35,11 @@ class MyChallengesActivity : AppCompatActivity() {
 
         this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
         this.minusButton = findViewById(R.id.mc_del_challenge)
+        this.plusButton = findViewById(R.id.mc_create_challenge)
 
         initialize()
 
-        findViewById<FloatingActionButton>(R.id.mc_create_challenge).setOnClickListener {
+        plusButton.setOnClickListener {
             createChallengeOnClick()
         }
     }
@@ -49,7 +51,7 @@ class MyChallengesActivity : AppCompatActivity() {
             "pw" to userData.get("password") as String
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_user_challenges")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/get_user_challenges")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()
@@ -62,17 +64,22 @@ class MyChallengesActivity : AppCompatActivity() {
                         if (bytes != null) {
                             val type = object: TypeToken<MutableList<HashMap<String, Any>>>(){}.type
                             val userChallenges = Gson().fromJson(String(bytes), type) as MutableList<HashMap<String, Any>>
-                            if (userChallenges.size == 0) {
-                                findViewById<TextView>(R.id.mc_no_chal).visibility = View.VISIBLE
-                            }
-                            else {
-                                val challengeNames = ArrayList<String>()
-                                for (challenge in userChallenges) {
-                                    challengeNames.add(challenge.get("name") as String)
+                            when (userChallenges.size) {
+                                0 -> {
+                                    findViewById<TextView>(R.id.mc_no_chal).visibility = View.VISIBLE
                                 }
+                                10 -> {
+                                    plusButton.isEnabled = false
+                                    plusButton.contentDescription = "You have reached the limit for the number of challenges that you are allowed to creaet."
+                                }
+                                else -> {
+                                    val challengeNames = ArrayList<String>()
+                                    for (challenge in userChallenges) {
+                                        challengeNames.add(challenge.get("name") as String)
+                                    }
 
-                                val rview = findViewById<RecyclerView>(R.id.mc_rview)
-                                val adapter = MyChallengesRVA(challengeNames,
+                                    val rview = findViewById<RecyclerView>(R.id.mc_rview)
+                                    val adapter = MyChallengesRVA(challengeNames,
                                         { challengeName ->
                                             val builder = AlertDialog.Builder(ctx)
                                             builder.setTitle("Are you sure you want to delete $challengeName?")
@@ -89,26 +96,27 @@ class MyChallengesActivity : AppCompatActivity() {
                                             val challengeData = userChallenges[challengeNames.indexOf(challengeName)]
                                             editChallenge(challengeData)
                                         }, minusButton)
-                                rview.layoutManager = LinearLayoutManager(ctx)
-                                rview.adapter = adapter
+                                    rview.layoutManager = LinearLayoutManager(ctx)
+                                    rview.adapter = adapter
 
-                                minusButton.setOnClickListener {
-                                    val builder = AlertDialog.Builder(ctx)
-                                    builder.setTitle("Are you sure you want to do this?")
-                                    builder.setPositiveButton("Yes") { _, _ ->
-                                        for (challengeName in adapter.checkedChallenges) {
-                                            val challengeId = (userChallenges[challengeNames.indexOf(challengeName)]["challenge_id"] as Double).toInt()
-                                            deleteChallenge(challengeId)
+                                    minusButton.setOnClickListener {
+                                        val builder = AlertDialog.Builder(ctx)
+                                        builder.setTitle("Are you sure you want to do this?")
+                                        builder.setPositiveButton("Yes") { _, _ ->
+                                            for (challengeName in adapter.checkedChallenges) {
+                                                val challengeId = (userChallenges[challengeNames.indexOf(challengeName)]["challenge_id"] as Double).toInt()
+                                                deleteChallenge(challengeId)
+                                            }
+                                            adapter.checkedChallenges = ArrayList()
+                                            val animation = ObjectAnimator.ofFloat(minusButton, "translationY", 175f)
+                                            animation.duration = 1000
+                                            animation.start()
+                                            minusButton.visibility = View.INVISIBLE
+                                            initialize()
                                         }
-                                        adapter.checkedChallenges = ArrayList()
-                                        val animation = ObjectAnimator.ofFloat(minusButton, "translationY", 175f)
-                                        animation.duration = 1000
-                                        animation.start()
-                                        minusButton.visibility = View.INVISIBLE
-                                        initialize()
+                                        builder.setNegativeButton("No") {_, _ -> }
+                                        builder.show()
                                     }
-                                    builder.setNegativeButton("No") {_, _ -> }
-                                    builder.show()
                                 }
                             }
                         }
@@ -134,7 +142,7 @@ class MyChallengesActivity : AppCompatActivity() {
                 "challenge_id" to challengeId
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/delete_challenge")
+            val (_, response, _) = Fuel.post("${getString(R.string.host)}/delete_challenge")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()

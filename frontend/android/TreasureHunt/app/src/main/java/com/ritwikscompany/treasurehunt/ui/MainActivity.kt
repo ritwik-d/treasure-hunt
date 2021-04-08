@@ -49,10 +49,7 @@ class MainActivity : AppCompatActivity() {
 
         if (email != null) {
             val pw = sharedPref.getString("pw", null)!!
-            println("email: $email\npassword: $pw")
             httpCall(email, pw)
-        } else {
-            println("never logged in")
         }
     }
 
