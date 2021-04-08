@@ -1,13 +1,11 @@
 package com.ritwikscompany.treasurehunt.ui
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.Gravity
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -107,7 +105,7 @@ class CreateChallengeActivity : AppCompatActivity() {
             "pw" to userData["password"]
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, result) = Fuel.post("${getString(R.string.host)}/get_groups")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_groups")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
@@ -172,7 +170,7 @@ class CreateChallengeActivity : AppCompatActivity() {
             "puzzle" to puzzle
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, _) = Fuel.post("${getString(R.string.host)}/create_challenge")
+            val (_, response, _) = Fuel.post("${getString(R.string.host)}/api/create_challenge")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()

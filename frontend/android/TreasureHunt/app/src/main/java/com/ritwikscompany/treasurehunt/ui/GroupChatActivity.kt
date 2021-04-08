@@ -40,7 +40,7 @@ class GroupChatActivity : AppCompatActivity() {
             "group_name" to groupName
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, result) = Fuel.post("${getString(R.string.host)}/get_group_row")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_group_row")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
@@ -99,7 +99,7 @@ class GroupChatActivity : AppCompatActivity() {
             "group_id" to groupId
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_messages")
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/get_messages")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
@@ -156,7 +156,7 @@ class GroupChatActivity : AppCompatActivity() {
             "message" to message
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/send_message")
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/send_message")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
