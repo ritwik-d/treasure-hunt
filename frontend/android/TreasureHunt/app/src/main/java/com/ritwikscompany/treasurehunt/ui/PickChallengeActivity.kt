@@ -36,7 +36,7 @@ class PickChallengeActivity : AppCompatActivity() {
         ))
         println(bodyJson)
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_challenges")
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/get_challenges")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()

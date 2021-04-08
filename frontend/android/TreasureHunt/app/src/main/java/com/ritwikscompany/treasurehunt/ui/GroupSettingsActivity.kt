@@ -49,7 +49,7 @@ class GroupSettingsActivity : AppCompatActivity() {
             "group_name" to groupName
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_group_settings")
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/get_group_settings")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()
@@ -130,7 +130,7 @@ class GroupSettingsActivity : AppCompatActivity() {
             )
         )
         CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, _) = Fuel.post("${getString(R.string.host)}/update_group_settings")
+            val (_, response, _) = Fuel.post("${getString(R.string.host)}/api/update_group_settings")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()

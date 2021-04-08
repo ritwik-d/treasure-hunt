@@ -59,7 +59,7 @@ class LoginActivity : AppCompatActivity() {
                 "email" to emailET.text.toString(),
             ))
             CoroutineScope(Dispatchers.IO).launch {
-                val (request, response, result) = Fuel.post("${getString(R.string.host)}/send_email_reset_password")
+                val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/send_email_reset_password")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()
@@ -96,7 +96,7 @@ class LoginActivity : AppCompatActivity() {
                                                 )
                                             )
                                             CoroutineScope(Dispatchers.IO).launch {
-                                                val (_, response3, _) = Fuel.post("${getString(R.string.host)}/reset_password")
+                                                val (_, response3, _) = Fuel.post("${getString(R.string.host)}/api/reset_password")
                                                     .body(bodyJson3)
                                                     .header("Content-Type" to "application/json")
                                                     .response()
@@ -146,7 +146,7 @@ class LoginActivity : AppCompatActivity() {
             "pw" to pw
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/login")
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/login")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()

@@ -99,7 +99,7 @@ class GroupPageActivity : AppCompatActivity() {
                 )
             )
             CoroutineScope(Dispatchers.IO).launch {
-                val (_, response, _) = Fuel.post("${getString(R.string.host)}/leave_group")
+                val (_, response, _) = Fuel.post("${getString(R.string.host)}/api/leave_group")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()
@@ -144,7 +144,7 @@ class GroupPageActivity : AppCompatActivity() {
             "group_name" to groupName
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_group_row")
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/get_group_row")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
@@ -183,7 +183,7 @@ class GroupPageActivity : AppCompatActivity() {
             "group_id" to groupId
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_group_members")
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/get_group_members")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
@@ -250,7 +250,7 @@ class GroupPageActivity : AppCompatActivity() {
             "name" to groupName
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_group_data")
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/get_group_data")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()

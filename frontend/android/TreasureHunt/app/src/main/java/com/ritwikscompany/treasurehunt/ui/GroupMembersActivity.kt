@@ -75,7 +75,7 @@ class GroupMembersActivity : AppCompatActivity() {
             "group_name" to groupName
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_group_row")
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/get_group_row")
                 .body(bodyJson1)
                 .header("Content-Type" to "application/json")
                 .response()
@@ -94,7 +94,7 @@ class GroupMembersActivity : AppCompatActivity() {
                                 "group_id" to groupData["group_id"].toString().toDouble().toInt()
                             ))
                             CoroutineScope(Dispatchers.IO).launch {
-                                val (request2, response2, result2) = Fuel.post("${getString(R.string.host)}/get_group_members")
+                                val (request2, response2, result2) = Fuel.post("${getString(R.string.host)}/api/get_group_members")
                                     .body(bodyJson2)
                                     .header("Content-Type" to "application/json")
                                     .response()
@@ -160,7 +160,7 @@ class GroupMembersActivity : AppCompatActivity() {
             )
         )
         CoroutineScope(Dispatchers.IO).launch {
-            val (_, response3, _) = Fuel.post("${getString(R.string.host)}/remove_group_member")
+            val (_, response3, _) = Fuel.post("${getString(R.string.host)}/api/remove_group_member")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
