@@ -130,7 +130,7 @@ class CreateChallengeActivity : AppCompatActivity() {
 
                                 val builder = AlertDialog.Builder(ctx)
                                 builder.setTitle("Add Groups")
-                                builder.setMessage("NOTE: If you do not specify any group(s), the challenge will be public\n\n")
+                                builder.setMessage("NOTE: If you do not specify any group(s), the challenge will be public.\n\n")
                                 builder.setView(rv)
                                 builder.setPositiveButton("Finish") { _, _ ->
                                     val addedGroups = (rv.adapter as AddGroupsRVA).checkedGroups
