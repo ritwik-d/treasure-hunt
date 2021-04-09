@@ -50,7 +50,7 @@ class EditChallengeActivity : AppCompatActivity() {
         puzzleET.setText(challengeData["puzzle"] as String)
         nameTV.text = challengeData["name"] as String
 
-        val diffArray = ctx.resources.getStringArray(R.array.difficulties).toMutableList()
+        val diffArray = ctx.resources.getStringArray(R.array.difficulties)
 
         val adapter = ArrayAdapter(
             ctx,
