@@ -87,4 +87,5 @@
     <!--   survey -->
 
     <string name="surveyLink">https://docs.google.com/forms/d/e/1FAIpQLSecPydSBK134zt2Q2tXNKCxIAVKZwvYk37UH-8-F7GLqHYENw/viewform</string>
+    <string name="treasureChestCD">Treasure Chest</string>
 </resources>
