@@ -196,7 +196,7 @@ class User:
         data['creator_name'] = db.select('select username from users where user_id = %s', params=(data['creator_id'],))[0][0]
         ugn = []
         for group_id in json.loads(data['user_groups']):
-            ugn.append(db.select('select name from user_groups where group_id = %s', params=(group_id))[0][0])
+            ugn.append(db.select('select name from user_groups where group_id = %s', params=(group_id,))[0][0])
         data['user_groups_names'] = ugn
         return {'body': data, 'status': 200}
 
