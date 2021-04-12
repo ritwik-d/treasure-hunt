@@ -47,8 +47,8 @@ class MyChallengesActivity : AppCompatActivity() {
 
     private fun initialize() {
         val bodyJson = Gson().toJson(hashMapOf<String, Any>(
-            "user_id" to userData.get("user_id") as Int,
-            "pw" to userData.get("password") as String
+            "user_id" to userData["user_id"] as Int,
+            "pw" to userData["password"] as String
         ))
         CoroutineScope(Dispatchers.IO).launch {
             val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_user_challenges")
@@ -70,7 +70,7 @@ class MyChallengesActivity : AppCompatActivity() {
                                 }
                                 10 -> {
                                     plusButton.isEnabled = false
-                                    plusButton.contentDescription = "You have reached the limit for the number of challenges that you are allowed to creaet."
+                                    plusButton.contentDescription = "You have reached the limit for the number of challenges that you are allowed to create."
                                 }
                                 else -> {
                                     val challengeNames = ArrayList<String>()

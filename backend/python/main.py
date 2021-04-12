@@ -196,7 +196,7 @@ async def get_messages(json: GetMessages, response: Response):
 @app.post(paths.get('update_challenge'))
 async def update_challenge(json: UpdateChallenge, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
-    response.status_code = user.update_challenge(json.challenge_id, json.new_latitude, json.new_longitude, json.new_puzzle, json.new_difficulty, json.new_group_name)
+    response.status_code = user.update_challenge(json.challenge_id, json.new_latitude, json.new_longitude, json.new_puzzle, json.new_difficulty, json.new_groups)
 
 
 @app.post(paths.get('update_group_settings'))
