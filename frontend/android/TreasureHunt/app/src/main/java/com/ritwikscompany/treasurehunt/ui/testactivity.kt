@@ -1,12 +1,14 @@
 package com.ritwikscompany.treasurehunt.ui
 
-import  android.content.Intent
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.*
 import com.github.kittinunf.fuel.Fuel
+
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -21,10 +23,10 @@ import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.collections.HashMap
 
-class EditChallengeActivity : AppCompatActivity() {
+class testactivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
-    private val ctx = this@EditChallengeActivity
+    private val ctx = this@testactivity
     private lateinit var userData: HashMap<String, Any>
     private lateinit var challengeData: HashMap<String, Any>
     private lateinit var spinnerDiff: Spinner
@@ -34,8 +36,11 @@ class EditChallengeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edit_challenge)
-
+        setContentView(R.layout.activity_testactivity)
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        val mapFragment = supportFragmentManager
+            .findFragmentById(R.id.ec_map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
         this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
         this.challengeData = intent.getSerializableExtra("challengeData") as HashMap<String, Any>
 
@@ -44,11 +49,7 @@ class EditChallengeActivity : AppCompatActivity() {
         findViewById<FloatingActionButton>(R.id.ec_edit_challenge).setOnClickListener {
             updateChallenge(0.0, 0.0)
         }
-//        val mapFragment = supportFragmentManager
-//            .findFragmentById(R.id.ec_map) as SupportMapFragment
-//        mapFragment.getMapAsync(this)
     }
-
 
     private fun autoFill() {
         puzzleET = findViewById(R.id.ec_puzzle)
@@ -56,8 +57,8 @@ class EditChallengeActivity : AppCompatActivity() {
         spinnerDiff = findViewById(R.id.ec_difficulty)
         spinnerGroups = findViewById(R.id.ec_groups)
 
-        puzzleET.setText(challengeData["puzzle"] as String)
-        nameTV.text = challengeData["name"] as String
+        puzzleET.setText(challengeData.get("puzzle") as String)
+        nameTV.text = challengeData.get("name") as String
 
         val diffArray = ctx.resources.getStringArray(R.array.difficulties).toMutableList()
 
@@ -69,14 +70,14 @@ class EditChallengeActivity : AppCompatActivity() {
         spinnerDiff.adapter = adapter
 
         val bodyJson = Gson().toJson(hashMapOf(
-            "user_id" to userData["user_id"],
-            "pw" to userData["password"]
+            "user_id" to userData.get("user_id"),
+            "pw" to userData.get("password")
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/get_groups")
-                    .body(bodyJson)
-                    .header("Content-Type" to "application/json")
-                    .response()
+            val (request, response, result) = Fuel.post("${getString(R.string.host)}/get_groups")
+                .body(bodyJson)
+                .header("Content-Type" to "application/json")
+                .response()
 
             withContext(Dispatchers.Main) {
                 runOnUiThread {
@@ -111,9 +112,9 @@ class EditChallengeActivity : AppCompatActivity() {
     private fun updateChallenge(latitude: Double, longitude: Double) {
         val bodyJson = Gson().toJson(
             hashMapOf(
-                "pw" to userData["password"],
-                "user_id" to userData["user_id"],
-                "challenge_id" to challengeData["challenge_id"],
+                "pw" to userData.get("password"),
+                "user_id" to userData.get("user_id"),
+                "challenge_id" to challengeData.get("challenge_id"),
                 "new_latitude" to latitude,
                 "new_longitude" to longitude,
                 "new_puzzle" to puzzleET.text.toString(),
@@ -122,10 +123,10 @@ class EditChallengeActivity : AppCompatActivity() {
             )
         )
         CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, _) = Fuel.post("${getString(R.string.host)}/api/update_challenge")
-                    .body(bodyJson)
-                    .header("Content-Type" to "application/json")
-                    .response()
+            val (_, response, _) = Fuel.post("${getString(R.string.host)}/update_challenge")
+                .body(bodyJson)
+                .header("Content-Type" to "application/json")
+                .response()
 
             withContext(Dispatchers.Main) {
                 runOnUiThread {
@@ -142,24 +143,15 @@ class EditChallengeActivity : AppCompatActivity() {
             }
         }
     }
-//    override fun onMapReady(googleMap: GoogleMap) {
-//        mMap = googleMap
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
 //
-//            val latitude = challengeData.get("latitude.")
-//
-//
-//        val latlng = latitude
-//            googleMap.addMarker(
-//                latlng?.let {
-//                    MarkerOptions()
-//                        .position(it)
-//                        .title("Marker somewhere")
-//                })
-//            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 17f))
-//            googleMap.uiSettings.isZoomControlsEnabled = true
-//
-//
-//
-//
-//        }
+//        val latitude = challengeData.get("latitude")
+//        val longitude = challengeData.get("longitude")
+        val latitude = 57.9
+        val longitude = 76.0
+        val challenge = LatLng(latitude as Double, longitude as Double)
+        mMap.addMarker(MarkerOptions().position(challenge).title("Marker at your challenge"))
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(challenge))
     }
+}
