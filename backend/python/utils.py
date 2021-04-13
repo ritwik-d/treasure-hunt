@@ -6,6 +6,7 @@ import hashlib
 import json
 import mimetypes
 import smtplib
+import ssl
 import random
 import string
 import redis
@@ -89,7 +90,7 @@ def send_email(file_name: str, receiver_email: str, subject: str, sender_email=N
     try:
         with smtplib.SMTP(smtp_server, port) as server:
             server.ehlo()
-            server.starttls()
+            server.starttls(ssl.create_default_context())
             server.ehlo()
             server.login(sender_email, password)
             server.sendmail(sender_email, receiver_email, msg.as_string())
