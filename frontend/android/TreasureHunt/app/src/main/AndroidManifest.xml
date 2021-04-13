@@ -20,11 +20,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TreasureHunt" >
-=======
-        android:theme="@style/Theme.TreasureHunt"
-        android:usesCleartextTraffic="true">
-
-        <!--
+<!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
              Note that the API key is linked to the encryption key used to sign the APK.
@@ -38,8 +34,7 @@
 
         <activity
             android:name=".ui.testactivity"
-            android:label="@string/title_activity_testactivity"></activity>
->>>>>>> Stashed changes
+            android:label="@string/title_activity_testactivity" />
         <activity android:name=".ui.GroupChatActivity" />
         <activity android:name=".ui.GroupSettingsActivity" />
         <activity android:name=".ui.GroupMembersActivity" />
