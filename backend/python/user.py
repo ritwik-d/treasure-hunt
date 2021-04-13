@@ -196,8 +196,6 @@ class User:
         data['creator_name'] = db.select('select username from users where user_id = %s', params=(data['creator_id'],))[0][0]
         ugn = []
         for group_id in json.loads(data['user_groups']):
-            print(f'group_id: {group_id}')
-            print(f'group_id type: {type(group_id)}')
             ugn.append(db.select('select name from user_groups where group_id = %s', params=(group_id,))[0][0])
         data['user_groups_names'] = ugn
         return {'body': data, 'status': 200}
@@ -454,7 +452,12 @@ class User:
     def update_challenge(self, challenge_id: int, new_latitude: float, new_longitude: float, new_puzzle: str, new_difficulty: str, new_groups: list):
         db = DB()
         db.connect()
-        row_id = db.update('challenges', {'latitude': new_latitude, 'longitude': new_longitude, 'difficulty': new_difficulty, 'user_groups': json.dumps(new_groups), 'puzzle': new_puzzle}, {'challenge_id': challenge_id})
+
+        new_groups2 = []
+        for group_name in new_groups:
+            new_groups2.append(get_group_id(group_name))
+
+        row_id = db.update('challenges', {'latitude': new_latitude, 'longitude': new_longitude, 'difficulty': new_difficulty, 'user_groups': json.dumps(new_groups2), 'puzzle': new_puzzle}, {'challenge_id': challenge_id})
         if row_id is None:
             return 400
         return 200
