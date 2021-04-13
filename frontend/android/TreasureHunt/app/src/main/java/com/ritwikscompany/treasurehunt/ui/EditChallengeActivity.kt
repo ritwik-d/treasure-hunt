@@ -122,7 +122,6 @@ class EditChallengeActivity : AppCompatActivity() {
                         if (bytes != null) {
                             val type = object : TypeToken<HashMap<String, Any>>(){}.type
                             val checkedGroups: ArrayList<String> = (Gson().fromJson(String(bytes), type) as HashMap<String, Any>)["user_groups_names"] as ArrayList<String>
-                            println("checkedGroups: $checkedGroups")
                             val rv = RecyclerView(ctx)
                             rv.layoutManager = LinearLayoutManager(ctx)
                             rv.adapter = AddGroupsRVA(groups, checkedGroups)
