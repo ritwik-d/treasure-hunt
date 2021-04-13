@@ -29,7 +29,7 @@ api:
     update_challenge: /api/update_challenge
     update_group_settings: /api/update_group_settings
     upload_pfp: /api/upload_pfp
-    verify_account: /api/verify_account/{email_verify_token}
+    verify_account: /verify_account/{email_verify_token}
 firebase_storage:
   db_backups: database_backups/
   profile_pictures: profile_pictures/

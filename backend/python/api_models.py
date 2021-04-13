@@ -168,7 +168,7 @@ class UpdateChallenge(BaseModel):
     new_longitude: float
     new_puzzle: str
     new_difficulty: str
-    new_group_name: str
+    new_groups: list
 
 
 class UpdateGroupSettings(BaseModel):
