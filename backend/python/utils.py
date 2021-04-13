@@ -52,9 +52,11 @@ def verify_jwt(hash: str, json: dict):
 
 
 def get_rand_string(length: int):
-    chars = [i for i in string.printable[0:62]]
-    random.shuffle(chars)
-    return ''.join(chars[0: length])
+    chars = string.printable[0:62]
+    final = ''
+    for _ in range(length):
+        final += chars[random.randint(0, 61)]
+    return final
 
 
 def hash_password(email: str, password: str):
@@ -97,7 +99,3 @@ def send_email(file_name: str, receiver_email: str, subject: str, sender_email=N
             return True
     except smtplib.SMTPRecipientsRefused:
         return False
-
-
-fail = {'status': 'failed'}
-suc = {'status': 'success'}

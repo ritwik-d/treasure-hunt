@@ -3,6 +3,8 @@ package com.ritwikscompany.treasurehunt.ui
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -20,6 +22,7 @@ import com.google.gson.reflect.TypeToken
 import com.ritwikscompany.treasurehunt.R
 import com.ritwikscompany.treasurehunt.utils.AddGroupsRVA
 import com.ritwikscompany.treasurehunt.utils.InvitationsRVA
+import com.ritwikscompany.treasurehunt.utils.Utils.Utils.getCheckMark
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -51,6 +54,27 @@ class GroupsActivity: AppCompatActivity() {
         val cgName = findViewById<EditText>(R.id.cg_name)
         val cgCreate = findViewById<Button>(R.id.cg_create)
         val invRview = findViewById<RecyclerView>(R.id.inv_rview)
+
+        cgName.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
+
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                val groupName = p0.toString()
+
+                if (groupName.length < 3) {
+                    cgName.error = "Group name must be greater than or equal to 3 characters"
+                    cgName.requestFocus()
+                }
+                else {
+                    cgName.setError("Good", getCheckMark(ctx))
+                    cgName.requestFocus()
+                }
+            }
+
+
+            override fun afterTextChanged(p0: Editable?) { }
+        })
 
         initializeListView()
 

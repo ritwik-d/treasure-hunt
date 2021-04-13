@@ -28,7 +28,6 @@ class EditChallengeActivity : AppCompatActivity() {
     private lateinit var userData: HashMap<String, Any>
     private lateinit var challengeData: HashMap<String, Any>
     private lateinit var spinnerDiff: Spinner
-    private lateinit var spinnerGroups: Spinner
     private lateinit var puzzleET: EditText
     private lateinit var nameTV: TextView
 
@@ -54,7 +53,6 @@ class EditChallengeActivity : AppCompatActivity() {
         puzzleET = findViewById(R.id.ec_puzzle)
         nameTV = findViewById(R.id.ec_name)
         spinnerDiff = findViewById(R.id.ec_difficulty)
-        spinnerGroups = findViewById(R.id.ec_groups)
 
         puzzleET.setText(challengeData["puzzle"] as String)
         nameTV.text = challengeData["name"] as String
