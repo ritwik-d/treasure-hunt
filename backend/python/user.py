@@ -457,6 +457,7 @@ class User:
         for group_name in new_groups:
             new_groups2.append(get_group_id(group_name))
 
+        print(f'stuff: {pprint.pformat({'latitude': new_latitude, 'longitude': new_longitude, 'difficulty': new_difficulty, 'user_groups': json.dumps(new_groups2), 'puzzle': new_puzzle}, {'challenge_id': challenge_id})}')
         row_id = db.update('challenges', {'latitude': new_latitude, 'longitude': new_longitude, 'difficulty': new_difficulty, 'user_groups': json.dumps(new_groups2), 'puzzle': new_puzzle}, {'challenge_id': challenge_id})
         if row_id is None:
             return 400
