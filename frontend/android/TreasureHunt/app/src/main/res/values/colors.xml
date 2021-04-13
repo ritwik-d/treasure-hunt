@@ -13,4 +13,5 @@
     <color name="colorFAB">#ff004d</color>
     <color name="colorDiscard">#C2C2C2</color>
     <color name="colorSave">#32c428</color>
+    <color name="colorSecondary">#00dcff</color>
 </resources>

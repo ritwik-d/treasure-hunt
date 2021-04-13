@@ -11,6 +11,7 @@
 
     <string name="cancel">Cancel</string>
     <string name="email">Email</string>
+    <string name="signUpSwitchText">I would like to receive email promotions, reminders, etc</string>
     <string name="logIn">Log In</string>
     <string name="logOut">Log Out</string>
     <string name="pw">Password</string>

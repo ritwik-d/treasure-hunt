@@ -22,6 +22,7 @@ create table users (
   password char(64) not null,
   points int unsigned not null default 0,
   picture_extension varchar(8),
+  receive_emails enum ('true', 'false') not null,
   status enum ('active', 'suspended', 'deleted') not null default 'active',
   email_verify_token char(10) not null
 ) engine=innodb;
