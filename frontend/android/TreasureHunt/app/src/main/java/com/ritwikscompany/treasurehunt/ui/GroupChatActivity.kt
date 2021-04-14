@@ -59,9 +59,12 @@ class GroupChatActivity : AppCompatActivity() {
                             findViewById<ImageButton>(R.id.gc_send).setOnClickListener {
                                 val message = messageET.text.toString()
                                 sendMessage(groupId, message)
+                                messageET.setText("")
                             }
 
                             getMessagesFinal(groupId)
+                            val scrollView = findViewById<ScrollView>(R.id.gc_sv)
+                            scrollView.fullScroll(ScrollView.FOCUS_DOWN)
                         }
 
                         else {
