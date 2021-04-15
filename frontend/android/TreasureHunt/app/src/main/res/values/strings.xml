@@ -45,6 +45,7 @@
     <string name="name">Name</string>
     <string name="difficulty">Difficulty</string>
     <string name="start">Start</string>
+    <string name="searchHint">Search Challenges</string>
     <string-array name="exerciseTypes">
         <item>Biking</item>
         <item>Walking</item>

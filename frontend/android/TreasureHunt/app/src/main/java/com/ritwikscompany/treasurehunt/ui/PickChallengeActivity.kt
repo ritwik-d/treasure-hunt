@@ -3,18 +3,24 @@ package com.ritwikscompany.treasurehunt.ui
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.ArrayAdapter
-import android.widget.ListView
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.EditText
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.fuel.core.isSuccessful
 import com.google.android.material.tabs.TabLayout
 import com.google.gson.Gson
 import com.ritwikscompany.treasurehunt.R
+import com.ritwikscompany.treasurehunt.utils.FindChallengeRVA
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class PickChallengeActivity : AppCompatActivity() {
 
@@ -47,52 +53,57 @@ class PickChallengeActivity : AppCompatActivity() {
                         if (status == 200) {
                             val (bytes, _) = result
                             if (bytes != null) {
-                                val challengeData = Gson().fromJson(String(bytes), HashMap::class.java) as HashMap<String, MutableList<String>>
+                                val challengeData = Gson().fromJson(String(bytes), HashMap::class.java) as HashMap<String, ArrayList<String>>
                                 val tabLayout = findViewById<TabLayout>(R.id.pc_tab_layout)
-                                val listView = findViewById<ListView>(R.id.pc_list_view)
-                                for (group in challengeData.keys) {
+                                val rv = findViewById<RecyclerView>(R.id.pc_rview)
+                                val tabNames = challengeData.keys.toTypedArray()
+                                for (group in tabNames) {
                                     tabLayout.addTab(tabLayout.newTab().setText(group))
                                 }
 
                                 val firstTab = tabLayout.getTabAt(tabLayout.selectedTabPosition)?.text.toString()
-                                val listItems = challengeData.get(firstTab) as MutableList
-                                val adapter = ArrayAdapter(
-                                    ctx,
-                                    android.R.layout.simple_list_item_1,
-                                    listItems
-                                )
-                                listView.adapter = adapter
+                                val challenges = challengeData[firstTab] as ArrayList
 
-                                listView.setOnItemClickListener { _, _, position, _ ->
+                                val startOnClick = { challengeName: String ->
                                     val intent = Intent(ctx, GameActivity::class.java).apply {
                                         putExtra("userData", userData)
-                                        putExtra("challengeName", listItems[position])
+                                        putExtra("challengeName", challengeName)
                                     }
                                     startActivity(intent)
                                 }
 
-                                tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-                                    override fun onTabSelected(tab: TabLayout.Tab?) {
-                                        val listItems = challengeData.get(tab?.text.toString()) as MutableList
-                                        val adapter = ArrayAdapter(
-                                                ctx,
-                                                android.R.layout.simple_list_item_1,
-                                                listItems
-                                        )
-                                        listView.adapter = adapter
+                                rv.layoutManager = LinearLayoutManager(ctx)
+                                rv.adapter = FindChallengeRVA(challenges, startOnClick)
 
-                                        listView.setOnItemClickListener { _, _, position, _ ->
-                                            val intent = Intent(ctx, GameActivity::class.java).apply {
-                                                putExtra("userData", userData)
-                                                putExtra("challengeName", listItems[position])
-                                            }
-                                            startActivity(intent)
-                                        }
+                                tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
+                                    override fun onTabSelected(tab: TabLayout.Tab?) {
+                                        rv.adapter = FindChallengeRVA(challengeData[tab?.text.toString()] as ArrayList, startOnClick)
+                                        findViewById<EditText>(R.id.pc_search_bar).setText("")
                                     }
 
                                     override fun onTabUnselected(tab: TabLayout.Tab?) {}
 
                                     override fun onTabReselected(tab: TabLayout.Tab?) {}
+                                })
+
+                                findViewById<EditText>(R.id.pc_search_bar).addTextChangedListener(object: TextWatcher {
+                                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
+
+                                    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                                        val text = p0.toString().toLowerCase(Locale.ROOT)
+
+                                        val currentChallenges = challengeData[tabNames[tabLayout.selectedTabPosition]] as ArrayList
+                                        val newChallenges = arrayListOf<String>()
+
+                                        for (challenge in currentChallenges) {
+                                            val challenge2 = challenge.toLowerCase(Locale.ROOT)
+                                            if (text in challenge2) { newChallenges.add(challenge) }
+                                        }
+
+                                        rv.adapter = FindChallengeRVA(newChallenges, startOnClick)
+                                    }
+
+                                    override fun afterTextChanged(p0: Editable?) { }
                                 })
                             }
 
