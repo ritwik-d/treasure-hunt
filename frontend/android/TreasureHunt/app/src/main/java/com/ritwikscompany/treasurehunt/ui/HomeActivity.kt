@@ -39,6 +39,7 @@ class HomeActivity : AppCompatActivity() {
     private var userData = HashMap<String, Any>()
     private val REQUEST_GALLERY = 200
     private val PERMISSION_REQUEST_CODE = 1
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
@@ -63,8 +64,16 @@ class HomeActivity : AppCompatActivity() {
         findViewById<Button>(R.id.home_groups).setOnClickListener {
             groupsOnClick()
         }
+
+        findViewById<Button>(R.id.home_race)
+                .setOnClickListener {
+                    raceOnClick()
+                }
     }
 
+    private fun raceOnClick() {
+        startActivity(Intent(this, RacesActivity::class.java))
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -84,7 +93,6 @@ class HomeActivity : AppCompatActivity() {
         return true
     }
 
-
     private fun requestPermissions() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(ctx,
                         Manifest.permission.READ_EXTERNAL_STORAGE)) {
@@ -99,7 +107,6 @@ class HomeActivity : AppCompatActivity() {
                     PERMISSION_REQUEST_CODE)
         }
     }
-
 
     private fun convertToByteArray(filePath: String): ByteArray {
         val image = File(filePath)
@@ -117,7 +124,6 @@ class HomeActivity : AppCompatActivity() {
         return data
     }
 
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         val pfp: CircleImageView = findViewById(R.id.home_pfp)
@@ -126,10 +132,8 @@ class HomeActivity : AppCompatActivity() {
 )
             val image = convertToByteArray(filePath!!)
 
-
         }
     }
-
 
     @SuppressLint("Recycle")
     private fun getRealPathFromUri(uri: Uri?, activity: Activity): String? {
@@ -147,14 +151,12 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-
     private fun checkPermissions(): Boolean {
         val result = ContextCompat.checkSelfPermission(
                 ctx,
                 Manifest.permission.READ_EXTERNAL_STORAGE)
         return result == PackageManager.PERMISSION_GRANTED
     }
-
 
     private fun filePicker() {
 
@@ -167,13 +169,11 @@ class HomeActivity : AppCompatActivity() {
         startActivityForResult(openGallery, REQUEST_GALLERY)
     }
 
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.home_menu, menu)
         return true
     }
-
 
     private fun setProfilePicture() {
         val bodyJson = Gson().toJson(
@@ -183,7 +183,7 @@ class HomeActivity : AppCompatActivity() {
                 )
         )
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/download_pfp")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/download_pfp")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()
@@ -193,7 +193,7 @@ class HomeActivity : AppCompatActivity() {
                     val status = response.statusCode
                     if (status == 200) {
                         val (bytes, _) = result
-                        val pfpImageView = findViewById<de.hdodenhof.circleimageview.CircleImageView>(R.id.home_pfp)
+                        val pfpImageView = findViewById<CircleImageView>(R.id.home_pfp)
                         if (bytes != null) {
                             val bitmap: Bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                             pfpImageView.setImageBitmap(bitmap)
@@ -212,7 +212,6 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-
     private fun findChallengeOnClick() {
         val intent = Intent(ctx, PickChallengeActivity::class.java).apply {
             putExtra("userData", userData)
@@ -220,12 +219,10 @@ class HomeActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-
-    private fun feedbackOnClick() {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.surveyLink)))
-        startActivity(intent)
-    }
-
+//    private fun feedbackOnClick() {
+//        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.surveyLink)))
+//        startActivity(intent)
+//    }
 
     private fun myChallengesOnClick() {
         val intent = Intent(ctx, MyChallengesActivity::class.java).apply {
@@ -234,14 +231,12 @@ class HomeActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-
     private fun groupsOnClick() {
         val intent = Intent(ctx, GroupsActivity::class.java).apply {
             putExtra("userData", userData)
         }
         startActivity(intent)
     }
-
 
     private fun clearSharedPref() {
         val sharedPref = application.getSharedPreferences("userInfo", Context.MODE_PRIVATE)
