@@ -76,8 +76,14 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback {
                         if (bytes != null) {
                             val type = object : TypeToken<HashMap<String, Any>>() {}.type
                             val challengeData: HashMap<String, Any> = Gson().fromJson(String(bytes), type) as HashMap<String, Any>
+                            var radius: Double = Double.MIN_VALUE
 
-                            placeMarkerOnMap(challengeData["latitude"] as Double, challengeData["longitude"] as Double)
+                            when (challengeData["difficulty"] as String) {
+                                "easy" -> radius = 10.0
+                                "medium" -> radius = 5.0
+                                "hard" -> radius = 1.0
+                            }
+                            placeMarkerOnMap(challengeData["latitude"] as Double, challengeData["longitude"] as Double, radius)
 
                             findViewById<TextView>(R.id.game_puzzle).text = "Puzzle: ${challengeData["puzzle"] as String}"
                             findViewById<TextView>(R.id.game_creator).text = "Creator: ${challengeData["creator_name"] as String}"
@@ -104,11 +110,11 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
-    private fun placeMarkerOnMap(challengeLatitude: Double, challengeLongitude: Double) {
+    private fun placeMarkerOnMap(challengeLatitude: Double, challengeLongitude: Double, radius: Double) {
         val circleOptions = CircleOptions()
 
         circleOptions.center(LatLng(challengeLatitude, challengeLongitude))
-        circleOptions.radius(50.0)
+        circleOptions.radius(radius)
         circleOptions.fillColor(Color.TRANSPARENT)
         circleOptions.strokeColor(Color.BLACK)
 

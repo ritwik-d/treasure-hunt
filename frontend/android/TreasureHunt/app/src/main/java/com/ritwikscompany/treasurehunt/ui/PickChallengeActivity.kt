@@ -24,6 +24,8 @@ class PickChallengeActivity : AppCompatActivity() {
 
     private val ctx = this@PickChallengeActivity
     private var userData = HashMap<String, Any>()
+    private lateinit var searchView: SearchView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pick_challenge)
@@ -38,7 +40,6 @@ class PickChallengeActivity : AppCompatActivity() {
                 "user_id" to userData["user_id"] as Int,
                 "pw" to userData["password"] as String
         ))
-        println(bodyJson)
         CoroutineScope(Dispatchers.IO).launch {
             val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_challenges")
                     .body(bodyJson)
@@ -76,6 +77,10 @@ class PickChallengeActivity : AppCompatActivity() {
                                 tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                                     override fun onTabSelected(tab: TabLayout.Tab?) {
                                         rv.adapter = FindChallengeRVA(challengeData[tab?.text.toString()] as ArrayList, startOnClick)
+
+                                        if (ctx::searchView.isInitialized) {
+                                            searchView.setQuery("", true)
+                                        }
                                     }
 
                                     override fun onTabUnselected(tab: TabLayout.Tab?) {}
@@ -102,7 +107,7 @@ class PickChallengeActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu_search, menu)
 
         val menuItem = menu!!.findItem(R.id.menu_sb)
-        val searchView = menuItem.actionView as SearchView
+        searchView = menuItem.actionView as SearchView
 
         searchView.queryHint = getString(R.string.searchHint)
 

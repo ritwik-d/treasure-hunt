@@ -49,12 +49,6 @@ class EditChallengeActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
 
-//    companion object {
-//        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
-//        private const val UPDATE_INTERVAL = 10 * 1000 /* 10 secs */.toLong()
-//        private const val FASTEST_INTERVAL: Long = 5000 /* 5 sec */
-//    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_challenge)
