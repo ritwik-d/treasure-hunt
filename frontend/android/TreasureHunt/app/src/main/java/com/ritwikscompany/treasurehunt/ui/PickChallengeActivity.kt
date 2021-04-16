@@ -79,34 +79,11 @@ class PickChallengeActivity : AppCompatActivity() {
                                 tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                                     override fun onTabSelected(tab: TabLayout.Tab?) {
                                         rv.adapter = FindChallengeRVA(challengeData[tab?.text.toString()] as ArrayList, startOnClick)
-                                        findViewById<EditText>(R.id.pc_search_bar).setText("")
                                     }
 
                                     override fun onTabUnselected(tab: TabLayout.Tab?) {}
 
                                     override fun onTabReselected(tab: TabLayout.Tab?) {}
-                                })
-
-                                findViewById<EditText>(R.id.pc_search_bar).addTextChangedListener(object : TextWatcher {
-                                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-                                    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                                        val text = p0.toString().toLowerCase(Locale.ROOT)
-
-                                        val currentChallenges = challengeData[tabNames[tabLayout.selectedTabPosition]] as ArrayList
-                                        val newChallenges = arrayListOf<String>()
-
-                                        for (challenge in currentChallenges) {
-                                            val challenge2 = challenge.toLowerCase(Locale.ROOT)
-                                            if (text in challenge2) {
-                                                newChallenges.add(challenge)
-                                            }
-                                        }
-
-                                        rv.adapter = FindChallengeRVA(newChallenges, startOnClick)
-                                    }
-
-                                    override fun afterTextChanged(p0: Editable?) {}
                                 })
                             }
 
