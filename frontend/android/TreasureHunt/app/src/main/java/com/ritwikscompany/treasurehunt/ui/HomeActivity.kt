@@ -10,7 +10,6 @@ import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.Menu
@@ -53,10 +52,6 @@ class HomeActivity : AppCompatActivity() {
             findChallengeOnClick()
         }
 
-//        findViewById<Button>(R.id.home_feedback).setOnClickListener {
-//            feedbackOnClick()
-//        }
-
         findViewById<Button>(R.id.home_my_challenges).setOnClickListener {
             myChallengesOnClick()
         }
@@ -64,16 +59,8 @@ class HomeActivity : AppCompatActivity() {
         findViewById<Button>(R.id.home_groups).setOnClickListener {
             groupsOnClick()
         }
-
-        findViewById<Button>(R.id.home_race)
-                .setOnClickListener {
-                    raceOnClick()
-                }
     }
 
-    private fun raceOnClick() {
-        startActivity(Intent(this, RacesActivity::class.java))
-    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -89,9 +76,17 @@ class HomeActivity : AppCompatActivity() {
                 }
                 startActivityForResult(Intent.createChooser(intent, "Select an Image"), PERMISSION_REQUEST_CODE)
             }
+
+            R.id.menu_race -> {
+                val intent = Intent(ctx, RacesActivity::class.java).apply {
+                    putExtra("userData", userData)
+                }
+                startActivity(intent)
+            }
         }
         return true
     }
+
 
     private fun requestPermissions() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(ctx,
@@ -108,6 +103,7 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
+
     private fun convertToByteArray(filePath: String): ByteArray {
         val image = File(filePath)
         val bmOptions = BitmapFactory.Options()
@@ -120,9 +116,9 @@ class HomeActivity : AppCompatActivity() {
 
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 30, baos)
-        val data = baos.toByteArray()
-        return data
+        return baos.toByteArray()
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -134,6 +130,7 @@ class HomeActivity : AppCompatActivity() {
 
         }
     }
+
 
     @SuppressLint("Recycle")
     private fun getRealPathFromUri(uri: Uri?, activity: Activity): String? {
@@ -151,12 +148,14 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
+
     private fun checkPermissions(): Boolean {
         val result = ContextCompat.checkSelfPermission(
                 ctx,
                 Manifest.permission.READ_EXTERNAL_STORAGE)
         return result == PackageManager.PERMISSION_GRANTED
     }
+
 
     private fun filePicker() {
 
@@ -169,11 +168,13 @@ class HomeActivity : AppCompatActivity() {
         startActivityForResult(openGallery, REQUEST_GALLERY)
     }
 
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.home_menu, menu)
         return true
     }
+
 
     private fun setProfilePicture() {
         val bodyJson = Gson().toJson(
@@ -212,6 +213,7 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
+
     private fun findChallengeOnClick() {
         val intent = Intent(ctx, PickChallengeActivity::class.java).apply {
             putExtra("userData", userData)
@@ -219,10 +221,6 @@ class HomeActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-//    private fun feedbackOnClick() {
-//        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.surveyLink)))
-//        startActivity(intent)
-//    }
 
     private fun myChallengesOnClick() {
         val intent = Intent(ctx, MyChallengesActivity::class.java).apply {
@@ -231,12 +229,14 @@ class HomeActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+
     private fun groupsOnClick() {
         val intent = Intent(ctx, GroupsActivity::class.java).apply {
             putExtra("userData", userData)
         }
         startActivity(intent)
     }
+
 
     private fun clearSharedPref() {
         val sharedPref = application.getSharedPreferences("userInfo", Context.MODE_PRIVATE)

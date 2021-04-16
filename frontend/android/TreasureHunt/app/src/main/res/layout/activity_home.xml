@@ -11,99 +11,75 @@
 
     <Button
         android:id="@+id/home_find_challenge"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="44dp"
-        android:layout_marginRight="44dp"
-        android:layout_marginBottom="85dp"
+        android:layout_width="156dp"
+        android:layout_height="60dp"
         android:text="@string/findChallenge"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/home_my_challenges"
-        app:layout_constraintTop_toBottomOf="@+id/home_treasure_chest" />
+        app:layout_constraintHorizontal_bias="0.827"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.873" />
 
     <Button
         android:id="@+id/home_my_challenges"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="36dp"
-        android:layout_marginLeft="36dp"
-        android:layout_marginEnd="27dp"
-        android:layout_marginRight="27dp"
-        android:layout_marginBottom="21dp"
+        android:layout_width="148dp"
+        android:layout_height="60dp"
         android:text="@string/myChallenge"
-        app:layout_constraintBottom_toTopOf="@+id/home_race"
-        app:layout_constraintEnd_toStartOf="@+id/home_find_challenge"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.136"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/home_groups" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.873" />
 
     <TextView
         android:id="@+id/home_name"
         android:layout_width="250dp"
-        android:layout_height="0dp"
+        android:layout_height="50dp"
         android:layout_marginTop="136dp"
-        android:layout_marginBottom="326dp"
+        android:layout_marginBottom="481dp"
         android:gravity="center_horizontal"
         android:text=""
         android:textAlignment="center"
         android:textSize="32sp"
-        app:layout_constraintBottom_toTopOf="@+id/home_groups"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/home_groups"
         android:layout_width="129dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="14dp"
+        android:layout_height="60dp"
         android:text="@string/groups"
-        app:layout_constraintBottom_toTopOf="@+id/home_my_challenges"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.46"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/home_name" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.763" />
 
     <ImageView
         android:id="@+id/home_treasure_chest"
-        android:layout_width="308dp"
-        android:layout_height="247dp"
-        android:layout_marginStart="62dp"
-        android:layout_marginLeft="62dp"
-        android:layout_marginEnd="62dp"
-        android:layout_marginRight="62dp"
-        android:layout_marginBottom="100dp"
-        android:contentDescription="@string/treasureChestCD"
-        app:layout_constraintBottom_toTopOf="@+id/home_find_challenge"
+        android:layout_width="286dp"
+        android:layout_height="240dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/home_pfp"
-        app:srcCompat="@drawable/thesecondone" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/thesecondone"
+        android:contentDescription="@string/treasureChestCD" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/home_pfp"
         android:layout_width="50dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginLeft="15dp"
+        android:layout_height="50dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginBottom="180dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
         android:src="@drawable/no_pfp"
-        app:layout_constraintBottom_toTopOf="@+id/home_treasure_chest"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/home_name"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/home_race"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="@string/races"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/home_my_challenges" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
