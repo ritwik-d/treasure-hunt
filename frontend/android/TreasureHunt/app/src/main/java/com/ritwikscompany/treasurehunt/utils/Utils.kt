@@ -34,5 +34,10 @@ class Utils {
 
             return pat.matcher(emailText).matches()
         }
+
+
+        const val LOCATION_PERMISSION_REQUEST_CODE = 1
+        const val UPDATE_INTERVAL = 10 * 1000 /* 10 secs */.toLong()
+        const val FASTEST_INTERVAL: Long = 5000 /* 5 sec */
     }
 }

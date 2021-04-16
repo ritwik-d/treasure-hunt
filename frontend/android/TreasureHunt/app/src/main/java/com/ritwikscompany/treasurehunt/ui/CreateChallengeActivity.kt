@@ -1,20 +1,33 @@
 package com.ritwikscompany.treasurehunt.ui
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.kittinunf.fuel.Fuel
+import com.google.android.gms.location.*
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.ritwikscompany.treasurehunt.R
 import com.ritwikscompany.treasurehunt.utils.AddGroupsRVA
+import com.ritwikscompany.treasurehunt.utils.Utils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,7 +36,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class CreateChallengeActivity : AppCompatActivity() {
+class CreateChallengeActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private val ctx = this@CreateChallengeActivity
     private var userData: HashMap<String, Any> = hashMapOf()
@@ -33,19 +46,97 @@ class CreateChallengeActivity : AppCompatActivity() {
     private lateinit var puzzle: String
     private lateinit var name: String
     private lateinit var checkMark: Drawable
+    private lateinit var map: GoogleMap
+    private lateinit var lastLocation: Location
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var locationRequest: LocationRequest
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_challenge)
         this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
 
-        checkMark = com.ritwikscompany.treasurehunt.utils.Utils.getCheckMark(ctx)!!
+        checkMark = Utils.getCheckMark(ctx)
 
         verifyFields()
 
+        val mapFragment = supportFragmentManager
+                .findFragmentById(R.id.cc_map) as SupportMapFragment
+        mapFragment.getMapAsync(ctx)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(ctx)
+
+        startLocationUpdates()
+
         findViewById<Button>(R.id.cc_create).setOnClickListener {
-            createOnClick(0.1, 0.2)
+            createOnClick(lastLocation.latitude, lastLocation.longitude)
         }
+    }
+
+
+    override fun onMapReady(p0: GoogleMap?) {
+        map = p0!!
+        map.uiSettings.isZoomControlsEnabled = true
+
+        setUpMap()
+    }
+
+
+    private fun setUpMap() {
+        if (ActivityCompat.checkSelfPermission(ctx,
+                        Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(ctx,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), Utils.LOCATION_PERMISSION_REQUEST_CODE)
+            return
+        }
+
+        map.isMyLocationEnabled = true
+
+        fusedLocationClient.lastLocation.addOnSuccessListener(ctx) { location ->
+            // Got last known location. In some rare situations this can be null.
+            if (location != null) {
+                lastLocation = location
+                val currentLatLng = LatLng(location.latitude, location.longitude)
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17f))
+            }
+        }
+    }
+
+
+    private fun startLocationUpdates() {
+        locationRequest = LocationRequest()
+        locationRequest.interval = Utils.UPDATE_INTERVAL
+        locationRequest.fastestInterval = Utils.FASTEST_INTERVAL
+        locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+
+        val builder = LocationSettingsRequest.Builder()
+        builder.addLocationRequest(locationRequest)
+        val locationSettingsRequest = builder.build()
+        val settingsClient = LocationServices.getSettingsClient(ctx)
+        settingsClient.checkLocationSettings(locationSettingsRequest)
+        if (ActivityCompat.checkSelfPermission(
+                        ctx,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                        ctx,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+
+        if (ActivityCompat.checkSelfPermission(ctx,
+                        Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(ctx,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    Utils.LOCATION_PERMISSION_REQUEST_CODE)
+            return
+        }
+
+        fusedLocationClient.requestLocationUpdates(locationRequest, object: LocationCallback() {
+            override fun onLocationResult(p0: LocationResult) {
+                lastLocation = p0.lastLocation
+            }
+        }, Looper.myLooper())
     }
 
 
