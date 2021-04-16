@@ -137,6 +137,7 @@ class PickChallengeActivity : AppCompatActivity() {
                             val tabNames = challengeData.keys.toTypedArray()
                             val tabLayout = findViewById<TabLayout>(R.id.pc_tab_layout)
                             val rv = findViewById<RecyclerView>(R.id.pc_rview)
+
                             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                                 override fun onQueryTextSubmit(query: String?): Boolean {
                                     val text = query!!.toLowerCase(Locale.ROOT)
