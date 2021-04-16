@@ -43,7 +43,14 @@
         <activity android:name=".ui.EditChallengeActivity" />
         <activity android:name=".ui.CreateChallengeActivity" />
         <activity android:name=".ui.MyChallengesActivity" />
-        <activity android:name=".ui.PickChallengeActivity" />
+        <activity android:name=".ui.PickChallengeActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
         <activity android:name=".ui.GroupsActivity" />
         <activity android:name=".ui.HomeActivity" />
         <activity android:name=".ui.SignUpActivity" />
