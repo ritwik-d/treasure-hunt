@@ -1,12 +1,14 @@
 package com.ritwikscompany.treasurehunt.ui
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.Menu
 import android.widget.EditText
+import android.widget.SearchView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.kittinunf.fuel.Fuel
@@ -19,7 +21,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class PickChallengeActivity : AppCompatActivity() {
@@ -30,15 +31,15 @@ class PickChallengeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pick_challenge)
 
-        this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
+        userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
         initialize()
     }
 
 
     private fun initialize() {
         val bodyJson = Gson().toJson(hashMapOf<String, Any>(
-            "user_id" to userData.get("user_id") as Int,
-            "pw" to userData.get("password") as String
+                "user_id" to userData.get("user_id") as Int,
+                "pw" to userData.get("password") as String
         ))
         println(bodyJson)
         CoroutineScope(Dispatchers.IO).launch {
@@ -75,7 +76,7 @@ class PickChallengeActivity : AppCompatActivity() {
                                 rv.layoutManager = LinearLayoutManager(ctx)
                                 rv.adapter = FindChallengeRVA(challenges, startOnClick)
 
-                                tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
+                                tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                                     override fun onTabSelected(tab: TabLayout.Tab?) {
                                         rv.adapter = FindChallengeRVA(challengeData[tab?.text.toString()] as ArrayList, startOnClick)
                                         findViewById<EditText>(R.id.pc_search_bar).setText("")
@@ -86,8 +87,8 @@ class PickChallengeActivity : AppCompatActivity() {
                                     override fun onTabReselected(tab: TabLayout.Tab?) {}
                                 })
 
-                                findViewById<EditText>(R.id.pc_search_bar).addTextChangedListener(object: TextWatcher {
-                                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
+                                findViewById<EditText>(R.id.pc_search_bar).addTextChangedListener(object : TextWatcher {
+                                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
                                     override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                                         val text = p0.toString().toLowerCase(Locale.ROOT)
@@ -97,13 +98,15 @@ class PickChallengeActivity : AppCompatActivity() {
 
                                         for (challenge in currentChallenges) {
                                             val challenge2 = challenge.toLowerCase(Locale.ROOT)
-                                            if (text in challenge2) { newChallenges.add(challenge) }
+                                            if (text in challenge2) {
+                                                newChallenges.add(challenge)
+                                            }
                                         }
 
                                         rv.adapter = FindChallengeRVA(newChallenges, startOnClick)
                                     }
 
-                                    override fun afterTextChanged(p0: Editable?) { }
+                                    override fun afterTextChanged(p0: Editable?) {}
                                 })
                             }
 
@@ -118,5 +121,31 @@ class PickChallengeActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val menuInflater = menuInflater
+        menuInflater.inflate(R.menu.menu_search, menu)
+
+        val menuItem = menu!!.findItem(R.id.menu_sb)
+        val searchView = menuItem.actionView as SearchView
+
+        searchView.queryHint = getString(R.string.searchHint)
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                //run search query
+                //...
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                //run search query
+                //...
+                return true
+            }
+        })
+
+        return true
     }
 }
