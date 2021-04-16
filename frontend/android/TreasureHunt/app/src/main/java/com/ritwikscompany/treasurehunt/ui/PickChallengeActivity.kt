@@ -2,10 +2,7 @@ package com.ritwikscompany.treasurehunt.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.Menu
-import android.widget.EditText
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -38,12 +35,12 @@ class PickChallengeActivity : AppCompatActivity() {
 
     private fun initialize() {
         val bodyJson = Gson().toJson(hashMapOf<String, Any>(
-                "user_id" to userData.get("user_id") as Int,
-                "pw" to userData.get("password") as String
+                "user_id" to userData["user_id"] as Int,
+                "pw" to userData["password"] as String
         ))
         println(bodyJson)
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/get_challenges")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_challenges")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()
@@ -100,7 +97,7 @@ class PickChallengeActivity : AppCompatActivity() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    private fun initializeMenu(menu: Menu?) {
         val menuInflater = menuInflater
         menuInflater.inflate(R.menu.menu_search, menu)
 
@@ -109,19 +106,82 @@ class PickChallengeActivity : AppCompatActivity() {
 
         searchView.queryHint = getString(R.string.searchHint)
 
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                //run search query
-                //...
-                return true
-            }
+        val bodyJson = Gson().toJson(hashMapOf<String, Any>(
+                "user_id" to userData["user_id"] as Int,
+                "pw" to userData["password"] as String
+        ))
+        println(bodyJson)
 
-            override fun onQueryTextChange(newText: String?): Boolean {
-                //run search query
-                //...
-                return true
+        CoroutineScope(Dispatchers.IO).launch {
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_challenges")
+                    .body(bodyJson)
+                    .header("Content-Type" to "application/json")
+                    .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    val status = response.statusCode
+                    if (status == 200) {
+                        val (bytes, _) = result
+
+                        if (bytes != null) {
+                            val startOnClick = { challengeName: String ->
+                                val intent = Intent(ctx, GameActivity::class.java).apply {
+                                    putExtra("userData", userData)
+                                    putExtra("challengeName", challengeName)
+                                }
+                                startActivity(intent)
+                            }
+
+                            val challengeData = Gson().fromJson(String(bytes), HashMap::class.java) as HashMap<String, ArrayList<String>>
+                            val tabNames = challengeData.keys.toTypedArray()
+                            val tabLayout = findViewById<TabLayout>(R.id.pc_tab_layout)
+                            val rv = findViewById<RecyclerView>(R.id.pc_rview)
+                            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                                override fun onQueryTextSubmit(query: String?): Boolean {
+                                    val text = query!!.toLowerCase(Locale.ROOT)
+
+                                    val currentChallenges = challengeData[tabNames[tabLayout.selectedTabPosition]] as ArrayList
+                                    val newChallenges = arrayListOf<String>()
+
+                                    for (challenge in currentChallenges) {
+                                        val challenge2 = challenge.toLowerCase(Locale.ROOT)
+                                        if (text in challenge2) {
+                                            newChallenges.add(challenge)
+                                        }
+                                    }
+
+                                    rv.adapter = FindChallengeRVA(newChallenges, startOnClick)
+                                    return true
+                                }
+
+                                override fun onQueryTextChange(newText: String?): Boolean {
+                                    val text = newText!!.toLowerCase(Locale.ROOT)
+
+                                    val currentChallenges = challengeData[tabNames[tabLayout.selectedTabPosition]] as ArrayList
+                                    val newChallenges = arrayListOf<String>()
+
+                                    for (challenge in currentChallenges) {
+                                        val challenge2 = challenge.toLowerCase(Locale.ROOT)
+                                        if (text in challenge2) {
+                                            newChallenges.add(challenge)
+                                        }
+                                    }
+
+                                    rv.adapter = FindChallengeRVA(newChallenges, startOnClick)
+                                    return true
+                                }
+                            })
+                        }
+                    }
+                }
             }
-        })
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
+        initializeMenu(menu)
 
         return true
     }
