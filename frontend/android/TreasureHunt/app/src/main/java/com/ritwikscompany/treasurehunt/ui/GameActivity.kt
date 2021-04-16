@@ -20,8 +20,6 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.ritwikscompany.treasurehunt.utils.Utils
@@ -29,6 +27,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
+import kotlin.collections.HashMap
 
 
 class GameActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -79,9 +79,9 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback {
                             var radius: Double = Double.MIN_VALUE
 
                             when (challengeData["difficulty"] as String) {
-                                "easy" -> radius = 10.0
-                                "medium" -> radius = 5.0
-                                "hard" -> radius = 1.0
+                                "easy" -> radius = 5.0
+                                "medium" -> radius = 15.0
+                                "hard" -> radius = 25.0
                             }
                             placeMarkerOnMap(challengeData["latitude"] as Double, challengeData["longitude"] as Double, radius)
 
@@ -111,9 +111,18 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
     private fun placeMarkerOnMap(challengeLatitude: Double, challengeLongitude: Double, radius: Double) {
+        var chalLatFinal = challengeLatitude
+        var chalLongFinal = challengeLongitude
         val circleOptions = CircleOptions()
 
-        circleOptions.center(LatLng(challengeLatitude, challengeLongitude))
+        val random = Random()
+        val latRandom = random.nextInt() % radius + 2
+        val longRandom = random.nextInt() % radius + 2
+
+        chalLatFinal += latRandom
+        chalLongFinal += longRandom
+
+        circleOptions.center(LatLng(chalLatFinal, chalLongFinal))
         circleOptions.radius(radius)
         circleOptions.fillColor(Color.TRANSPARENT)
         circleOptions.strokeColor(Color.BLACK)
