@@ -59,6 +59,10 @@
     </string-array>
     <string name="create">Create</string>
 
+    <!--   races -->
+
+    <string name="createRace">Create Race</string>
+
     <!--   groups -->
 
     <string name="createGroup">Create Group</string>
