@@ -70,6 +70,7 @@ class EditChallengeActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap
         map = p0!!
         map.setPadding(0, 0, 0, 250)
         map.uiSettings.isZoomControlsEnabled = true
+        map.mapType = GoogleMap.MAP_TYPE_TERRAIN
         map.setOnMarkerClickListener(ctx)
 
         val marker = MarkerOptions()
@@ -79,6 +80,15 @@ class EditChallengeActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap
         map.addMarker(marker)
 
         setUpMap()
+
+        findViewById<ImageButton>(R.id.ec_satellite).setOnClickListener {
+            if (map.mapType == GoogleMap.MAP_TYPE_TERRAIN) {
+                map.mapType = GoogleMap.MAP_TYPE_HYBRID
+            }
+            else {
+                map.mapType = GoogleMap.MAP_TYPE_TERRAIN
+            }
+        }
     }
 
 

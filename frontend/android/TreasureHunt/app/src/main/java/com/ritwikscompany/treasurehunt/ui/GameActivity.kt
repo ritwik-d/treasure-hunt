@@ -105,8 +105,18 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(p0: GoogleMap?) {
         map = p0!!
         map.uiSettings.isZoomControlsEnabled = true
+        map.mapType = GoogleMap.MAP_TYPE_TERRAIN
 
         setUpMap()
+
+        findViewById<ImageButton>(R.id.game_satellite).setOnClickListener {
+            if (map.mapType == GoogleMap.MAP_TYPE_TERRAIN) {
+                map.mapType = GoogleMap.MAP_TYPE_HYBRID
+            }
+            else {
+                map.mapType = GoogleMap.MAP_TYPE_TERRAIN
+            }
+        }
     }
 
 
