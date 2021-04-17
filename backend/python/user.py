@@ -162,6 +162,20 @@ class User:
 
 
     @authenticate
+    def create_race(self, title: str, start_time: str, latitude: float, longitude: float, group_name: str):
+        group_id = get_group_id(group_name)
+
+        start_time_obj = datetime.datetime.strptime(start_time, '%Y-%m-%d %H:%M:0.0')
+        race = Race(title, start_time_obj, latitude, longitude, group_id)
+        status = race.create(self.user_id)
+
+        if status == False:
+            return {'status': 400, 'body': {'error': 'title exists'}}
+        else:
+            return {'status': 201, 'body': {'error': 'success'}}
+
+
+    @authenticate
     def delete_challenge(self, challenge_id: int):
         db = DB()
         db.connect()

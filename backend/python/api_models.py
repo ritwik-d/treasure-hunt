@@ -37,6 +37,16 @@ class CreateGroup(BaseModel):
     user_id: int
 
 
+class CreateRace(BaseModel):
+    title: str
+    start_time: str
+    latitude: float
+    longitude: float
+    group_name: str
+    pw: str
+    user_id: int
+
+
 class DeleteChallenge(BaseModel):
     challenge_id: int
     pw: str
