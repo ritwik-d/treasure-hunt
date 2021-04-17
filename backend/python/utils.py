@@ -1,4 +1,5 @@
 import datetime
+import db
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from environment import *
@@ -35,6 +36,32 @@ class ChatDB:
     def get_messages(self):
         messages = [json.loads(message) for message in self.rdb.lrange(str(self.group_id), 0, -1)]
         return messages
+
+
+class Race:
+    def __init__(self, title=None, start_time=None, latitude=None, longitude=None, group_id=None):
+        self.title = title
+        self.start_time = start_time
+        self.latitude = latitude
+        self.longitude = longitude
+        self.group_d = group_id
+
+
+    def create(self, creator_id: int):
+        db = DB()
+        db.connect()
+        row = {
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'group_id': self.group_id,
+            'start_time': self.start_time,
+            'title': self.title,
+            'creator_id': creator_id
+        }
+        row_id = db.insert('races', row)
+        if row_id is None:
+            return False
+        return True
 
 
 def get_jwt(user_id: int):

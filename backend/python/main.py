@@ -37,6 +37,14 @@ async def create_group(json: CreateGroup, response: Response):
     response.status_code = user.create_group(json.name, json.description)
 
 
+@app.post(paths.get('create_race'))
+async def get_challenges(json: CreateRace, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response_2 = user.create_race(json.title, json.start_time, json.latitude, json.longitude, json.group_name)
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
+
+
 @app.post(paths.get('delete_challenge'))
 async def delete_challenge(json: DeleteChallenge, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
