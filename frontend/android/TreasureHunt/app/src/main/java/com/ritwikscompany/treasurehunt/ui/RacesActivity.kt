@@ -27,12 +27,12 @@ class RacesActivity : AppCompatActivity() {
         val scheduleRaceBTN = findViewById<Button>(R.id.races_schedule_race)
         scheduleRaceBTN
             .setOnClickListener {
-                scheduleRace()
+                showDateDialog()
             }
     }
 
     private fun scheduleRace() {
-        
+
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -48,7 +48,6 @@ class RacesActivity : AppCompatActivity() {
                         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                         calendar.set(Calendar.MINUTE, minute)
                         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
-                        n.setText(simpleDateFormat.format(calendar.time))
                     }
                 TimePickerDialog(
                     ctx,
@@ -66,5 +65,7 @@ class RacesActivity : AppCompatActivity() {
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
         ).show()
+
+        scheduleRace()
     }
 }
