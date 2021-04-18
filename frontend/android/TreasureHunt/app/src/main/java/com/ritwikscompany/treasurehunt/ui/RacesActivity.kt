@@ -9,20 +9,15 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.ritwikscompany.treasurehunt.R
-import java.text.SimpleDateFormat
+//import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.HashMap
-
 
 class RacesActivity : AppCompatActivity() {
 
-    private var userData = HashMap<String, Any>()
     private val ctx = this@RacesActivity
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_races)
-
-        this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
 
         val scheduleRaceBTN = findViewById<Button>(R.id.races_schedule_race)
         scheduleRaceBTN
@@ -47,7 +42,7 @@ class RacesActivity : AppCompatActivity() {
                     OnTimeSetListener { _, hourOfDay, minute ->
                         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                         calendar.set(Calendar.MINUTE, minute)
-                        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
+//                        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
                     }
                 TimePickerDialog(
                     ctx,

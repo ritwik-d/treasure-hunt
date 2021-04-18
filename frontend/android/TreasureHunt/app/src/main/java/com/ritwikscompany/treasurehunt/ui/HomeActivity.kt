@@ -32,12 +32,12 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 
 
+@Suppress("DEPRECATION")
 class HomeActivity : AppCompatActivity() {
 
     private val ctx = this@HomeActivity
     private var userData = HashMap<String, Any>()
-    private val REQUEST_GALLERY = 200
-    private val PERMISSION_REQUEST_CODE = 1
+
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +47,7 @@ class HomeActivity : AppCompatActivity() {
 
         setProfilePicture()
 
-        findViewById<TextView>(R.id.home_name).text = "Hello ${userData.get("username").toString()}!"
+        findViewById<TextView>(R.id.home_name).text = "Hello ${userData["username"].toString()}!"
         findViewById<Button>(R.id.home_find_challenge).setOnClickListener {
             findChallengeOnClick()
         }
@@ -70,11 +70,7 @@ class HomeActivity : AppCompatActivity() {
             }
 
             R.id.menu_upload_pfp -> {
-                val intent = Intent().apply {
-                    type = "image/*"
-                    action = Intent.ACTION_GET_CONTENT
-                }
-                startActivityForResult(Intent.createChooser(intent, "Select an Image"), PERMISSION_REQUEST_CODE)
+                requestPermissions()
             }
 
             R.id.menu_race -> {
@@ -101,10 +97,14 @@ class HomeActivity : AppCompatActivity() {
                     ctx, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
                     PERMISSION_REQUEST_CODE)
         }
+
+        if (checkPermissions()) {
+            filePicker()
+        }
     }
 
 
-    private fun convertToByteArray(filePath: String): ByteArray {
+    private fun convertToBitmap(filePath: String): Bitmap {
         val image = File(filePath)
         val bmOptions = BitmapFactory.Options()
         var bitmap = BitmapFactory.decodeFile(image.absolutePath, bmOptions)
@@ -116,18 +116,30 @@ class HomeActivity : AppCompatActivity() {
 
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 30, baos)
-        return baos.toByteArray()
+        return bitmap
     }
 
+    private fun toByteArray(bitmap: Bitmap): ByteArray {
+
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 30, baos)
+
+        return baos.toByteArray()
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         val pfp: CircleImageView = findViewById(R.id.home_pfp)
         if (requestCode == REQUEST_GALLERY && resultCode == RESULT_OK) {
-            val filePath = getRealPathFromUri(data!!.data, ctx
-)
-            val image = convertToByteArray(filePath!!)
+            val filePath = getRealPathFromUri(data!!.data, ctx)
 
+            val image = convertToBitmap(filePath!!)
+
+            pfp.setImageBitmap(image)
+
+            val bytes = toByteArray(image)
+
+            bytes.size
         }
     }
 
@@ -158,10 +170,6 @@ class HomeActivity : AppCompatActivity() {
 
 
     private fun filePicker() {
-
-        //.Now Permission Working
-        Toast.makeText(ctx
-, "File Picker Call", Toast.LENGTH_SHORT).show()
         //Let's Pick File
         val openGallery = Intent(Intent.ACTION_PICK)
         openGallery.type = "image/*"
@@ -179,8 +187,8 @@ class HomeActivity : AppCompatActivity() {
     private fun setProfilePicture() {
         val bodyJson = Gson().toJson(
                 hashMapOf(
-                        "pw" to userData.get("password"),
-                        "user_id" to userData.get("user_id")
+                        "pw" to userData["password"],
+                        "user_id" to userData["user_id"]
                 )
         )
         CoroutineScope(Dispatchers.IO).launch {
@@ -245,5 +253,10 @@ class HomeActivity : AppCompatActivity() {
             remove("pw")
             apply()
         }
+    }
+
+    companion object {
+        private const val REQUEST_GALLERY = 200
+        private const val PERMISSION_REQUEST_CODE = 1
     }
 }
