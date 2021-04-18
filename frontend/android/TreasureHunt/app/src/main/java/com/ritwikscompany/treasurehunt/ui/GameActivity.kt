@@ -214,34 +214,41 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private fun launchDaemon(challengeData: HashMap<String, Any>) {
         CoroutineScope(Dispatchers.IO).launch {
             var distanceTraveled = 0.0
-            var previousLocation = lastLocation
+            var previousLocation: Location? = null
+            if (ctx::lastLocation.isInitialized) {
+                previousLocation = lastLocation
+            }
             while (true) {
                 Thread.sleep(1000)
+                if (ctx::lastLocation.isInitialized && previousLocation != null) {
+                    val resultsDistance = FloatArray(1)
+                    Location.distanceBetween(
+                            previousLocation.latitude,
+                            previousLocation.longitude,
+                            lastLocation.latitude,
+                            lastLocation.longitude,
+                            resultsDistance
+                    )
 
-                val resultsDistance = FloatArray(1)
-                Location.distanceBetween(
-                        previousLocation.latitude,
-                        previousLocation.longitude,
-                        lastLocation.latitude,
-                        lastLocation.longitude,
-                        resultsDistance
-                )
+                    distanceTraveled += resultsDistance[0]
 
-                distanceTraveled += resultsDistance[0]
-                previousLocation = lastLocation
+                    val results = FloatArray(1)
+                    Location.distanceBetween(
+                            lastLocation.latitude,
+                            lastLocation.longitude,
+                            challengeData["latitude"] as Double,
+                            challengeData["longitude"] as Double,
+                            results
+                    )
 
-                val results = FloatArray(1)
-                Location.distanceBetween(
-                        lastLocation.latitude,
-                        lastLocation.longitude,
-                        challengeData["latitude"] as Double,
-                        challengeData["longitude"] as Double,
-                        results
-                )
+                    if (results[0] <= 1) {
+                        completeChallenge(challengeData)
+                        break
+                    }
+                }
 
-                if (results[0] <= 1) {
-                    completeChallenge(challengeData)
-                    break
+                if (ctx::lastLocation.isInitialized) {
+                    previousLocation = lastLocation
                 }
             }
         }

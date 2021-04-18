@@ -47,6 +47,11 @@ class CreateRace(BaseModel):
     user_id: int
 
 
+class GetRaces(BaseModel):
+    pw: str
+    user_id: int
+
+
 class DeleteChallenge(BaseModel):
     challenge_id: int
     pw: str

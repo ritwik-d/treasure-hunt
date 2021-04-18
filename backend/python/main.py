@@ -13,6 +13,14 @@ async def accept_invitation(json: AcceptInvitation, response: Response):
     response.status_code = user.accept_invitation(json.invitation_id)
 
 
+@app.post(paths.get('get_races'))
+async def get_races(json: GetRaces, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response_2 = user.get_races()
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
+
+
 @app.post(paths.get('decline_invitation'))
 async def decline_invitation(json: DeclineInvitation, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)

@@ -18,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class PickChallengeActivity : AppCompatActivity() {
@@ -57,7 +58,9 @@ class PickChallengeActivity : AppCompatActivity() {
                                 val rv = findViewById<RecyclerView>(R.id.pc_rview)
                                 val tabNames = challengeData.keys.toTypedArray()
                                 for (group in tabNames) {
-                                    tabLayout.addTab(tabLayout.newTab().setText(group))
+                                    if ((challengeData[group] as ArrayList<String>).isNotEmpty()) {
+                                        tabLayout.addTab(tabLayout.newTab().setText(group))
+                                    }
                                 }
 
                                 val firstTab = tabLayout.getTabAt(tabLayout.selectedTabPosition)?.text.toString()

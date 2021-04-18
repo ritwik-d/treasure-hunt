@@ -92,6 +92,7 @@ create table races (
   creator_id bigint unsigned not null,
   date_created datetime not null default current_timestamp,
   date_updated datetime not null default current_timestamp on update current_timestamp,
+  difficulty enum ('easy', 'medium', 'hard') not null,
   latitude double(12, 10) not null,
   longitude double(13, 10) not null,
   group_id bigint unsigned not null,

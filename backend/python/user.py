@@ -145,6 +145,15 @@ class User:
 
 
     @authenticate
+    def get_races(self):
+        db = DB()
+        db.connect()
+        groups = list(itertools.chain(*db.select(f"select group_id from groups where JSON_CONTAINS(members, '{self.user_id}')")))
+        races = db.select(f'''select title, creator_id, start_time from races where group_id in ({','.join(groups)})''', dict_cursor=True)
+        return {'status': 200, 'body': races}
+
+
+    @authenticate
     def delete_challenge(self, challenge_id: int):
         db = DB()
         db.connect()
