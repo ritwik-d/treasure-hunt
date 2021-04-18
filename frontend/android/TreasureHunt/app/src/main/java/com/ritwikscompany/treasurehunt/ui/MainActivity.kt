@@ -21,7 +21,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        startActivity(Intent(this, RacesActivity::class.java))
+
         checkIsLoggedIn()
+
+
 
         findViewById<Button>(R.id.main_login).setOnClickListener {
             logInOnClick()
@@ -72,8 +76,8 @@ class MainActivity : AppCompatActivity() {
                     if (status == 200) {
                         val (bytes, _) = result
                         if (bytes != null) {
-                            val userData = Gson().fromJson(String(bytes), HashMap::class.java) as HashMap<String, Any>
-                            userData["user_id"] = userData.get("user_id").toString().toDouble().toInt()
+                            val userData: HashMap<String, Any> = Gson().fromJson(String(bytes), HashMap::class.java) as HashMap<String, Any>
+                            userData["user_id"] = userData["user_id"].toString().toDouble().toInt()
 
                             val intent = Intent(ctx, HomeActivity::class.java).apply {
                                 putExtra("userData", userData)
