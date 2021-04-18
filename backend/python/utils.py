@@ -5,12 +5,45 @@ from email.mime.text import MIMEText
 from environment import *
 import hashlib
 import json
+import math
 import mimetypes
 import smtplib
 import ssl
 import random
 import string
 import redis
+
+
+def authenticate(func):
+    def wrapper(user, *args, **kwargs):
+        db = DB()
+        db.connect()
+        if db.select('select * from users where user_id = %s and password = %s', params=(user.user_id, user.pw), dict_cursor=True) != tuple():
+            return func(user, *args, **kwargs)
+    return wrapper
+
+
+def get_group_id(gname: str):
+    db = DB()
+    db.connect()
+    group_id = db.select('select group_id from user_groups where name = %s', params=(gname,), dict_cursor=True)
+    if group_id != tuple():
+        return group_id[0].get('group_id')
+
+
+def get_user_id(value: str, column='email'):
+    db = DB()
+    db.connect()
+    user_id = db.select(f'select user_id from users where {column} = %s', params=(value,), dict_cursor=True)
+    if user_id != tuple():
+        return user_id[0].get('user_id')
+
+
+def get_race_id(race_title: str):
+    db = DB()
+    db.connect()
+    return db.select('select race_id from races where title = %s', params=(race_title,), dict_cursor=True)[0].get('race_id')
+
 
 redis_connections = {}
 
@@ -44,7 +77,7 @@ class Race:
         self.start_time = start_time
         self.latitude = latitude
         self.longitude = longitude
-        self.group_d = group_id
+        self.group_id = group_id
 
 
     def create(self, creator_id: int):
@@ -62,6 +95,67 @@ class Race:
         if row_id is None:
             return False
         return True
+
+
+class RaceLocation:
+    def __init__(self, user_id: int, race_id: int, latitude=None, longitude=None):
+        self.user_id = user_id
+        self.race_id = race_id
+        self.latitude = latitude
+        self.longitude = longitude
+
+
+    def insert(self):
+        db = DB()
+        db.connect()
+        row = {
+            'race_id': self.race_id,
+            'user_id': self.user_id,
+            'latitude': self.latitude,
+            'longitude': self.longitude
+        }
+        row_id = db.insert('race_locations', row)
+        if row_id is None:
+            return False
+        return True
+
+
+    def update(self):
+        db = DB()
+        db.connect()
+        row_id = db.update('race_locations', {'latitude': self.latitude, 'longitude': self.longitude}, {'race_id': self.race_id, 'user_id': self.user_id})
+        if row_id is None:
+            return False
+        return True
+
+
+    def delete(self):
+        db = DB()
+        db.connect()
+        row_id = db.delete('race_locations', {'race_id': self.race_id, 'user_id': self.user_id})
+        if row_id is None:
+            return False
+        return True
+
+
+class RaceInProgress:
+    def __init__(self, race_id):
+        self.race_id = race_id
+
+
+    def add_user(self, user_id: int, latitude: float, longitude: float):
+        user_location = RaceLocation(user_id, self.race_id, latitude, longitude)
+        user_location.insert()
+
+
+    def remove_user(self, user_id: int):
+        user_location = RaceLocation(user_id, self.race_id)
+        user_location.delete()
+
+
+    def update_user(self, user_id: int, latitude: float, longitude: float):
+        user_location = RaceLocation(user_id, self.race_id, latitude, longitude)
+        user_location.update()
 
 
 def get_jwt(user_id: int):
@@ -126,3 +220,26 @@ def send_email(file_name: str, receiver_email: str, subject: str, sender_email=N
             return True
     except smtplib.SMTPRecipientsRefused:
         return False
+
+
+def create_random_race_location(latitude: float, longitude: float, difficulty: str):
+    direction = random.randint(1, 360)
+    magnitude = random.randint(-100, 100) / 1000 # kilometers
+    if difficulty == 'easy':
+        magnitude += 0.5
+    elif difficulty == 'medium':
+        magnitude += 1
+    elif difficulty == 'hard':
+        magnitude += 1.5
+    else:
+        return False
+
+    direction_rad = direction * math.pi / 180
+    x_displacement = magnitude * math.cos(direction_rad) # kilometers displacement x
+    y_displacement = magnitude * math.sin(direction_rad) # kilometers displacement y
+    radius_earth = 6371
+
+    final_longitude = longitude + (x_displacement / radius_earth) * (180 / math.pi) / math.cos(latitude * math.pi / 180)
+    final_latitude = latitude + (y_displacement / radius_earth) * (180 / math.pi)
+
+    return [round(final_latitude, 10), round(final_longitude, 10)]

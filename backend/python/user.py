@@ -14,37 +14,6 @@ from threading import Timer
 from utils import *
 
 
-def authenticate(func):
-    def wrapper(user, *args, **kwargs):
-        db = DB()
-        db.connect()
-        if db.select('select * from users where user_id = %s and password = %s', params=(user.user_id, user.pw), dict_cursor=True) != tuple():
-            return func(user, *args, **kwargs)
-    return wrapper
-
-
-def get_group_id(gname: str):
-    db = DB()
-    db.connect()
-    group_id = db.select('select group_id from user_groups where name = %s', params=(gname,), dict_cursor=True)
-    if group_id != tuple():
-        return group_id[0].get('group_id')
-
-
-def get_user_id(value: str, column='email'):
-    db = DB()
-    db.connect()
-    user_id = db.select(f'select user_id from users where {column} = %s', params=(value,), dict_cursor=True)
-    if user_id != tuple():
-        return user_id[0].get('user_id')
-
-
-def get_users(self):
-    db = DB()
-    db.connect()
-    return {'status': 200, 'body': list(db.select('select email, username from users', dict_cursor=True))}
-
-
 def verify_account_web(email_verify_token: str):
     db = DB()
     db.connect()
@@ -109,7 +78,7 @@ class User:
         db.connect()
         db.delete('challenges', {'challenge_id': challenge_id})
         points = db.select('select points from users where user_id = %s', params=(self.user_id,))[0][0] + 1
-        db.update('users', {'points', points}, {'user_id': self.user_id})
+        db.update('users', {'points': points}, {'user_id': self.user_id})
         return 200
 
 
