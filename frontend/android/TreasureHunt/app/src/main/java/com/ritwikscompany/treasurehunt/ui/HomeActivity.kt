@@ -32,13 +32,11 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 
 
-@Suppress("DEPRECATION")
 class HomeActivity : AppCompatActivity() {
 
     private val ctx = this@HomeActivity
     private var userData = HashMap<String, Any>()
 
-    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)

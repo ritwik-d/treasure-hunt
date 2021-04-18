@@ -20,6 +20,8 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.ritwikscompany.treasurehunt.utils.Utils
@@ -29,9 +31,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.collections.HashMap
+import kotlin.math.cos
+import kotlin.math.sin
 
 
-class GameActivity : AppCompatActivity(), OnMapReadyCallback {
+class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private val ctx = this@GameActivity
     private var userData = HashMap<String, Any>()
@@ -79,14 +83,16 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback {
                             var radius: Double = Double.MIN_VALUE
 
                             when (challengeData["difficulty"] as String) {
-                                "easy" -> radius = 5.0
-                                "medium" -> radius = 15.0
-                                "hard" -> radius = 25.0
+                                "easy" -> radius = 20.0
+                                "medium" -> radius = 60.0
+                                "hard" -> radius = 100.0
                             }
                             placeMarkerOnMap(challengeData["latitude"] as Double, challengeData["longitude"] as Double, radius)
 
                             findViewById<TextView>(R.id.game_puzzle).text = "Puzzle: ${challengeData["puzzle"] as String}"
                             findViewById<TextView>(R.id.game_creator).text = "Creator: ${challengeData["creator_name"] as String}"
+
+                            launchCompleteDaemon(challengeData)
                         }
                         else {
                             Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
@@ -105,6 +111,7 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(p0: GoogleMap?) {
         map = p0!!
         map.uiSettings.isZoomControlsEnabled = true
+        map.setOnMarkerClickListener(ctx)
 
         setUpMap()
 
@@ -125,10 +132,9 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback {
         val circleOptions = CircleOptions()
 
         val random = Random()
-        val latRandom = random.nextInt() % radius + 2
-        val longRandom = random.nextInt() % radius + 2
-
+        val latRandom = (random.nextInt() % (radius * 2 / 3)) / 111111
         chalLatFinal += latRandom
+        val longRandom = (random.nextInt() % (radius * 2 / 3)) / (111111 * cos(Math.toRadians(chalLatFinal)))
         chalLongFinal += longRandom
 
         circleOptions.center(LatLng(chalLatFinal, chalLongFinal))
@@ -137,6 +143,12 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback {
         circleOptions.strokeColor(Color.BLACK)
 
         map.addCircle(circleOptions)
+
+        val marker = MarkerOptions()
+        marker.position(LatLng(chalLatFinal, chalLongFinal))
+        marker.title("This challenge's general area")
+
+        map.addMarker(marker)
     }
 
 
@@ -199,8 +211,33 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
+    private fun launchCompleteDaemon(challengeData: HashMap<String, Any>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            while (true) {
+                Thread.sleep(1000)
+                withContext(Dispatchers.Main) {
+                    runOnUiThread {
+                        val results = FloatArray(1)
+                        Location.distanceBetween(
+                            lastLocation.latitude,
+                            lastLocation.longitude,
+                            challengeData["latitude"] as Double,
+                            challengeData["longitude"] as Double,
+                            results
+                        )
+
+                        if (results[0] <= 50) {
+                            completeChallenge(challengeData)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
     private fun completeChallenge(challengeData: HashMap<String, Any>) {
-        val challengeId: Int = challengeData["challenge_id"] as Int
+        val challengeId: Int = (challengeData["challenge_id"] as Double).toInt()
 
         val bodyJson = Gson().toJson(hashMapOf(
             "user_id" to userData["user_id"],
@@ -239,4 +276,6 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
+
+    override fun onMarkerClick(p0: Marker?): Boolean = false
 }

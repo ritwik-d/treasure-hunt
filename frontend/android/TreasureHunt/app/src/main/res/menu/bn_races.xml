@@ -3,20 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/bn_races_schedule_race"
-        android:title="@string/schedule_race"
-        android:icon="@drawable/schedule_race_icon"
-        app:showAsAction="always"/>
-
-    <item
         android:id="@+id/bn_races_find_race"
         android:title="@string/find_race"
         android:icon="@drawable/race"
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/bn_races_schedule_race"
+        android:title="@string/schedule_race"
+        android:icon="@drawable/schedule_race_icon"
+        app:showAsAction="always"/>
+
+    <item
         android:id="@+id/bn_races_upcoming_races"
         android:title="@string/upcoming_races"
         android:icon="@drawable/upcoming_races"
         app:showAsAction="always"/>
+
 </menu>

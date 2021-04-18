@@ -62,6 +62,8 @@
     <!--   races -->
 
     <string name="createRace">Create Race</string>
+    <string name="raceTitle">Race Title</string>
+    <string name="enter">Enter</string>
 
     <!--   groups -->
 
@@ -100,5 +102,4 @@
     <string name="find_race">Find Race</string>
     <string name="upcoming_races">Upcoming Races</string>
     <string name="click_here">Click Here</string>
-    <string name="schedule_race">Schedule Race</string>
 </resources>
