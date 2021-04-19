@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/bn_races_schedule_race"
-        android:title="@string/schedule_race"
+        android:title="@string/scheduleRace"
         android:icon="@drawable/schedule_race_icon"
         app:showAsAction="always"/>
 
