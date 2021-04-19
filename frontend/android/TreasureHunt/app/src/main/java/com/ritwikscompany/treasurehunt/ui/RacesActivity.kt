@@ -6,8 +6,6 @@ import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
 import android.app.TimePickerDialog.OnTimeSetListener
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -37,7 +35,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class RacesActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+@Suppress("DEPRECATION", "NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+class RacesActivity : AppCompatActivity(),
+    OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
+    AdapterView.OnItemSelectedListener {
 
     private val ctx = this@RacesActivity
     private lateinit var map: GoogleMap
@@ -68,13 +69,7 @@ class RacesActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarke
             showDateDialog()
         }
 
-        diffSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                placeMarkerOnMap(diffSpinner.selectedItem.toString())
-            }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) {}
-        }
+        diffSpinner.onItemSelectedListener = this
     }
 
 
@@ -154,8 +149,18 @@ class RacesActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarke
         }, Looper.myLooper())
     }
 
+    private fun moveCamera(latLng: LatLng, zoom: Float) {
+        if (ctx::map.isInitialized) {
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom))
+        }
+    }
+
 
     private fun placeMarkerOnMap(difficulty: String) {
+        if (!ctx::lastLocation.isInitialized) {
+            return
+        }
+
         val bodyJson = Gson().toJson(hashMapOf(
                 "user_id" to userData["user_id"],
                 "pw" to userData["password"],
@@ -182,6 +187,12 @@ class RacesActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarke
                             marker.title("This Race's Location")
 
                             map.addMarker(marker)
+                            moveCamera(
+                                LatLng(
+                                lastLocation.latitude,
+                                lastLocation.longitude
+                            ), DEFAULT_ZOOM
+                            )
                         }
 
                         else {
@@ -269,4 +280,14 @@ class RacesActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarke
     }
 
     override fun onMarkerClick(p0: Marker?): Boolean = false
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        placeMarkerOnMap(diffSpinner.selectedItem.toString())
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {}
+
+    companion object {
+        private const val DEFAULT_ZOOM = 15f
+    }
 }
