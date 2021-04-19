@@ -192,3 +192,12 @@ class UpdateGroupSettings(BaseModel):
     group_id: int
     allow_members_code: int
     min_points: int
+
+
+
+class SimulateRaceLocation(BaseModel):
+    difficulty: str
+    latitude: float
+    longitude: float
+    pw: str
+    user_id: str

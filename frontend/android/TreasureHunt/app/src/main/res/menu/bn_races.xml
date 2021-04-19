@@ -3,12 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/bn_races_find_race"
-        android:title="@string/find_race"
-        android:icon="@drawable/race"
-        app:showAsAction="always" />
-
-    <item
         android:id="@+id/bn_races_schedule_race"
         android:title="@string/schedule_race"
         android:icon="@drawable/schedule_race_icon"

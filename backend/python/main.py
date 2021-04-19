@@ -230,3 +230,8 @@ async def upload_pfp(response: Response, image: UploadFile = File(...), user_id:
 @app.get(paths.get('verify_account'))
 async def verify_account(email_verify_token: str):
     return verify_account_web(email_verify_token)
+
+
+@app.post(paths.get('simulate_race_location'))
+async def simulate_race_location(json: SimulateRaceLocation, response: Response):
+    return create_random_race_location(json.latitude, json.longitude, json.difficulty)
