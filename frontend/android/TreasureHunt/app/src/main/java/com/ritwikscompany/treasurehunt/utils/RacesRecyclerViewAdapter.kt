@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ritwikscompany.treasurehunt.R
 
 class RacesRecyclerViewAdapter(var races: ArrayList<Race>,
-        var onEnterClicked: (raceTitle: String) -> Unit)
+        var onEnterClicked: (race: Race) -> Unit)
     : RecyclerView.Adapter<RacesRecyclerViewAdapter.ViewHolder>() {
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val creatorTV = itemView.findViewById<TextView>(R.id.row_race_creator)!!
@@ -30,7 +30,7 @@ class RacesRecyclerViewAdapter(var races: ArrayList<Race>,
         holder.raceGroupTV.text = races[position].groupName
         holder.raceTitleTV.text = races[position].title
         holder.enterBTN.setOnClickListener {
-            onEnterClicked(races[position].title)
+            onEnterClicked(races[position])
         }
     }
 

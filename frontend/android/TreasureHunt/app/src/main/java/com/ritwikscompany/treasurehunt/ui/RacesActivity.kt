@@ -6,6 +6,7 @@ import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
 import android.app.TimePickerDialog.OnTimeSetListener
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -63,6 +64,10 @@ class RacesActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_races)
 
+        setUpUI()
+    }
+
+    private fun setUpUI() {
         userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
         titleET = findViewById(R.id.race_title)
         diffSpinner = findViewById(R.id.race_diff)
@@ -70,45 +75,38 @@ class RacesActivity : AppCompatActivity(),
         racesRV = findViewById(R.id.race_races_rv)
         groupsTB = findViewById(R.id.race_groups_tb)
 
+        titleET = findViewById(R.id.race_title)
+        diffSpinner = findViewById(R.id.race_diff)
+        groupsSpinner = findViewById(R.id.race_groups)
+        racesRV = findViewById(R.id.race_races_rv)
+        groupsTB = findViewById(R.id.race_groups_tb)
+
+        setUpRacesRVAndGroupsTB()
+
+        setUpBottomNavigation()
+    }
+
+    private fun setUpBottomNavigation() {
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.race_bn)
+
+        bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.bn_races_schedule_race ->
+                    setUpScheduleRace()
+
+                R.id.bn_races_upcoming_races ->
+                    setUpUpcomingRaces()
+            }
+
+            true
+        }
+    }
+
+    private fun setUpRacesRVAndGroupsTB() {
         val bodyJson = Gson().toJson(hashMapOf(
                 "pw" to userData["pw"],
                 "user_id" to userData["user_id"]
         ))
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_groups")
-                    .body(bodyJson)
-                    .header("Content-Type" to "application/json")
-                    .response()
-
-            withContext(Dispatchers.Main) {
-                runOnUiThread {
-                    if (response.statusCode == 200) {
-                        val (bytes, _) = result
-
-                        if (bytes != null) {
-                            val type = object : TypeToken<ArrayList<String>>() {}.type
-                            val groups = Gson().fromJson(String(bytes), type) as ArrayList<String>
-
-                            for (group in groups) {
-                                groupsTB.addTab(groupsTB.newTab().setText(group))
-                            }
-
-                            groupsTB.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
-                                override fun onTabSelected(tab: TabLayout.Tab?) {
-                                    
-                                }
-
-                                override fun onTabUnselected(tab: TabLayout.Tab?) {}
-
-                                override fun onTabReselected(tab: TabLayout.Tab?) {}
-
-                            })
-                        }
-                    }
-                }
-            }
-        }
 
         CoroutineScope(Dispatchers.IO).launch {
             val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_races")
@@ -122,47 +120,84 @@ class RacesActivity : AppCompatActivity(),
                         val (bytes, _) = result
 
                         if (bytes != null) {
-                            val type = object: TypeToken<ArrayList<HashMap<String, Any>>>(){}.type
-                            val races1 = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, Any>>
+                            val type = object : TypeToken<ArrayList<HashMap<String, Any>>>() {}.type
+                            val racesData = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, Any>>
                             val races = ArrayList<Race>()
+                            val groups = ArrayList<String>()
+                            val groupsRaces = HashMap<String, ArrayList<Race>>()
 
-                            for (race in races1) {
-                                races.add(
-                                    Race(
-                                        race["title"] as String,
-                                        race["start_time"] as String,
-                                        (race["creator_id"] as Double).toInt(),
-                                        race["creator_username"] as String,
-                                        race["group_name"] as String
-                                    )
+                            for (raceData in racesData) {
+                                val race = Race(
+                                        raceData["title"] as String,
+                                        raceData["start_time"] as String,
+                                        raceData["creator_id"] as Int,
+                                        raceData["creator_username"] as String,
+                                        raceData["group_name"] as String
                                 )
+
+                                races.add(race)
+
+                                if (!groups.contains(race.groupName)) {
+                                    val racesOfGroup = ArrayList<Race>()
+                                    racesOfGroup.add(race)
+
+                                    groups.add(race.groupName)
+                                    groupsRaces[race.groupName] = racesOfGroup
+                                }
                             }
 
-                            val adapter = RacesRecyclerViewAdapter(races) { raceTitle ->
+                            groupsTB.addTab(groupsTB.newTab().setText("All"))
 
+                            for (group in groups) {
+                                groupsTB.addTab(groupsTB.newTab().setText(group))
                             }
+
+                            val racesAdapter = RacesRecyclerViewAdapter(races) { race ->
+                                val raceData = hashMapOf(
+                                        "title" to race.title,
+                                        "startTime" to race.startTime,
+                                        "creator" to race.creatorName,
+                                        "groupName" to race.groupName
+                                )
+
+                                startActivity(Intent(this@RacesActivity, RaceDataActivity::class.java).apply {
+                                    putExtra("raceData", raceData)
+                                    putExtra("userData", userData)
+                                })
+                            }
+
+                            racesRV.adapter = racesAdapter
                             racesRV.layoutManager = LinearLayoutManager(ctx)
-                            racesRV.adapter = adapter
+
+                            groupsTB.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                                override fun onTabSelected(tab: TabLayout.Tab?) {
+                                    val racesOfGroup = groupsRaces[tab?.text.toString()]
+
+                                    val racesOfGroupAdapter = RacesRecyclerViewAdapter(racesOfGroup!!) { race ->
+                                        val raceData = hashMapOf(
+                                                "title" to race.title,
+                                                "startTime" to race.startTime,
+                                                "creator" to race.creatorName,
+                                                "groupName" to race.groupName
+                                        )
+
+                                        startActivity(Intent(this@RacesActivity, RaceDataActivity::class.java).apply {
+                                            putExtra("raceData", raceData)
+                                            putExtra("userData", userData)
+                                        })
+                                    }
+
+                                    racesRV.adapter = racesOfGroupAdapter
+                                }
+
+                                override fun onTabUnselected(tab: TabLayout.Tab?) {}
+
+                                override fun onTabReselected(tab: TabLayout.Tab?) {}
+                            })
                         }
                     }
                 }
             }
-        }
-
-        setUpScheduleRace()
-
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.race_bn)
-
-        bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.bn_races_schedule_race ->
-                    setUpScheduleRace()
-
-                R.id.bn_races_upcoming_races ->
-                    setUpUpcomingRaces()
-            }
-
-            true
         }
     }
 
@@ -184,8 +219,6 @@ class RacesActivity : AppCompatActivity(),
         groupsSpinner.visibility = View.GONE
         racesRV.visibility = View.VISIBLE
         groupsTB.visibility = View.VISIBLE
-
-
     }
 
     private fun setUpScheduleRace() {
@@ -225,15 +258,6 @@ class RacesActivity : AppCompatActivity(),
         map.setOnMarkerClickListener(ctx)
 
         setUpMap()
-
-//        findViewById<ImageButton>(R.id.cc_satellite).setOnClickListener {
-//            if (map.mapType == GoogleMap.MAP_TYPE_NORMAL) {
-//                map.mapType = GoogleMap.MAP_TYPE_HYBRID
-//            }
-//            else {
-//                map.mapType = GoogleMap.MAP_TYPE_NORMAL
-//            }
-//        }
     }
 
 
