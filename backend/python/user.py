@@ -216,7 +216,7 @@ class User:
     def get_groups(self, is_admin: int):
         db = DB()
         db.connect()
-        group1 = None
+        groups1 = None
         if is_admin == 0:
             groups1 = db.select(f"select name from user_groups where JSON_CONTAINS(members, '{self.user_id}')")
         else:

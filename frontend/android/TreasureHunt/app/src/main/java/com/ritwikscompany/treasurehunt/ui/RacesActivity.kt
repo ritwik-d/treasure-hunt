@@ -14,15 +14,18 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.RecyclerView
 import com.github.kittinunf.fuel.Fuel
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.tabs.TabLayout
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.ritwikscompany.treasurehunt.R
@@ -44,27 +47,137 @@ class RacesActivity : AppCompatActivity(),
     private lateinit var map: GoogleMap
     private lateinit var titleET: EditText
     private lateinit var diffSpinner: Spinner
+    private lateinit var groupsSpinner: Spinner
     private lateinit var lastLocation: Location
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
+    private lateinit var racesRV: RecyclerView
+    private lateinit var groupsTB: TabLayout
     private var userData = HashMap<String, Any>()
+    private var groups = ArrayList<String>()
+    private var races = ArrayList<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_races)
 
         this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
+
+        val bodyJson = Gson().toJson(hashMapOf(
+                "pw" to userData["pw"],
+                "user_id" to userData["user_id"]
+        ))
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_groups")
+                    .body(bodyJson)
+                    .header("Content-Type" to "application/json")
+                    .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    if (response.statusCode == 200) {
+                        val (bytes, _) = result
+
+                        if (bytes != null) {
+                            val type = object : TypeToken<ArrayList<String>>() {}.type
+                            val groups = Gson().fromJson(String(bytes), type) as ArrayList<String>
+
+                            this@RacesActivity.groups = groups
+                        }
+                    }
+                }
+            }
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_races")
+                    .body(bodyJson)
+                    .header("Content-Type" to "application/json")
+                    .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    if (response.statusCode == 200) {
+                        val (bytes, _) = result
+
+                        if (bytes != null) {
+                            val type = object : TypeToken<ArrayList<String>>() {}.type
+                            val races = Gson().fromJson(String(bytes), type) as ArrayList<String>
+
+                            this@RacesActivity.races = races
+                        }
+                    }
+                }
+            }
+        }
+
         this.titleET = findViewById(R.id.race_title)
         this.diffSpinner = findViewById(R.id.race_diff)
+        this.groupsSpinner = findViewById(R.id.race_groups)
+        this.racesRV = findViewById(R.id.race_races_rv)
+        this.groupsTB = findViewById(R.id.race_groups_tb)
 
+        setUpScheduleRace()
+
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.race_bn)
+
+        bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.bn_races_schedule_race ->
+                    setUpScheduleRace()
+
+                R.id.bn_races_upcoming_races ->
+                    setUpUpcomingRaces()
+            }
+
+            true
+        }
+    }
+
+    private fun setUpUpcomingRaces() {
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.race_create_map) as SupportMapFragment
+
+        val fm = supportFragmentManager
+        fm.beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                .hide(mapFragment)
+                .commit()
+
+        val scheduleRaceBTN = findViewById<Button>(R.id.race_schedule)
+        scheduleRaceBTN.visibility = View.GONE
+
+        titleET.visibility = View.GONE
+        diffSpinner.visibility = View.GONE
+        groupsSpinner.visibility = View.GONE
+        racesRV.visibility = View.VISIBLE
+        groupsTB.visibility = View.VISIBLE
+    }
+
+    private fun setUpScheduleRace() {
+        val mapFragment = supportFragmentManager
+                .findFragmentById(R.id.race_create_map) as SupportMapFragment
+
+        val fm = supportFragmentManager
+        fm.beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                .show(mapFragment)
+                .commit()
+
         mapFragment.getMapAsync(ctx)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(ctx)
 
         startLocationUpdates()
 
         val scheduleRaceBTN = findViewById<Button>(R.id.race_schedule)
+        scheduleRaceBTN.visibility = View.VISIBLE
+        titleET.visibility = View.VISIBLE
+        diffSpinner.visibility = View.VISIBLE
+        groupsSpinner.visibility = View.VISIBLE
+        racesRV.visibility = View.GONE
+        groupsTB.visibility = View.GONE
+
         scheduleRaceBTN.setOnClickListener {
             showDateDialog()
         }
@@ -106,7 +219,7 @@ class RacesActivity : AppCompatActivity(),
             if (location != null) {
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17f))
+                moveCamera(currentLatLng, DEFAULT_ZOOM)
             }
         }
     }
@@ -123,16 +236,6 @@ class RacesActivity : AppCompatActivity(),
         val locationSettingsRequest = builder.build()
         val settingsClient = LocationServices.getSettingsClient(ctx)
         settingsClient.checkLocationSettings(locationSettingsRequest)
-        if (ActivityCompat.checkSelfPermission(
-                        ctx,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                        ctx,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return
-        }
 
         if (ActivityCompat.checkSelfPermission(ctx,
                         Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -142,7 +245,7 @@ class RacesActivity : AppCompatActivity(),
             return
         }
 
-        fusedLocationClient.requestLocationUpdates(locationRequest, object: LocationCallback() {
+        fusedLocationClient.requestLocationUpdates(locationRequest, object : LocationCallback() {
             override fun onLocationResult(p0: LocationResult) {
                 lastLocation = p0.lastLocation
             }
@@ -157,55 +260,28 @@ class RacesActivity : AppCompatActivity(),
 
 
     private fun placeMarkerOnMap(difficulty: String) {
-        if (!ctx::lastLocation.isInitialized) {
+        if (!ctx::lastLocation.isInitialized || !this::map.isInitialized) {
             return
         }
 
-        val bodyJson = Gson().toJson(hashMapOf(
-                "user_id" to userData["user_id"],
-                "pw" to userData["password"],
-                "difficulty" to difficulty,
-                "latitude" to lastLocation.latitude,
-                "longitude" to lastLocation.longitude
-        ))
-        CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/simulate_race_location")
-                    .body(bodyJson)
-                    .header("Content-Type" to "application/json")
-                    .response()
+        val circle = CircleOptions()
+        val currentLocation = LatLng(
+                lastLocation.latitude,
+                lastLocation.longitude
+        )
 
-            withContext(Dispatchers.Main) {
-                runOnUiThread {
-                    val status = response.statusCode
-                    if (status == 200) {
-                        val (bytes, _) = result
-                        if (bytes != null) {
-                            val raceLatLong = Gson().fromJson(String(bytes), object: TypeToken<ArrayList<Double>>(){}.type) as ArrayList<Double>
+        circle.center(currentLocation)
 
-                            val marker = MarkerOptions()
-                            marker.position(LatLng(raceLatLong[0], raceLatLong[1]))
-                            marker.title("This Race's Location")
-
-                            map.addMarker(marker)
-                            moveCamera(
-                                LatLng(
-                                lastLocation.latitude,
-                                lastLocation.longitude
-                            ), DEFAULT_ZOOM
-                            )
-                        }
-
-                        else {
-                            Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
-                        }
-                    }
-
-                    else if (status == 404) {
-                        Toast.makeText(ctx, "Log In Failure", Toast.LENGTH_LONG).show()
-                    }
-                }
-            }
+        when (difficulty) {
+            "Easy" ->
+                circle.radius(500.0)
+            "Medium" ->
+                circle.radius(1000.0)
+            "Hard" ->
+                circle.radius(1500.0)
         }
+
+        map.addCircle(circle)
     }
 
 
@@ -229,7 +305,7 @@ class RacesActivity : AppCompatActivity(),
                 runOnUiThread {
                     val (bytes, _) = result
                     if (bytes != null) {
-                        when ((Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, String>>(){}.type) as HashMap<String, String>)["error"]) {
+                        when ((Gson().fromJson(String(bytes), object : TypeToken<HashMap<String, String>>() {}.type) as HashMap<String, String>)["error"]) {
                             "title exists" -> {
                                 titleET.error = "Title already exists"
                                 titleET.requestFocus()
@@ -262,20 +338,20 @@ class RacesActivity : AppCompatActivity(),
                         scheduleRace(titleET.text.toString(), simpleDateFormat.format(calendar.time), 0.0, 0.0, findViewById<Spinner>(R.id.race_groups).selectedItem.toString())
                     }
                 TimePickerDialog(
-                    ctx,
-                    timeSetListener,
-                    calendar.get(Calendar.HOUR_OF_DAY),
-                    calendar.get(Calendar.MINUTE),
-                    false
+                        ctx,
+                        timeSetListener,
+                        calendar.get(Calendar.HOUR_OF_DAY),
+                        calendar.get(Calendar.MINUTE),
+                        false
                 ).show()
             }
 
         DatePickerDialog(
-            ctx,
-            dateSetListener,
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
+                ctx,
+                dateSetListener,
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
         ).show()
     }
 
