@@ -108,7 +108,7 @@ class RacesActivity : AppCompatActivity(),
                         val (bytes, _) = result
 
                         if (bytes != null) {
-                            val type = object : TypeToken<ArrayList<String>>() {}.type
+                            val type = object: TypeToken<ArrayList<String>>(){}.type
                             val races = Gson().fromJson(String(bytes), type) as ArrayList<String>
 
                             this@RacesActivity.races = races
@@ -251,7 +251,7 @@ class RacesActivity : AppCompatActivity(),
             return
         }
 
-        fusedLocationClient.requestLocationUpdates(locationRequest, object : LocationCallback() {
+        fusedLocationClient.requestLocationUpdates(locationRequest, object: LocationCallback() {
             override fun onLocationResult(p0: LocationResult) {
                 lastLocation = p0.lastLocation
             }
@@ -266,7 +266,7 @@ class RacesActivity : AppCompatActivity(),
 
 
     private fun placeMarkerOnMap(difficulty: String) {
-        if (!ctx::lastLocation.isInitialized || !this::map.isInitialized) {
+        if (!ctx::lastLocation.isInitialized || !ctx::map.isInitialized) {
             return
         }
 
@@ -311,7 +311,7 @@ class RacesActivity : AppCompatActivity(),
                 runOnUiThread {
                     val (bytes, _) = result
                     if (bytes != null) {
-                        when ((Gson().fromJson(String(bytes), object : TypeToken<HashMap<String, String>>() {}.type) as HashMap<String, String>)["error"]) {
+                        when ((Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, String>>() {}.type) as HashMap<String, String>)["error"]) {
                             "title exists" -> {
                                 titleET.error = "Title already exists"
                                 titleET.requestFocus()

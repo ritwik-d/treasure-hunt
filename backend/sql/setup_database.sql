@@ -19,12 +19,13 @@ create table users (
   date_last_login datetime,
   email varchar(255) not null,
   is_verified enum ('true', 'false') not null default 'false',
-  password char(64) not null,
+  password char(64),
   points int unsigned not null default 0,
   picture_extension varchar(8),
   receive_emails enum ('true', 'false') not null,
   status enum ('active', 'suspended', 'deleted') not null default 'active',
-  email_verify_token char(10) not null
+  email_verify_token char(10) not null,
+  auth_type enum ('password', 'google') not null default 'password'
 ) engine=innodb;
 
 -- create unique index on email
