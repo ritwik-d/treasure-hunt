@@ -90,7 +90,7 @@ class GroupChatActivity : AppCompatActivity() {
 
     private fun getMessagesFinal(groupId: Int) {
         CoroutineScope(Dispatchers.IO).launch {
-            while (active) {
+            while (ctx.active) {
                 Thread.sleep(1000)
                 getMessages(groupId)
             }

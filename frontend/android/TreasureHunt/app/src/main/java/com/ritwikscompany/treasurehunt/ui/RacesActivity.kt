@@ -6,7 +6,6 @@ import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
 import android.app.TimePickerDialog.OnTimeSetListener
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -16,18 +15,24 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.kittinunf.fuel.Fuel
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.tabs.TabLayout
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.ritwikscompany.treasurehunt.R
+import com.ritwikscompany.treasurehunt.utils.Race
+import com.ritwikscompany.treasurehunt.utils.RacesRecyclerViewAdapter
 import com.ritwikscompany.treasurehunt.utils.Utils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,45 +41,214 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
-class RacesActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+@Suppress("DEPRECATION", "NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+class RacesActivity : AppCompatActivity(),
+    OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
+    AdapterView.OnItemSelectedListener {
 
     private val ctx = this@RacesActivity
     private lateinit var map: GoogleMap
     private lateinit var titleET: EditText
     private lateinit var diffSpinner: Spinner
+    private lateinit var groupsSpinner: Spinner
     private lateinit var lastLocation: Location
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
+    private lateinit var racesRV: RecyclerView
+    private lateinit var groupsTB: TabLayout
     private var userData = HashMap<String, Any>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_races)
 
-        this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
-        this.titleET = findViewById(R.id.race_title)
-        this.diffSpinner = findViewById(R.id.race_diff)
+        setUpUI()
+    }
 
+    private fun setUpUI() {
+        userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
+        titleET = findViewById(R.id.race_title)
+        diffSpinner = findViewById(R.id.race_diff)
+        groupsSpinner = findViewById(R.id.race_groups)
+        racesRV = findViewById(R.id.race_races_rv)
+        groupsTB = findViewById(R.id.race_groups_tb)
+
+        titleET = findViewById(R.id.race_title)
+        diffSpinner = findViewById(R.id.race_diff)
+        groupsSpinner = findViewById(R.id.race_groups)
+        racesRV = findViewById(R.id.race_races_rv)
+        groupsTB = findViewById(R.id.race_groups_tb)
+
+        setUpRacesRVAndGroupsTB()
+
+        setUpBottomNavigation()
+    }
+
+    private fun setUpBottomNavigation() {
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.race_bn)
+
+        bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.bn_races_schedule_race ->
+                    setUpScheduleRace()
+
+                R.id.bn_races_upcoming_races ->
+                    setUpUpcomingRaces()
+            }
+
+            true
+        }
+    }
+
+    private fun setUpRacesRVAndGroupsTB() {
+        val bodyJson = Gson().toJson(hashMapOf(
+                "pw" to userData["pw"],
+                "user_id" to userData["user_id"]
+        ))
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_races")
+                    .body(bodyJson)
+                    .header("Content-Type" to "application/json")
+                    .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    if (response.statusCode == 200) {
+                        val (bytes, _) = result
+
+                        if (bytes != null) {
+                            val type = object : TypeToken<ArrayList<HashMap<String, Any>>>() {}.type
+                            val racesData = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, Any>>
+                            val races = ArrayList<Race>()
+                            val groups = ArrayList<String>()
+                            val groupsRaces = HashMap<String, ArrayList<Race>>()
+
+                            for (raceData in racesData) {
+                                val race = Race(
+                                        raceData["title"] as String,
+                                        raceData["start_time"] as String,
+                                        raceData["creator_id"] as Int,
+                                        raceData["creator_username"] as String,
+                                        raceData["group_name"] as String
+                                )
+
+                                races.add(race)
+
+                                if (!groups.contains(race.groupName)) {
+                                    val racesOfGroup = ArrayList<Race>()
+                                    racesOfGroup.add(race)
+
+                                    groups.add(race.groupName)
+                                    groupsRaces[race.groupName] = racesOfGroup
+                                }
+                            }
+
+                            groupsTB.addTab(groupsTB.newTab().setText("All"))
+
+                            for (group in groups) {
+                                groupsTB.addTab(groupsTB.newTab().setText(group))
+                            }
+
+                            val racesAdapter = RacesRecyclerViewAdapter(races) { race ->
+                                val raceData = hashMapOf(
+                                        "title" to race.title,
+                                        "startTime" to race.startTime,
+                                        "creator" to race.creatorName,
+                                        "groupName" to race.groupName
+                                )
+
+                                startActivity(Intent(this@RacesActivity, RaceDataActivity::class.java).apply {
+                                    putExtra("raceData", raceData)
+                                    putExtra("userData", userData)
+                                })
+                            }
+
+                            racesRV.adapter = racesAdapter
+                            racesRV.layoutManager = LinearLayoutManager(ctx)
+
+                            groupsTB.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                                override fun onTabSelected(tab: TabLayout.Tab?) {
+                                    val racesOfGroup = groupsRaces[tab?.text.toString()]
+
+                                    val racesOfGroupAdapter = RacesRecyclerViewAdapter(racesOfGroup!!) { race ->
+                                        val raceData = hashMapOf(
+                                                "title" to race.title,
+                                                "startTime" to race.startTime,
+                                                "creator" to race.creatorName,
+                                                "groupName" to race.groupName
+                                        )
+
+                                        startActivity(Intent(this@RacesActivity, RaceDataActivity::class.java).apply {
+                                            putExtra("raceData", raceData)
+                                            putExtra("userData", userData)
+                                        })
+                                    }
+
+                                    racesRV.adapter = racesOfGroupAdapter
+                                }
+
+                                override fun onTabUnselected(tab: TabLayout.Tab?) {}
+
+                                override fun onTabReselected(tab: TabLayout.Tab?) {}
+                            })
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setUpUpcomingRaces() {
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.race_create_map) as SupportMapFragment
+
+        val fm = supportFragmentManager
+        fm.beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                .hide(mapFragment)
+                .commit()
+
+        val scheduleRaceBTN = findViewById<Button>(R.id.race_schedule)
+        scheduleRaceBTN.visibility = View.GONE
+
+        titleET.visibility = View.GONE
+        diffSpinner.visibility = View.GONE
+        groupsSpinner.visibility = View.GONE
+        racesRV.visibility = View.VISIBLE
+        groupsTB.visibility = View.VISIBLE
+    }
+
+    private fun setUpScheduleRace() {
+        val mapFragment = supportFragmentManager
+                .findFragmentById(R.id.race_create_map) as SupportMapFragment
+
+        val fm = supportFragmentManager
+        fm.beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                .show(mapFragment)
+                .commit()
+
         mapFragment.getMapAsync(ctx)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(ctx)
 
         startLocationUpdates()
 
         val scheduleRaceBTN = findViewById<Button>(R.id.race_schedule)
+        scheduleRaceBTN.visibility = View.VISIBLE
+        titleET.visibility = View.VISIBLE
+        diffSpinner.visibility = View.VISIBLE
+        groupsSpinner.visibility = View.VISIBLE
+        racesRV.visibility = View.GONE
+        groupsTB.visibility = View.GONE
+
         scheduleRaceBTN.setOnClickListener {
             showDateDialog()
         }
 
-        diffSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                placeMarkerOnMap(diffSpinner.selectedItem.toString())
-            }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) {}
-        }
+        diffSpinner.onItemSelectedListener = this
     }
 
 
@@ -84,15 +258,6 @@ class RacesActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarke
         map.setOnMarkerClickListener(ctx)
 
         setUpMap()
-
-//        findViewById<ImageButton>(R.id.cc_satellite).setOnClickListener {
-//            if (map.mapType == GoogleMap.MAP_TYPE_NORMAL) {
-//                map.mapType = GoogleMap.MAP_TYPE_HYBRID
-//            }
-//            else {
-//                map.mapType = GoogleMap.MAP_TYPE_NORMAL
-//            }
-//        }
     }
 
 
@@ -111,7 +276,7 @@ class RacesActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarke
             if (location != null) {
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17f))
+                moveCamera(currentLatLng, DEFAULT_ZOOM)
             }
         }
     }
@@ -128,16 +293,6 @@ class RacesActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarke
         val locationSettingsRequest = builder.build()
         val settingsClient = LocationServices.getSettingsClient(ctx)
         settingsClient.checkLocationSettings(locationSettingsRequest)
-        if (ActivityCompat.checkSelfPermission(
-                        ctx,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                        ctx,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return
-        }
 
         if (ActivityCompat.checkSelfPermission(ctx,
                         Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -154,47 +309,36 @@ class RacesActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarke
         }, Looper.myLooper())
     }
 
+    private fun moveCamera(latLng: LatLng, zoom: Float) {
+        if (ctx::map.isInitialized) {
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom))
+        }
+    }
+
 
     private fun placeMarkerOnMap(difficulty: String) {
-        val bodyJson = Gson().toJson(hashMapOf(
-                "user_id" to userData["user_id"],
-                "pw" to userData["password"],
-                "difficulty" to difficulty,
-                "latitude" to lastLocation.latitude,
-                "longitude" to lastLocation.longitude
-        ))
-        CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/simulate_race_location")
-                    .body(bodyJson)
-                    .header("Content-Type" to "application/json")
-                    .response()
-
-            withContext(Dispatchers.Main) {
-                runOnUiThread {
-                    val status = response.statusCode
-                    if (status == 200) {
-                        val (bytes, _) = result
-                        if (bytes != null) {
-                            val raceLatLong = Gson().fromJson(String(bytes), object: TypeToken<ArrayList<Double>>(){}.type) as ArrayList<Double>
-
-                            val marker = MarkerOptions()
-                            marker.position(LatLng(raceLatLong[0], raceLatLong[1]))
-                            marker.title("This Race's Location")
-
-                            map.addMarker(marker)
-                        }
-
-                        else {
-                            Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
-                        }
-                    }
-
-                    else if (status == 404) {
-                        Toast.makeText(ctx, "Log In Failure", Toast.LENGTH_LONG).show()
-                    }
-                }
-            }
+        if (!ctx::lastLocation.isInitialized || !ctx::map.isInitialized) {
+            return
         }
+
+        val circle = CircleOptions()
+        val currentLocation = LatLng(
+                lastLocation.latitude,
+                lastLocation.longitude
+        )
+
+        circle.center(currentLocation)
+
+        when (difficulty) {
+            "Easy" ->
+                circle.radius(500.0)
+            "Medium" ->
+                circle.radius(1000.0)
+            "Hard" ->
+                circle.radius(1500.0)
+        }
+
+        map.addCircle(circle)
     }
 
 
@@ -218,7 +362,7 @@ class RacesActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarke
                 runOnUiThread {
                     val (bytes, _) = result
                     if (bytes != null) {
-                        when ((Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, String>>(){}.type) as HashMap<String, String>)["error"]) {
+                        when ((Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, String>>() {}.type) as HashMap<String, String>)["error"]) {
                             "title exists" -> {
                                 titleET.error = "Title already exists"
                                 titleET.requestFocus()
@@ -251,22 +395,32 @@ class RacesActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarke
                         scheduleRace(titleET.text.toString(), simpleDateFormat.format(calendar.time), 0.0, 0.0, findViewById<Spinner>(R.id.race_groups).selectedItem.toString())
                     }
                 TimePickerDialog(
-                    ctx,
-                    timeSetListener,
-                    calendar.get(Calendar.HOUR_OF_DAY),
-                    calendar.get(Calendar.MINUTE),
-                    false
+                        ctx,
+                        timeSetListener,
+                        calendar.get(Calendar.HOUR_OF_DAY),
+                        calendar.get(Calendar.MINUTE),
+                        false
                 ).show()
             }
 
         DatePickerDialog(
-            ctx,
-            dateSetListener,
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
+                ctx,
+                dateSetListener,
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
         ).show()
     }
 
     override fun onMarkerClick(p0: Marker?): Boolean = false
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        placeMarkerOnMap(diffSpinner.selectedItem.toString())
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {}
+
+    companion object {
+        private const val DEFAULT_ZOOM = 15f
+    }
 }

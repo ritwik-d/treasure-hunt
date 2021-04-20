@@ -149,7 +149,11 @@ class User:
         db = DB()
         db.connect()
         groups = list(itertools.chain(*db.select(f"select group_id from groups where JSON_CONTAINS(members, '{self.user_id}')")))
-        races = db.select(f'''select title, creator_id, start_time from races where group_id in ({','.join(groups)})''', dict_cursor=True)
+        races = db.select(f'''select title, creator_id, start_time, group_id from races where group_id in ({','.join(groups)})''', dict_cursor=True)
+        for race in races:
+            race['start_time'] = str(start_time)
+            race['group_name'] = db.select('select name from user_groups where group_id = %s', params=(race['group_id'],), dict_cursor=True)[0].get('name')
+            race['creator_username'] = db.select('select username from users where user_id = %s', params=(race['creator_id'],), dict_cursor=True)[0].get('username')
         return {'status': 200, 'body': races}
 
 
@@ -216,7 +220,7 @@ class User:
     def get_groups(self, is_admin: int):
         db = DB()
         db.connect()
-        group1 = None
+        groups1 = None
         if is_admin == 0:
             groups1 = db.select(f"select name from user_groups where JSON_CONTAINS(members, '{self.user_id}')")
         else:
@@ -295,6 +299,27 @@ class User:
         db = DB()
         db.connect()
         return {'body': list(db.select('select * from challenges where creator_id = %s', params=(self.user_id,), dict_cursor=True)), 'status': 200}
+
+
+    @authenticate
+    def insert_race_location(self, race_id: int, latitude: float, longitude: float):
+        race = RaceInProgress(race_id)
+        race.add_user(self.user_id, latitude, longitude)
+        return {'body': race.get_users(), 'status': 200}
+
+
+    @authenticate
+    def update_race_location(self, race_id: int, latitude: float, longitude: float):
+        race = RaceInProgress(race_id)
+        race.update_user(self.user_id, latitude, longitude)
+        return {'body': race.get_users(), 'status': 200}
+
+
+    @authenticate
+    def leave_race(self, race_id: int):
+        race = RaceInProgress(race_id)
+        race.remove_user(self.user_id)
+        return 200
 
 
     @authenticate

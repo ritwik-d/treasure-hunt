@@ -20,8 +20,10 @@ api:
     get_races: /get_races
     get_user_challenges: /api/get_user_challenges
     invite_user: /api/invite_user
+    insert_race_location: /insert_race_location
     join_group: /api/join_group
     leave_group: /api/leave_group
+    leave_race: /leave_race
     login: /api/login
     register: /api/register
     remove_group_member: /api/remove_group_member
@@ -30,6 +32,7 @@ api:
     send_message: /api/send_message
     update_challenge: /api/update_challenge
     update_group_settings: /api/update_group_settings
+    update_race_location: /update_race_location
     upload_pfp: /api/upload_pfp
     verify_account: /verify_account/{email_verify_token}
     simulate_race_location: /api/simulate_race_location

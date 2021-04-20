@@ -65,6 +65,7 @@
     <string name="raceTitle">Race Title</string>
     <string name="enter">Enter</string>
     <string name="schedule">Schedule</string>
+    <string name="scheduleRace">Schedule Race</string>
 
     <!--   groups -->
 
@@ -103,4 +104,7 @@
     <string name="find_race">Find Race</string>
     <string name="upcoming_races">Upcoming Races</string>
     <string name="click_here">Click Here</string>
+    <string name="creator_name">creator name</string>
+    <string name="group_name">group name</string>
+    <string name="race_title">race title</string>
 </resources>
