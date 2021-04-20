@@ -14,6 +14,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.kittinunf.fuel.Fuel
 import com.google.android.gms.location.*
@@ -30,6 +31,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.ritwikscompany.treasurehunt.R
 import com.ritwikscompany.treasurehunt.utils.Race
+import com.ritwikscompany.treasurehunt.utils.RacesRecyclerViewAdapter
 import com.ritwikscompany.treasurehunt.utils.Utils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -56,14 +58,17 @@ class RacesActivity : AppCompatActivity(),
     private lateinit var racesRV: RecyclerView
     private lateinit var groupsTB: TabLayout
     private var userData = HashMap<String, Any>()
-    private var groups = ArrayList<String>()
-    private var races = ArrayList<Race>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_races)
 
         userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
+        titleET = findViewById(R.id.race_title)
+        diffSpinner = findViewById(R.id.race_diff)
+        groupsSpinner = findViewById(R.id.race_groups)
+        racesRV = findViewById(R.id.race_races_rv)
+        groupsTB = findViewById(R.id.race_groups_tb)
 
         val bodyJson = Gson().toJson(hashMapOf(
                 "pw" to userData["pw"],
@@ -82,15 +87,23 @@ class RacesActivity : AppCompatActivity(),
                         val (bytes, _) = result
 
                         if (bytes != null) {
-                            val type = object : TypeToken<ArrayList<HashMap<String, Any>>>() {}.type
-                            val groups = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, Any>>
-                            val groupTitles = this@RacesActivity.groups
+                            val type = object : TypeToken<ArrayList<String>>() {}.type
+                            val groups = Gson().fromJson(String(bytes), type) as ArrayList<String>
 
                             for (group in groups) {
-                                groupTitles.add(group["title"] as String)
+                                groupsTB.addTab(groupsTB.newTab().setText(group))
                             }
 
-                            this@RacesActivity.groups = groupTitles
+                            groupsTB.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
+                                override fun onTabSelected(tab: TabLayout.Tab?) {
+                                    
+                                }
+
+                                override fun onTabUnselected(tab: TabLayout.Tab?) {}
+
+                                override fun onTabReselected(tab: TabLayout.Tab?) {}
+
+                            })
                         }
                     }
                 }
@@ -111,23 +124,29 @@ class RacesActivity : AppCompatActivity(),
                         if (bytes != null) {
                             val type = object: TypeToken<ArrayList<HashMap<String, Any>>>(){}.type
                             val races1 = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, Any>>
-                            var races = ArrayList<Race>()
+                            val races = ArrayList<Race>()
 
                             for (race in races1) {
-                                races.add(Race(race["title"] as String, race["start_time"] as String, race["creator_id"] as String,
-                                race["creator_username"] as String, race[]))
+                                races.add(
+                                    Race(
+                                        race["title"] as String,
+                                        race["start_time"] as String,
+                                        race["creator_username"] as String,
+                                        race["group_name"] as String
+                                    )
+                                )
                             }
+
+                            val adapter = RacesRecyclerViewAdapter(races) { raceTitle ->
+
+                            }
+                            racesRV.layoutManager = LinearLayoutManager(ctx)
+                            racesRV.adapter = adapter
                         }
                     }
                 }
             }
         }
-
-        titleET = findViewById(R.id.race_title)
-        diffSpinner = findViewById(R.id.race_diff)
-        groupsSpinner = findViewById(R.id.race_groups)
-        racesRV = findViewById(R.id.race_races_rv)
-        groupsTB = findViewById(R.id.race_groups_tb)
 
         setUpScheduleRace()
 
