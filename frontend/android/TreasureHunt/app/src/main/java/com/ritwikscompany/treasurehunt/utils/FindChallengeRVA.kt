@@ -27,7 +27,7 @@ class FindChallengeRVA(
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.challengeET.setText(this.challenges[position])
+        holder.challengeET.text = this.challenges[position]
         holder.startChallengeBTN.setOnClickListener {
             startOnClick(this.challenges[position])
         }

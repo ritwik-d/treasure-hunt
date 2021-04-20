@@ -37,6 +37,7 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 @Suppress("DEPRECATION", "NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class RacesActivity : AppCompatActivity(),
@@ -61,7 +62,7 @@ class RacesActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_races)
 
-        this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
+        userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
 
         val bodyJson = Gson().toJson(hashMapOf(
                 "pw" to userData["pw"],
@@ -80,10 +81,15 @@ class RacesActivity : AppCompatActivity(),
                         val (bytes, _) = result
 
                         if (bytes != null) {
-                            val type = object : TypeToken<ArrayList<String>>() {}.type
-                            val groups = Gson().fromJson(String(bytes), type) as ArrayList<String>
+                            val type = object : TypeToken<ArrayList<HashMap<String, Any>>>() {}.type
+                            val groups = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, Any>>
+                            val groupTitles = this@RacesActivity.groups
 
-                            this@RacesActivity.groups = groups
+                            for (group in groups) {
+                                groupTitles.add(group["title"] as String)
+                            }
+
+                            this@RacesActivity.groups = groupTitles
                         }
                     }
                 }
@@ -112,11 +118,11 @@ class RacesActivity : AppCompatActivity(),
             }
         }
 
-        this.titleET = findViewById(R.id.race_title)
-        this.diffSpinner = findViewById(R.id.race_diff)
-        this.groupsSpinner = findViewById(R.id.race_groups)
-        this.racesRV = findViewById(R.id.race_races_rv)
-        this.groupsTB = findViewById(R.id.race_groups_tb)
+        titleET = findViewById(R.id.race_title)
+        diffSpinner = findViewById(R.id.race_diff)
+        groupsSpinner = findViewById(R.id.race_groups)
+        racesRV = findViewById(R.id.race_races_rv)
+        groupsTB = findViewById(R.id.race_groups_tb)
 
         setUpScheduleRace()
 
