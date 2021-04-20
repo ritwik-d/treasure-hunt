@@ -131,6 +131,7 @@ class RacesActivity : AppCompatActivity(),
                                     Race(
                                         race["title"] as String,
                                         race["start_time"] as String,
+                                        (race["creator_id"] as Double).toInt(),
                                         race["creator_username"] as String,
                                         race["group_name"] as String
                                     )
