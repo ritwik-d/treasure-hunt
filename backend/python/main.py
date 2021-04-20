@@ -232,6 +232,23 @@ async def verify_account(email_verify_token: str):
     return verify_account_web(email_verify_token)
 
 
-@app.post(paths.get('simulate_race_location'))
-async def simulate_race_location(json: SimulateRaceLocation, response: Response):
-    return create_random_race_location(json.latitude, json.longitude, json.difficulty)
+@app.post(paths.get('insert_race_location'))
+async def insert_race_location(json: InsertRaceLocation, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response_2 = user.insert_race_location(json.race_id, json.latitude, json.longitude)
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
+
+
+@app.post(paths.get('update_race_location'))
+async def update_race_location(json: UpdateRaceLocation, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response_2 = user.update_race_location(json.race_id, json.latitude, json.longitude)
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
+
+
+@app.post(paths.get('leave_race'))
+async def leave_race(json: LeaveRace, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response.status_code = user.leave_race(json.race_id)

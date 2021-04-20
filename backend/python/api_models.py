@@ -194,10 +194,23 @@ class UpdateGroupSettings(BaseModel):
     min_points: int
 
 
-
-class SimulateRaceLocation(BaseModel):
-    difficulty: str
-    latitude: float
-    longitude: float
+class InsertRaceLocation(BaseModel):
     pw: str
     user_id: str
+    race_id: int
+    latitude: float
+    longitude: float
+
+
+class UpdateRaceLocation(BaseModel):
+    pw: str
+    user_id: str
+    race_id: int
+    latitude: float
+    longitude: float
+
+
+class LeaveRace(BaseModel):
+    pw: str
+    user_id: str
+    race_id: int

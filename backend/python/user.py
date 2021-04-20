@@ -302,6 +302,27 @@ class User:
 
 
     @authenticate
+    def insert_race_location(self, race_id: int, latitude: float, longitude: float):
+        race = RaceInProgress(race_id)
+        race.add_user(self.user_id, latitude, longitude)
+        return {'body': race.get_users(), 'status': 200}
+
+
+    @authenticate
+    def update_race_location(self, race_id: int, latitude: float, longitude: float):
+        race = RaceInProgress(race_id)
+        race.update_user(self.user_id, latitude, longitude)
+        return {'body': race.get_users(), 'status': 200}
+
+
+    @authenticate
+    def leave_race(self, race_id: int):
+        race = RaceInProgress(race_id)
+        race.remove_user(self.user_id)
+        return 200
+
+
+    @authenticate
     def invite_user(self, group_name: str, to_username: str):
         db = DB()
         db.connect()

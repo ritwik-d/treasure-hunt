@@ -148,6 +148,10 @@ class RaceInProgress:
         user_location.insert()
 
 
+    def get_users(self):
+        return db.select('select user_id, latitude, longitude from race_locations where race_id = %s', params=(self.race_id,), dict_cursor=True)
+
+
     def remove_user(self, user_id: int):
         user_location = RaceLocation(user_id, self.race_id)
         user_location.delete()
