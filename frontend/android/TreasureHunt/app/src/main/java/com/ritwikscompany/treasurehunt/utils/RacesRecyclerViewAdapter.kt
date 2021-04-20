@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.ritwikscompany.treasurehunt.R
 
-class RacesRecyclerViewAdapter(var creators: ArrayList<String>, var titles: ArrayList<String>, var groups: ArrayList<String>,
+class RacesRecyclerViewAdapter(var races: ArrayList<Race>,
         var onEnterClicked: (raceTitle: String) -> Unit)
     : RecyclerView.Adapter<RacesRecyclerViewAdapter.ViewHolder>() {
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -26,15 +26,15 @@ class RacesRecyclerViewAdapter(var creators: ArrayList<String>, var titles: Arra
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.creatorTV.text = creators[position]
-        holder.raceGroupTV.text = groups[position]
-        holder.raceTitleTV.text = titles[position]
+        holder.creatorTV.text = races[position].creatorName
+        holder.raceGroupTV.text = races[position].groupName
+        holder.raceTitleTV.text = races[position].title
         holder.enterBTN.setOnClickListener {
-            onEnterClicked(holder.raceTitleTV.text.toString())
+            onEnterClicked(races[position].title)
         }
     }
 
     override fun getItemCount(): Int {
-        return creators.size + titles.size - groups.size
+        return this.races.size
     }
 }

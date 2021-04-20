@@ -29,6 +29,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.ritwikscompany.treasurehunt.R
+import com.ritwikscompany.treasurehunt.utils.Race
 import com.ritwikscompany.treasurehunt.utils.Utils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -56,7 +57,7 @@ class RacesActivity : AppCompatActivity(),
     private lateinit var groupsTB: TabLayout
     private var userData = HashMap<String, Any>()
     private var groups = ArrayList<String>()
-    private var races = ArrayList<String>()
+    private var races = ArrayList<Race>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,10 +109,14 @@ class RacesActivity : AppCompatActivity(),
                         val (bytes, _) = result
 
                         if (bytes != null) {
-                            val type = object: TypeToken<ArrayList<String>>(){}.type
-                            val races = Gson().fromJson(String(bytes), type) as ArrayList<String>
+                            val type = object: TypeToken<ArrayList<HashMap<String, Any>>>(){}.type
+                            val races1 = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, Any>>
+                            var races = ArrayList<Race>()
 
-                            this@RacesActivity.races = races
+                            for (race in races1) {
+                                races.add(Race(race["title"] as String, race["start_time"] as String, race["creator_id"] as String,
+                                race["creator_username"] as String, race[]))
+                            }
                         }
                     }
                 }
@@ -159,6 +164,8 @@ class RacesActivity : AppCompatActivity(),
         groupsSpinner.visibility = View.GONE
         racesRV.visibility = View.VISIBLE
         groupsTB.visibility = View.VISIBLE
+
+
     }
 
     private fun setUpScheduleRace() {

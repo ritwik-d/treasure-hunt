@@ -149,8 +149,10 @@ class User:
         db = DB()
         db.connect()
         groups = list(itertools.chain(*db.select(f"select group_id from groups where JSON_CONTAINS(members, '{self.user_id}')")))
-        races = db.select(f'''select title, creator_id, start_time from races where group_id in ({','.join(groups)})''', dict_cursor=True)
+        races = db.select(f'''select title, creator_id, start_time, group_id from races where group_id in ({','.join(groups)})''', dict_cursor=True)
         for race in races:
+            race['start_time'] = str(start_time)
+            race['group_name'] = db.select('select name from user_groups where group_id = %s', params=(race['group_id'],), dict_cursor=True)[0].get('name')
             race['creator_username'] = db.select('select username from users where user_id = %s', params=(race['creator_id'],), dict_cursor=True)[0].get('username')
         return {'status': 200, 'body': races}
 
