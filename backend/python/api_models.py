@@ -19,6 +19,13 @@ class CompleteChallenge(BaseModel):
     user_id: int
 
 
+class CompleteRace(BaseModel):
+    group_name: str
+    race_id: int
+    pw: str
+    user_id: int
+
+
 class CreateChallenge(BaseModel):
     difficulty: str
     groups: list

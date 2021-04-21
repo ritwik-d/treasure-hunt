@@ -83,6 +83,17 @@ class User:
 
 
     @authenticate
+    def complete_race(self, race_id: int, group_name: str):
+        group_id = get_group_id(group_name)
+        db = DB()
+        db.connect()
+        db.delete('races', {'race_id' : race_id, 'group_id' : group_id})
+        db.connect()
+        db.delete('race_locations', {'race_id' : race_id})
+        return 200
+
+
+    @authenticate
     def create_challenge(self, difficulty: str, latitude: float, longitude: float, name: str, puzzle: str, groups: list):
         db = DB()
         db.connect()
@@ -148,6 +159,7 @@ class User:
     def get_race(self, race_id: int, group_name: str):
         group_id = get_group_id(group_name)
         db = DB()
+        db.connect()
         group = db.select("select * from groups where race_id = %s and group_id = %s", params=(race_id, group_id), dict_cursor= True)
 
         if not group:

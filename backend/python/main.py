@@ -33,6 +33,12 @@ async def complete_challenge(json: CompleteChallenge, response: Response):
     response.status_code = user.complete_challenge(json.challenge_id)
 
 
+@app.post(paths.get('complete_race'))
+async def complete_race(json: CompleteRace, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response.status_code = user.complete_race(json.race_id, json.group_name)
+
+
 @app.post(paths.get('create_challenge'))
 async def create_challenge(json: CreateChallenge, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)

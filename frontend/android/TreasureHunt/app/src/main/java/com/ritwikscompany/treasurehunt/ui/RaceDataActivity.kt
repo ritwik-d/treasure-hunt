@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Looper
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -141,7 +142,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
                     setUpRaceMap()
 
                     while (true) {
-                        upDateRaceMap()
+                        updateRaceMap()
                     }
                 }
             }
@@ -151,12 +152,12 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
             setUpRaceMap()
 
             while (true) {
-                upDateRaceMap()
+                updateRaceMap()
             }
         }
     }
 
-    private fun upDateRaceMap() {
+    private fun updateRaceMap() {
         if (!ctx::lastLocation.isInitialized || !ctx::map.isInitialized) {
             return
         }
@@ -170,6 +171,8 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
             "latitude" to lastLocation.latitude,
             "longitude" to lastLocation.longitude
         ))
+
+        checkForLocation()
 
         CoroutineScope(Dispatchers.IO).launch {
             val (_, response, result) = Fuel.post("${getString(R.string.host)}/update_race_location")
@@ -196,6 +199,73 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
                                 map.addMarker(user)
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun checkForLocation() {
+        val bodyJson = Gson().toJson(hashMapOf(
+            "pw" to userData["pw"] as String,
+            "user_id" to userData["user_id"] as Int,
+            "race_id" to raceData["race_id"] as Int,
+            "group_name" to raceData["group_name"] as String
+        ))
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/get_race")
+                .body(bodyJson)
+                .header("Content-Type" to "application/json")
+                .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    if (response.statusCode == 200) {
+                        val (bytes, _) = result
+
+                        if (bytes != null) {
+                            val type = object : TypeToken<HashMap<String, Any>>() {}.type
+                            val usersInRace = Gson().fromJson(String(bytes), type) as HashMap<String, Any>
+
+                            if (usersInRace["longitude"] == lastLocation.longitude && usersInRace["latitude"] == lastLocation.latitude) {
+                                completeRace()
+                            }
+                        }
+                    } else {
+                        Toast.makeText(
+                            ctx,
+                            "You have failed to complete the race",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun completeRace() {
+        val bodyJson = Gson().toJson(hashMapOf(
+            "pw" to userData["pw"] as String,
+            "user_id" to userData["user_id"] as Int,
+            "race_id" to raceData["race_id"] as Int,
+            "group_name" to raceData["group_name"] as String
+        ))
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val (_, response, _) = Fuel.post("${getString(R.string.host)}/complete_race")
+                .body(bodyJson)
+                .header("Content-Type" to "application/json")
+                .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    if (response.statusCode == 200) {
+                        Toast.makeText(
+                            ctx,
+                            "You have successfully completed the race before anyone else",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }

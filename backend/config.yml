@@ -2,6 +2,7 @@ api:
   paths:
     accept_invitation: /api/accept_invitation
     complete_challenge: /api/complete_challenge
+    complete_race: /complete_race
     create_challenge: /api/create_challenge
     create_group: /api/create_group
     create_race: /api/create_race
