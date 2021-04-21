@@ -165,7 +165,7 @@ class User:
         if group is None:
             return {'status': 400, 'body': {}}
 
-        return ('status': 200, 'body': group[0])
+        return {'status': 200, 'body': group[0]}
 
 
     @authenticate
