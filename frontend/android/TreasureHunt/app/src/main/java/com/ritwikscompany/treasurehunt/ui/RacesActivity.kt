@@ -90,6 +90,16 @@ class RacesActivity : AppCompatActivity(),
         setUpRacesRVAndGroupsTB()
 
         setUpBottomNavigation()
+
+        setUpGroupsSpinner()
+    }
+
+    private fun setUpGroupsSpinner() {
+        
+
+        CoroutineScope(Dispatchers.Main).launch {
+
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -222,11 +232,11 @@ class RacesActivity : AppCompatActivity(),
                 .commit()
 
         val scheduleRaceBTN = findViewById<Button>(R.id.race_schedule)
-        scheduleRaceBTN.visibility = View.GONE
+        scheduleRaceBTN.visibility = View.INVISIBLE
 
-        titleET.visibility = View.GONE
-        diffSpinner.visibility = View.GONE
-        groupsSpinner.visibility = View.GONE
+        titleET.visibility = View.INVISIBLE
+        diffSpinner.visibility = View.INVISIBLE
+        groupsSpinner.visibility = View.INVISIBLE
         racesRV.visibility = View.VISIBLE
         groupsTB.visibility = View.VISIBLE
     }
@@ -252,8 +262,8 @@ class RacesActivity : AppCompatActivity(),
         titleET.visibility = View.VISIBLE
         diffSpinner.visibility = View.VISIBLE
         groupsSpinner.visibility = View.VISIBLE
-        racesRV.visibility = View.GONE
-        groupsTB.visibility = View.GONE
+        racesRV.visibility = View.INVISIBLE
+        groupsTB.visibility = View.INVISIBLE
 
         scheduleRaceBTN.setOnClickListener {
             showDateDialog()

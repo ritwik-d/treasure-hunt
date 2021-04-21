@@ -392,27 +392,27 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         val secondsRemaining: Long
 
         if (seconds < 60) {
-            return "S $seconds"
+            return "$seconds"
         } else {
             var formattedTime = ""
             val minutes = floor((seconds / 60).toDouble()).toLong()
             secondsRemaining = seconds - (minutes * 60)
 
             if (minutes < 60) {
-                formattedTime += "M $minutes S $secondsRemaining"
+                formattedTime += "$minutes:$secondsRemaining"
                 return formattedTime
             } else {
                 val hours = floor((minutes / 60).toDouble()).toLong()
                 val minutesRemaining: Long = minutes - hours
 
                 return if (hours < 24) {
-                    formattedTime += "H $hours M $minutesRemaining S $secondsRemaining"
+                    formattedTime += "$hours:$minutesRemaining:$secondsRemaining"
                     formattedTime
                 } else {
                     val days = floor((hours / 24).toDouble()).toLong()
                     val hoursRemaining = hours - (days * 24)
 
-                    formattedTime += "D $days H $hoursRemaining M $minutesRemaining S $secondsRemaining"
+                    formattedTime += "$days:$hoursRemaining:$minutesRemaining:$secondsRemaining"
                     formattedTime
                 }
             }
