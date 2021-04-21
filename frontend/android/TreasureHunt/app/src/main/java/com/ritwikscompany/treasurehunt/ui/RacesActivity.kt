@@ -95,10 +95,41 @@ class RacesActivity : AppCompatActivity(),
     }
 
     private fun setUpGroupsSpinner() {
+        val bodyJson = Gson().toJson(hashMapOf(
+            "pw" to userData["pw"] as String,
+            "user_id" to userData["id"] as Int
+        ))
 
+        CoroutineScope(Dispatchers.IO).launch {
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/get_groups")
+                .body(bodyJson)
+                .header("Content-Type" to "application/json")
+                .response()
 
-        CoroutineScope(Dispatchers.Main).launch {
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    if (response.statusCode == 200) {
+                        val (bytes, _) = result
 
+                        if (bytes != null) {
+                            val type = object : TypeToken<ArrayList<String>>() {}.type
+                            val groups = Gson().fromJson(String(bytes), type) as ArrayList<String>
+
+                            if (groups.isEmpty()) {
+                                Toast.makeText(
+                                    ctx,
+                                    "You cannot create a race since you have not created or joined any group",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+
+                                startActivity(Intent(ctx, HomeActivity::class.java).apply {
+                                    putExtra("userData", userData)
+                                })
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
