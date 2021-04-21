@@ -126,6 +126,10 @@ class RacesActivity : AppCompatActivity(),
                                     putExtra("userData", userData)
                                 })
                             }
+
+                            val groupsAdapter = ArrayAdapter(ctx, android.R.layout.simple_dropdown_item_1line, groups)
+
+                            groupsSpinner.adapter = groupsAdapter
                         }
                     }
                 }

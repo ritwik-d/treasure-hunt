@@ -435,7 +435,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
             return
         }
 
-        fusedLocationClient.requestLocationUpdates(locationRequest, object: LocationCallback() {
+        fusedLocationClient.requestLocationUpdates(locationRequest, object : LocationCallback() {
             override fun onLocationResult(p0: LocationResult) {
                 lastLocation = p0.lastLocation
             }
