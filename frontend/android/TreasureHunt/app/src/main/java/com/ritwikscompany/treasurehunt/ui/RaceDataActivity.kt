@@ -11,7 +11,6 @@ import android.os.CountDownTimer
 import android.os.Looper
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -317,12 +316,28 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
                 }
             }
         }
+    }
 
-        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                leaveRace()
-            }
-        })
+    @RequiresApi(Build.VERSION_CODES.O)
+    @SuppressLint("SimpleDateFormat")
+    override fun onBackPressed() {
+        if (ctx::raceData.isInitialized) {
+            super.onBackPressed()
+            return
+        }
+
+        val currentTime = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant())
+
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
+        val startTime = simpleDateFormat.parse(raceData["startTime"] as String)
+
+        if (startTime.after(currentTime)) {
+            super.onBackPressed()
+            return
+        }
+
+        leaveRace()
+        super.onBackPressed()
     }
 
     private fun leaveRace() {
