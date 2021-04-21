@@ -62,7 +62,7 @@ class RacesActivity : AppCompatActivity(),
     private lateinit var locationRequest: LocationRequest
     private lateinit var racesRV: RecyclerView
     private lateinit var groupsTB: TabLayout
-    private var userData = HashMap<String, Any>()
+    private lateinit var userData: HashMap<*, *>
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,7 +74,7 @@ class RacesActivity : AppCompatActivity(),
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setUpUI() {
-        userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
+        userData = intent.getSerializableExtra("userData") as HashMap<*, *>
         titleET = findViewById(R.id.race_title)
         diffSpinner = findViewById(R.id.race_diff)
         groupsSpinner = findViewById(R.id.race_groups)
@@ -187,7 +187,8 @@ class RacesActivity : AppCompatActivity(),
                                                 "title" to race.title,
                                                 "startTime" to race.startTime,
                                                 "creator" to race.creatorName,
-                                                "groupName" to race.groupName
+                                                "groupName" to race.groupName,
+                                                "raceID" to race.raceID
                                         )
 
                                         startActivity(Intent(this@RacesActivity, RaceDataActivity::class.java).apply {
@@ -410,9 +411,9 @@ class RacesActivity : AppCompatActivity(),
 
                         if (calendar.before(calendar2.time)) {
                             Toast.makeText(
-                                this@RacesActivity,
+                                ctx,
                                 "Date selected must be two days after today's date",
-                                Toast.LENGTH_LONG
+                                Toast.LENGTH_SHORT
                             ).show()
 
                             return@OnTimeSetListener

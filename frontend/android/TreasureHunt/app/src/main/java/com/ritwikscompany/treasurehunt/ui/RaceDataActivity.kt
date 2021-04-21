@@ -2,6 +2,7 @@ package com.ritwikscompany.treasurehunt.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
@@ -9,6 +10,7 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Looper
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -40,9 +42,7 @@ import kotlin.collections.HashMap
 import kotlin.math.floor
 
 @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS", "DEPRECATION")
-class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback,
-            GoogleMap.OnMarkerClickListener{
-
+class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     private var ctx = this@RaceDataActivity
     private lateinit var raceData: HashMap<*, *>
     private lateinit var userData: HashMap<*, *>
@@ -138,16 +138,66 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback,
                 override fun onFinish() {
                     startTimeTV.text = "GO!"
 
+                    setUpRaceMap()
+
                     while (true) {
-                        setUpRaceMap()
+                        upDateRaceMap()
                     }
                 }
             }
 
             timer.start()
         } else {
+            setUpRaceMap()
+
             while (true) {
-                setUpRaceMap()
+                upDateRaceMap()
+            }
+        }
+    }
+
+    private fun upDateRaceMap() {
+        if (!ctx::lastLocation.isInitialized || !ctx::map.isInitialized) {
+            return
+        }
+
+        map.clear()
+
+        val bodyJson = Gson().toJson(hashMapOf(
+            "pw" to userData["pw"] as String,
+            "user_id" to userData["user_id"],
+            "race_id" to raceData["race_id"],
+            "latitude" to lastLocation.latitude,
+            "longitude" to lastLocation.longitude
+        ))
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/update_race_location")
+                .body(bodyJson)
+                .header("Content-Type" to "application/json")
+                .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    if (response.statusCode == 200) {
+                        val (bytes, _) = result
+
+                        if (bytes != null) {
+                            val type = object : TypeToken<ArrayList<HashMap<String, Any>>>() {}.type
+                            val usersInRace = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, Any>>
+
+                            for (userInRace in usersInRace) {
+                                val noPFP = BitmapDescriptorFactory.fromResource(R.drawable.no_pfp)
+
+                                val user = MarkerOptions()
+                                    .icon(noPFP)
+                                    .title(userInRace["username"] as String)
+
+                                map.addMarker(user)
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -193,6 +243,37 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback,
                                 map.addMarker(user)
                             }
                         }
+                    }
+                }
+            }
+        }
+
+        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                leaveRace()
+            }
+        })
+    }
+
+    private fun leaveRace() {
+        val bodyJson = Gson().toJson(hashMapOf(
+            "pw" to userData["pw"] as String,
+            "user_id" to userData["user_id"] as Int,
+            "race_id" to raceData["raceID"] as Int
+        ))
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val (_, response, _) = Fuel.post("${getString(R.string.host)}/leave_race")
+                .body(bodyJson)
+                .header("Content-Type" to "application/json")
+                .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    if (response.statusCode == 200) {
+                        startActivity(Intent(ctx, RacesActivity::class.java).apply {
+                            putExtra("userData", userData)
+                        })
                     }
                 }
             }

@@ -209,6 +209,14 @@ async def get_messages(json: GetMessages, response: Response):
     return response_2.get('body')
 
 
+@app.post(paths.get('get_race'))
+async def get_race(json: GetRace, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response_2 = user.get_race(json.race_id, json.group_name)
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
+
+
 @app.post(paths.get('update_challenge'))
 async def update_challenge(json: UpdateChallenge, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)

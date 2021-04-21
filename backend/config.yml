@@ -36,6 +36,7 @@ api:
     upload_pfp: /api/upload_pfp
     verify_account: /verify_account/{email_verify_token}
     simulate_race_location: /api/simulate_race_location
+    get_race: /get_race
 firebase_storage:
   db_backups: database_backups/
   profile_pictures: profile_pictures/

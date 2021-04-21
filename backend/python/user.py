@@ -145,6 +145,18 @@ class User:
 
 
     @authenticate
+    def get_race(self, race_id: int, group_name: str):
+        group_id = get_group_id(group_name)
+        db = DB()
+        group = db.select("select * from groups where race_id = %s and group_id = %s", params=(race_id, group_id), dict_cursor= True)
+
+        if not group:
+            return {'status' : 400, 'body' : []}
+
+        return ('status' : 200, 'body' : group[1])
+
+
+    @authenticate
     def get_races(self):
         db = DB()
         db.connect()
