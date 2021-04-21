@@ -149,7 +149,10 @@ class RaceInProgress:
 
 
     def get_users(self):
-        return db.select('select user_id, latitude, longitude from race_locations where race_id = %s', params=(self.race_id,), dict_cursor=True)
+        db = DB()
+        result = db.select('select user_id, latitude, longitude from race_locations where race_id = %s', params=(self.race_id,), dict_cursor=True)
+        result["username"] = db.select("select username from users where user_id = ", params=(result["user_id"],))[0][0]
+        return result
 
 
     def remove_user(self, user_id: int):
