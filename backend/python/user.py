@@ -87,9 +87,9 @@ class User:
         group_id = get_group_id(group_name)
         db = DB()
         db.connect()
-        db.delete('races', {'race_id' : race_id, 'group_id' : group_id})
-        db.connect()
-        db.delete('race_locations', {'race_id' : race_id})
+        db.delete('races', {'race_id': race_id})
+        db.delete('race_locations', {'race_id': race_id})
+        db.update('users', {'points': db.select('select points from users where user_id = %s', params=(self.user_id,), dict_cursor=True)[0].get('points') + 1}, {'user_id': self.user_id})
         return 200
 
 
@@ -160,12 +160,12 @@ class User:
         group_id = get_group_id(group_name)
         db = DB()
         db.connect()
-        group = db.select("select * from groups where race_id = %s and group_id = %s", params=(race_id, group_id), dict_cursor= True)
+        group = db.select("select * from races where race_id = %s", params=(race_id,), dict_cursor=True)
 
-        if not group:
-            return {'status' : 400, 'body' : []}
+        if group is None:
+            return {'status': 400, 'body': {}}
 
-        return ('status' : 200, 'body' : group[1])
+        return ('status': 200, 'body': group[0])
 
 
     @authenticate

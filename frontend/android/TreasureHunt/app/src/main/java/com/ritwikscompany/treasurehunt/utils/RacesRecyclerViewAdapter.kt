@@ -9,8 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ritwikscompany.treasurehunt.R
 
 class RacesRecyclerViewAdapter(var races: ArrayList<Race>,
-        var onEnterClicked: (race: Race) -> Unit)
+                               var onEnterClicked: (race: Race) -> Unit)
     : RecyclerView.Adapter<RacesRecyclerViewAdapter.ViewHolder>() {
+
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val creatorTV = itemView.findViewById<TextView>(R.id.row_race_creator)!!
         val raceTitleTV = itemView.findViewById<TextView>(R.id.row_race_title)!!
