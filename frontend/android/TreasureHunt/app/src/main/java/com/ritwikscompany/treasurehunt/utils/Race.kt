@@ -5,5 +5,6 @@ data class Race(
     val startTime: String,
     val creatorId: Int,
     val creatorName: String,
-    val groupName: String
+    val groupName: String,
+    val raceID: Int
 )

@@ -9,10 +9,12 @@ import android.app.TimePickerDialog.OnTimeSetListener
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.view.View
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,6 +41,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -60,6 +64,7 @@ class RacesActivity : AppCompatActivity(),
     private lateinit var groupsTB: TabLayout
     private var userData = HashMap<String, Any>()
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_races)
@@ -67,6 +72,7 @@ class RacesActivity : AppCompatActivity(),
         setUpUI()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun setUpUI() {
         userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
         titleET = findViewById(R.id.race_title)
@@ -86,6 +92,7 @@ class RacesActivity : AppCompatActivity(),
         setUpBottomNavigation()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun setUpBottomNavigation() {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.race_bn)
 
@@ -132,7 +139,8 @@ class RacesActivity : AppCompatActivity(),
                                         raceData["start_time"] as String,
                                         raceData["creator_id"] as Int,
                                         raceData["creator_username"] as String,
-                                        raceData["group_name"] as String
+                                        raceData["group_name"] as String,
+                                        raceData["race_id"] as Int
                                 )
 
                                 races.add(race)
@@ -157,7 +165,8 @@ class RacesActivity : AppCompatActivity(),
                                         "title" to race.title,
                                         "startTime" to race.startTime,
                                         "creator" to race.creatorName,
-                                        "groupName" to race.groupName
+                                        "groupName" to race.groupName,
+                                        "raceID" to race.raceID
                                 )
 
                                 startActivity(Intent(this@RacesActivity, RaceDataActivity::class.java).apply {
@@ -221,6 +230,7 @@ class RacesActivity : AppCompatActivity(),
         groupsTB.visibility = View.VISIBLE
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun setUpScheduleRace() {
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.race_create_map) as SupportMapFragment
@@ -379,6 +389,7 @@ class RacesActivity : AppCompatActivity(),
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SimpleDateFormat")
     private fun showDateDialog() {
         val calendar: Calendar = Calendar.getInstance()
@@ -391,6 +402,22 @@ class RacesActivity : AppCompatActivity(),
                     OnTimeSetListener { _, hourOfDay, minute ->
                         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                         calendar.set(Calendar.MINUTE, minute)
+                        val currentTime = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant())
+
+                        val calendar2 = Calendar.getInstance()
+                        calendar2.time = currentTime
+                        calendar2.add(Calendar.DATE, 2)
+
+                        if (calendar.before(calendar2.time)) {
+                            Toast.makeText(
+                                this@RacesActivity,
+                                "Date selected must be two days after today's date",
+                                Toast.LENGTH_LONG
+                            ).show()
+
+                            return@OnTimeSetListener
+                        }
+
                         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
                         scheduleRace(titleET.text.toString(), simpleDateFormat.format(calendar.time), 0.0, 0.0, findViewById<Spinner>(R.id.race_groups).selectedItem.toString())
                     }

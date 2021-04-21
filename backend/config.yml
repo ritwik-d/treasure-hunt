@@ -20,8 +20,8 @@ api:
     get_races: /get_races
     get_user_challenges: /api/get_user_challenges
     invite_user: /api/invite_user
-    insert_race_location: /insert_race_location
     join_group: /api/join_group
+    join_race: /join_race
     leave_group: /api/leave_group
     leave_race: /leave_race
     login: /api/login

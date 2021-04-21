@@ -6,45 +6,65 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
+import android.os.CountDownTimer
+import android.os.Looper
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.google.android.gms.location.FusedLocationProviderClient
+import androidx.core.content.ContextCompat
+import com.github.kittinunf.fuel.Fuel
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.ritwikscompany.treasurehunt.R
 import com.ritwikscompany.treasurehunt.utils.Utils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.math.floor
 
-@Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+@Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS", "DEPRECATION")
 class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback,
             GoogleMap.OnMarkerClickListener{
 
     private var ctx = this@RaceDataActivity
-    private lateinit var raceData: HashMap<String, Any>
-    private lateinit var userData: HashMap<String, Any>
+    private lateinit var raceData: HashMap<*, *>
+    private lateinit var userData: HashMap<*, *>
     private lateinit var titleTV: TextView
     private lateinit var startTimeTV: TextView
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var lastLocation: Location
+    private lateinit var locationRequest: LocationRequest
+
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_race_data)
 
-        raceData = intent.getSerializableExtra("raceData") as HashMap<String, Any>
-        userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
+        raceData = intent.getSerializableExtra("raceData") as HashMap<*, *>
+        userData = intent.getSerializableExtra("userData") as HashMap<*, *>
 
         setUpUI()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun setUpUI() {
         setUpRaceTitle()
         setUpRaceTimeRemaining()
@@ -73,6 +93,13 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback,
                 moveCamera(currentLatLng, DEFAULT_ZOOM)
             }
         }
+
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.race_data_map) as SupportMapFragment
+
+        mapFragment.getMapAsync(ctx)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(ctx)
+
+        startLocationUpdates()
     }
 
     private fun moveCamera(latLng: LatLng, zoom: Float) {
@@ -89,7 +116,87 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback,
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
         val startTime = simpleDateFormat.parse(raceData["startTime"] as String)
 
-        val diff: Long = startTime.time - currentTime.time
+        if (startTime.after(currentTime)) {
+            val timeRemaining = (startTime.time - currentTime.time)
+
+            val timer = object : CountDownTimer(timeRemaining, 1000) {
+                override fun onTick(millisUntilFinished: Long) {
+                    startTimeTV.text = formatSeconds(millisUntilFinished / 1000)
+
+                    if (millisUntilFinished / 1000 < 60) {
+                        startTimeTV.setTextColor(
+                            ContextCompat.getColor(ctx, R.color.red)
+                        )
+                    } else if (millisUntilFinished / 1000 < 600) {
+                        startTimeTV.setTextColor(
+                            ContextCompat.getColor(ctx, R.color.yellow)
+                        )
+                    }
+                }
+
+                @SuppressLint("SetTextI18n")
+                override fun onFinish() {
+                    startTimeTV.text = "GO!"
+
+                    while (true) {
+                        setUpRaceMap()
+                    }
+                }
+            }
+
+            timer.start()
+        } else {
+            while (true) {
+                setUpRaceMap()
+            }
+        }
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private fun setUpRaceMap() {
+        if (!ctx::lastLocation.isInitialized || !ctx::map.isInitialized) {
+            return
+        }
+
+        map.clear()
+
+        val bodyJson = Gson().toJson(hashMapOf(
+            "pw" to userData["pw"] as String,
+            "user_id" to userData["user_id"],
+            "race_id" to raceData["race_id"],
+            "latitude" to lastLocation.latitude,
+            "longitude" to lastLocation.longitude
+        ))
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/join_race")
+                .body(bodyJson)
+                .header("Content-Type" to "application/json")
+                .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    if (response.statusCode == 200) {
+                        val (bytes, _) = result
+
+                        if (bytes != null) {
+                            val type = object : TypeToken<ArrayList<HashMap<String, Any>>>() {}.type
+                            val usersInRace = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, Any>>
+
+                            for (userInRace in usersInRace) {
+                                val noPFP = BitmapDescriptorFactory.fromResource(R.drawable.no_pfp)
+
+                                val user = MarkerOptions()
+                                    .icon(noPFP)
+                                    .title(userInRace["username"] as String)
+
+                                map.addMarker(user)
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun setUpRaceTitle() {
@@ -111,5 +218,63 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback,
 
     companion object {
         private const val DEFAULT_ZOOM = 15f
+    }
+
+    private fun formatSeconds(seconds: Long): String {
+        val secondsRemaining: Long
+
+        if (seconds < 60) {
+            return "S $seconds"
+        } else {
+            var formattedTime = ""
+            val minutes = floor((seconds / 60).toDouble()).toLong()
+            secondsRemaining = seconds - (minutes * 60)
+
+            if (minutes < 60) {
+                formattedTime += "M $minutes S $secondsRemaining"
+                return formattedTime
+            } else {
+                val hours = floor((minutes / 60).toDouble()).toLong()
+                val minutesRemaining: Long = minutes - hours
+
+                return if (hours < 24) {
+                    formattedTime += "H $hours M $minutesRemaining S $secondsRemaining"
+                    formattedTime
+                } else {
+                    val days = floor((hours / 24).toDouble()).toLong()
+                    val hoursRemaining = hours - (days * 24)
+
+                    formattedTime += "D $days H $hoursRemaining M $minutesRemaining S $secondsRemaining"
+                    formattedTime
+                }
+            }
+        }
+    }
+
+    private fun startLocationUpdates() {
+        locationRequest = LocationRequest()
+        locationRequest.interval = Utils.UPDATE_INTERVAL
+        locationRequest.fastestInterval = Utils.FASTEST_INTERVAL
+        locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+
+        val builder = LocationSettingsRequest.Builder()
+        builder.addLocationRequest(locationRequest)
+        val locationSettingsRequest = builder.build()
+        val settingsClient = LocationServices.getSettingsClient(ctx)
+        settingsClient.checkLocationSettings(locationSettingsRequest)
+
+        if (ActivityCompat.checkSelfPermission(ctx,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(ctx,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                Utils.LOCATION_PERMISSION_REQUEST_CODE)
+            return
+        }
+
+        fusedLocationClient.requestLocationUpdates(locationRequest, object: LocationCallback() {
+            override fun onLocationResult(p0: LocationResult) {
+                lastLocation = p0.lastLocation
+            }
+        }, Looper.myLooper()!!)
     }
 }

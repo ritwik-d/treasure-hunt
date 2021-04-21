@@ -194,9 +194,9 @@ class UpdateGroupSettings(BaseModel):
     min_points: int
 
 
-class InsertRaceLocation(BaseModel):
+class JoinRace(BaseModel):
     pw: str
-    user_id: str
+    user_id: int
     race_id: int
     latitude: float
     longitude: float

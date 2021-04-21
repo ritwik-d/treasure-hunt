@@ -232,8 +232,8 @@ async def verify_account(email_verify_token: str):
     return verify_account_web(email_verify_token)
 
 
-@app.post(paths.get('insert_race_location'))
-async def insert_race_location(json: InsertRaceLocation, response: Response):
+@app.post(paths.get('join_race'))
+async def insert_race_location(json: JoinRace, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
     response_2 = user.insert_race_location(json.race_id, json.latitude, json.longitude)
     response.status_code = response_2.get('status')

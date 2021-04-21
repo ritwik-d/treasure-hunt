@@ -14,4 +14,6 @@
     <color name="colorDiscard">#C2C2C2</color>
     <color name="colorSave">#32c428</color>
     <color name="colorSecondary">#00dcff</color>
+    <color name="red">#FF0000</color>
+    <color name="yellow">#FFEC00</color>
 </resources>
