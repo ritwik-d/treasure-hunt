@@ -5,10 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
-import android.os.Build
-import android.os.Bundle
-import android.os.CountDownTimer
-import android.os.Looper
+import android.os.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -52,6 +49,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var lastLocation: Location
     private lateinit var locationRequest: LocationRequest
+    private val mainHandler = Handler()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -140,9 +138,8 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
                     setUpRaceMap()
 
-                    while (true) {
-                        updateRaceMap()
-                    }
+                    val updateRaceMapThread = UpdateRaceMapThread()
+                    updateRaceMapThread.start()
                 }
             }
 
@@ -150,9 +147,8 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         } else {
             setUpRaceMap()
 
-            while (true) {
-                updateRaceMap()
-            }
+            val updateRaceMapThread = UpdateRaceMapThread()
+            updateRaceMapThread.start()
         }
     }
 
@@ -444,5 +440,15 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
                 lastLocation = p0.lastLocation
             }
         }, Looper.myLooper()!!)
+    }
+
+    inner class UpdateRaceMapThread : Thread() {
+        override fun run() {
+            while (true) {
+                mainHandler.post {
+                    updateRaceMap()
+                }
+            }
+        }
     }
 }

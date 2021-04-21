@@ -95,7 +95,7 @@ class RacesActivity : AppCompatActivity(),
     }
 
     private fun setUpGroupsSpinner() {
-        
+
 
         CoroutineScope(Dispatchers.Main).launch {
 
