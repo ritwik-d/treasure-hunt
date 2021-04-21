@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
             "is_hashed" to 1
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/login")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/login")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()

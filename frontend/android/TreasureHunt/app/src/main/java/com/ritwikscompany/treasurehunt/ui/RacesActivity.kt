@@ -12,6 +12,7 @@ import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
@@ -69,6 +70,8 @@ class RacesActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_races)
 
+        Log.d(TAG, "onCreate: ")
+
         setUpUI()
     }
 
@@ -81,27 +84,30 @@ class RacesActivity : AppCompatActivity(),
         racesRV = findViewById(R.id.race_races_rv)
         groupsTB = findViewById(R.id.race_groups_tb)
 
-        titleET = findViewById(R.id.race_title)
-        diffSpinner = findViewById(R.id.race_diff)
-        groupsSpinner = findViewById(R.id.race_groups)
-        racesRV = findViewById(R.id.race_races_rv)
-        groupsTB = findViewById(R.id.race_groups_tb)
+        Log.d(TAG, "setUpUI: ")
 
-        setUpRacesRVAndGroupsTB()
+        setUpGroupsSpinner()
 
         setUpBottomNavigation()
 
-        setUpGroupsSpinner()
+        setUpRacesRVAndGroupsTB()
+
+        setUpScheduleRace()
     }
 
     private fun setUpGroupsSpinner() {
         val bodyJson = Gson().toJson(hashMapOf(
-            "pw" to userData["pw"] as String,
-            "user_id" to userData["id"] as Int
+            "pw" to userData["password"] as String,
+            "user_id" to userData["user_id"] as Int,
+            "is_hashed" to 1
         ))
 
+        Log.d(TAG, "setUpGroupsSpinner: ")
+
+        Log.d(TAG, "setUpGroupsSpinner: $bodyJson")
+
         CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, result) = Fuel.post("${getString(R.string.host)}/get_groups")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_groups")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
@@ -122,15 +128,21 @@ class RacesActivity : AppCompatActivity(),
                                     Toast.LENGTH_SHORT
                                 ).show()
 
+                                Log.d(TAG, "setUpGroupsSpinner: here")
+
                                 startActivity(Intent(ctx, HomeActivity::class.java).apply {
                                     putExtra("userData", userData)
                                 })
                             }
 
+                            Log.d(TAG, "setUpGroupsSpinner: $groups")
+
                             val groupsAdapter = ArrayAdapter(ctx, android.R.layout.simple_dropdown_item_1line, groups)
 
                             groupsSpinner.adapter = groupsAdapter
                         }
+                    } else {
+                        Log.d(TAG, "setUpGroupsSpinner: here1")
                     }
                 }
             }
@@ -156,7 +168,7 @@ class RacesActivity : AppCompatActivity(),
 
     private fun setUpRacesRVAndGroupsTB() {
         val bodyJson = Gson().toJson(hashMapOf(
-                "pw" to userData["pw"],
+                "pw" to userData["password"],
                 "user_id" to userData["user_id"]
         ))
 
@@ -423,7 +435,10 @@ class RacesActivity : AppCompatActivity(),
                                 titleET.error = "Title already exists"
                                 titleET.requestFocus()
                             }
-                            "success" -> Toast.makeText(ctx, "Race Scheduled", Toast.LENGTH_SHORT).show()
+                            "success" -> {
+                                Toast.makeText(ctx, "Race Scheduled", Toast.LENGTH_SHORT).show()
+                                val race = Race(title, startTime, userData["user_id"], userData["username"], groupName, )
+                            }
                         }
                     }
 
@@ -454,18 +469,26 @@ class RacesActivity : AppCompatActivity(),
                         calendar2.time = currentTime
                         calendar2.add(Calendar.DATE, 2)
 
-                        if (calendar.before(calendar2.time)) {
+                        if (calendar.time.before(calendar2.time)) {
                             Toast.makeText(
                                 ctx,
                                 "Date selected must be two days after today's date",
                                 Toast.LENGTH_SHORT
                             ).show()
 
+                            Log.d(TAG, "showDateDialog: error of two days")
+
                             return@OnTimeSetListener
                         }
 
                         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
-                        scheduleRace(titleET.text.toString(), simpleDateFormat.format(calendar.time), 0.0, 0.0, findViewById<Spinner>(R.id.race_groups).selectedItem.toString())
+                        scheduleRace(
+                            titleET.text.toString(),
+                            simpleDateFormat.format(calendar.time),
+                            lastLocation.latitude,
+                            lastLocation.longitude,
+                            findViewById<Spinner>(R.id.race_groups)
+                                .selectedItem.toString())
                     }
                 TimePickerDialog(
                         ctx,
@@ -495,5 +518,6 @@ class RacesActivity : AppCompatActivity(),
 
     companion object {
         private const val DEFAULT_ZOOM = 15f
+        private const val TAG = "RacesActivity"
     }
 }

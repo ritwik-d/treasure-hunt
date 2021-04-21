@@ -18,14 +18,14 @@ api:
     get_group_settings: /api/get_group_settings
     get_invitations: /api/get_invitations
     get_messages: /api/get_messages
-    get_race: /get_race
-    get_races: /get_races
+    get_race: /api/get_race
+    get_races: /api/get_races
     get_user_challenges: /api/get_user_challenges
     invite_user: /api/invite_user
     join_group: /api/join_group
-    join_race: /join_race
+    join_race: /api/join_race
     leave_group: /api/leave_group
-    leave_race: /leave_race
+    leave_race: /api/leave_race
     login: /api/login
     register: /api/register
     remove_group_member: /api/remove_group_member
@@ -34,9 +34,9 @@ api:
     send_message: /api/send_message
     update_challenge: /api/update_challenge
     update_group_settings: /api/update_group_settings
-    update_race_location: /update_race_location
+    update_race_location: /api/update_race_location
     upload_pfp: /api/upload_pfp
-    verify_account: /verify_account/{email_verify_token}
+    verify_account: /api/verify_account/{email_verify_token}
     simulate_race_location: /api/simulate_race_location
 firebase_storage:
   db_backups: database_backups/

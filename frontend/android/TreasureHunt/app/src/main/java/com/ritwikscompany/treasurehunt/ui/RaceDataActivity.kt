@@ -160,7 +160,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         map.clear()
 
         val bodyJson = Gson().toJson(hashMapOf(
-            "pw" to userData["pw"] as String,
+            "pw" to userData["password"] as String,
             "user_id" to userData["user_id"],
             "race_id" to raceData["race_id"],
             "latitude" to lastLocation.latitude,
@@ -202,7 +202,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
     private fun checkForLocation() {
         val bodyJson = Gson().toJson(hashMapOf(
-            "pw" to userData["pw"] as String,
+            "pw" to userData["password"] as String,
             "user_id" to userData["user_id"] as Int,
             "race_id" to raceData["race_id"] as Int,
             "group_name" to raceData["group_name"] as String
@@ -241,7 +241,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
     private fun completeRace() {
         val bodyJson = Gson().toJson(hashMapOf(
-            "pw" to userData["pw"] as String,
+            "pw" to userData["password"] as String,
             "user_id" to userData["user_id"] as Int,
             "race_id" to raceData["race_id"] as Int,
             "group_name" to raceData["group_name"] as String
@@ -276,7 +276,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         map.clear()
 
         val bodyJson = Gson().toJson(hashMapOf(
-            "pw" to userData["pw"] as String,
+            "pw" to userData["password"] as String,
             "user_id" to userData["user_id"],
             "race_id" to raceData["race_id"],
             "latitude" to lastLocation.latitude,
@@ -338,7 +338,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
     private fun leaveRace() {
         val bodyJson = Gson().toJson(hashMapOf(
-            "pw" to userData["pw"] as String,
+            "pw" to userData["password"] as String,
             "user_id" to userData["user_id"] as Int,
             "race_id" to raceData["raceID"] as Int
         ))
