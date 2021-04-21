@@ -348,6 +348,8 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
                 }
             }
         }
+
+        super.onBackPressed()
     }
 
     private fun setUpRaceTitle() {
