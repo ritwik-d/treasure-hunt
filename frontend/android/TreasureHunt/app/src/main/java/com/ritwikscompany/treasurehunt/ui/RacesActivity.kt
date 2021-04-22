@@ -8,6 +8,7 @@ import android.app.TimePickerDialog
 import android.app.TimePickerDialog.OnTimeSetListener
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
@@ -322,7 +323,9 @@ class RacesActivity : AppCompatActivity(),
 
     override fun onMapReady(p0: GoogleMap?) {
         map = p0!!
+
         map.uiSettings.isZoomControlsEnabled = true
+
         map.setOnMarkerClickListener(ctx)
 
         setUpMap()
@@ -345,6 +348,7 @@ class RacesActivity : AppCompatActivity(),
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
                 moveCamera(currentLatLng, DEFAULT_ZOOM)
+                placeMarkerOnMap("Easy")
             }
         }
     }
@@ -374,7 +378,8 @@ class RacesActivity : AppCompatActivity(),
             override fun onLocationResult(p0: LocationResult) {
                 lastLocation = p0.lastLocation
             }
-        }, Looper.myLooper())
+        },
+            Looper.myLooper())
     }
 
     private fun moveCamera(latLng: LatLng, zoom: Float) {
@@ -389,7 +394,10 @@ class RacesActivity : AppCompatActivity(),
             return
         }
 
+        map.clear()
+
         val circle = CircleOptions()
+
         val currentLocation = LatLng(
                 lastLocation.latitude,
                 lastLocation.longitude
@@ -406,6 +414,8 @@ class RacesActivity : AppCompatActivity(),
                 circle.radius(1500.0)
         }
 
+        circle.strokeColor(Color.BLACK)
+
         map.addCircle(circle)
     }
 
@@ -420,6 +430,7 @@ class RacesActivity : AppCompatActivity(),
                 "longitude" to longitude,
                 "group_name" to groupName
         ))
+
         CoroutineScope(Dispatchers.IO).launch {
             val (_, _, result) = Fuel.post("${getString(R.string.host)}/api/create_race")
                     .body(bodyJson)
@@ -465,32 +476,35 @@ class RacesActivity : AppCompatActivity(),
     @SuppressLint("SimpleDateFormat")
     private fun showDateDialog() {
         val calendar: Calendar = Calendar.getInstance()
+
         val dateSetListener =
             OnDateSetListener { _, year, month, dayOfMonth ->
                 calendar.set(Calendar.YEAR, year)
                 calendar.set(Calendar.MONTH, month)
                 calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
                 val timeSetListener =
                     OnTimeSetListener { _, hourOfDay, minute ->
                         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                         calendar.set(Calendar.MINUTE, minute)
-                        val currentTime = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant())
 
-                        val calendar2 = Calendar.getInstance()
-                        calendar2.time = currentTime
-                        calendar2.add(Calendar.DATE, 2)
-
-                        if (calendar.time.before(calendar2.time)) {
-                            Toast.makeText(
-                                ctx,
-                                "Date selected must be two days after today's date",
-                                Toast.LENGTH_SHORT
-                            ).show()
-
-                            Log.d(TAG, "showDateDialog: error of two days")
-
-                            return@OnTimeSetListener
-                        }
+//                        val currentTime = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant())
+//
+//                        val calendar2 = Calendar.getInstance()
+//                        calendar2.time = currentTime
+//                        calendar2.add(Calendar.DATE, 1)
+//
+//                        if (calendar.time.before(calendar2.time)) {
+//                            Toast.makeText(
+//                                ctx,
+//                                "Date selected must be a day after today's date",
+//                                Toast.LENGTH_SHORT
+//                            ).show()
+//
+//                            Log.d(TAG, "showDateDialog: error of two days")
+//
+//                            return@OnTimeSetListener
+//                        }
 
                         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
                         scheduleRace(
@@ -501,6 +515,7 @@ class RacesActivity : AppCompatActivity(),
                             findViewById<Spinner>(R.id.race_groups)
                                 .selectedItem.toString())
                     }
+
                 TimePickerDialog(
                         ctx,
                         timeSetListener,

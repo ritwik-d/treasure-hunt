@@ -1,18 +1,13 @@
 package com.ritwikscompany.treasurehunt.ui
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.fuel.core.isSuccessful
 import com.google.gson.Gson
 import com.ritwikscompany.treasurehunt.R
 import com.ritwikscompany.treasurehunt.utils.Utils.Utils.isValid
@@ -20,7 +15,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.regex.Pattern
 
 
 class SignUpActivity : AppCompatActivity() {
@@ -78,7 +72,8 @@ class SignUpActivity : AppCompatActivity() {
                             emailET.requestFocus()
                         }
                         401 -> {
-                            usernameET.error = "An account has already been created with this username"
+                            usernameET.error =
+                                "An account has already been created with this username"
                             usernameET.requestFocus()
                         }
                     }
