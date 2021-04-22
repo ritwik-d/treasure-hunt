@@ -172,7 +172,7 @@ class User:
     def get_races(self):
         db = DB()
         db.connect()
-        groups = list(itertools.chain(*db.select(f"select group_id from groups where JSON_CONTAINS(members, '{self.user_id}')")))
+        groups = list(itertools.chain(*db.select(f"select group_id from user_groups where JSON_CONTAINS(members, '{self.user_id}')")))
         races = db.select(f'''select title, creator_id, start_time, group_id, race_id from races where group_id in ({','.join(groups)})''', dict_cursor=True)
         for race in races:
             race['start_time'] = str(start_time)
