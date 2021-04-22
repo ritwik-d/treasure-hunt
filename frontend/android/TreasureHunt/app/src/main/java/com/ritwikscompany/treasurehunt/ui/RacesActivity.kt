@@ -430,14 +430,25 @@ class RacesActivity : AppCompatActivity(),
                 runOnUiThread {
                     val (bytes, _) = result
                     if (bytes != null) {
-                        when ((Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, String>>() {}.type) as HashMap<String, String>)["error"]) {
+                        val errorAndRaceID = Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, *>>() {}.type) as HashMap<String, *>
+                        when (errorAndRaceID["error"]) {
                             "title exists" -> {
                                 titleET.error = "Title already exists"
                                 titleET.requestFocus()
                             }
                             "success" -> {
                                 Toast.makeText(ctx, "Race Scheduled", Toast.LENGTH_SHORT).show()
-                                val race = Race(title, startTime, userData["user_id"], userData["username"], groupName, )
+                                val raceData = hashMapOf(
+                                    "title" to title,
+                                    "startTime" to startTime,
+                                    "creator" to userData["username"] as String,
+                                    "groupName" to groupName,
+                                    "raceID" to errorAndRaceID["race_id"] as Int
+                                )
+
+                                startActivity(Intent(ctx, RaceDataActivity::class.java).apply {
+                                    putExtra("raceData", raceData)
+                                })
                             }
                         }
                     }
