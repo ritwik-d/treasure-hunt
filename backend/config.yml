@@ -36,7 +36,7 @@ api:
     update_group_settings: /api/update_group_settings
     update_race_location: /api/update_race_location
     upload_pfp: /api/upload_pfp
-    verify_account: /api/verify_account/{email_verify_token}
+    verify_account: /verify_account/{email_verify_token}
     simulate_race_location: /api/simulate_race_location
 firebase_storage:
   db_backups: database_backups/
