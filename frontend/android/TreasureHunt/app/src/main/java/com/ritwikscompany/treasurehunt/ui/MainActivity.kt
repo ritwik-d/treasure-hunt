@@ -33,9 +33,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        checkIsLoggedIn()
-
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.g_client))
             .requestEmail()
             .build()
 
@@ -77,6 +76,16 @@ class MainActivity : AppCompatActivity() {
             gSignUp(account)
         }
     }
+
+    private fun gSignUp(account: GoogleSignInAccount) {
+        val idToken = account.idToken
+
+        val nameValuePairs = ArrayList<NameValuePair>()
+
+        val bodyJson = Gson().toJson(nameValuePairs)
+    }
+
+    data class NameValuePair(var name: String, var value: String)
 
     private fun logInOnClick() {
         startActivity(Intent(ctx, LoginActivity::class.java))

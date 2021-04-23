@@ -107,4 +107,8 @@
     <string name="creator_name">creator name</string>
     <string name="group_name">group name</string>
     <string name="race_title">race title</string>
+
+<!--    g sign in-->
+
+    <string name="g_client">http://730998725642-ckq8b3obokmq10d0uko2agjo46124kbo.apps.googleusercontent.com</string>
 </resources>
