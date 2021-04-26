@@ -32,10 +32,7 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
-        <activity
-            android:name=".ui.testactivity"
-            android:label="@string/title_activity_testactivity" />
+        
         <activity android:name=".ui.GroupChatActivity" />
         <activity android:name=".ui.GroupSettingsActivity" />
         <activity android:name=".ui.GroupMembersActivity" />

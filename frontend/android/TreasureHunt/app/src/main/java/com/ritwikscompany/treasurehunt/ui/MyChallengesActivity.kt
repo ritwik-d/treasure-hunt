@@ -174,7 +174,7 @@ class MyChallengesActivity : AppCompatActivity() {
 
 
     private fun editChallenge(challengeData: HashMap<String, Any>) {
-        val intent = Intent(ctx, testactivity::class.java).apply {
+        val intent = Intent(ctx, EditChallengeActivity::class.java).apply {
             putExtra("userData", userData)
             putExtra("challengeData", challengeData)
         }
