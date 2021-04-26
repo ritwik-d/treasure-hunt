@@ -154,7 +154,7 @@ class User:
         else:
             db = DB()
             race_id = db.select("select race_id from races where title = %s", (title,), True)[0][0]
-            return {'status': 201, 'body': {'error': 'success', 'race_id', race_id}}
+            return {'status': 201, 'body': {'error': 'success', 'race_id': race_id}}
 
 
     @authenticate
