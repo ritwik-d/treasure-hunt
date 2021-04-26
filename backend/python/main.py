@@ -13,6 +13,14 @@ async def accept_invitation(json: AcceptInvitation, response: Response):
     response.status_code = user.accept_invitation(json.invitation_id)
 
 
+@app.post(paths.get('get_races'))
+async def get_races(json: GetRaces, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response_2 = user.get_races()
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
+
+
 @app.post(paths.get('decline_invitation'))
 async def decline_invitation(json: DeclineInvitation, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
@@ -25,6 +33,12 @@ async def complete_challenge(json: CompleteChallenge, response: Response):
     response.status_code = user.complete_challenge(json.challenge_id)
 
 
+@app.post(paths.get('complete_race'))
+async def complete_race(json: CompleteRace, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response.status_code = user.complete_race(json.race_id, json.group_name)
+
+
 @app.post(paths.get('create_challenge'))
 async def create_challenge(json: CreateChallenge, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
@@ -35,6 +49,14 @@ async def create_challenge(json: CreateChallenge, response: Response):
 async def create_group(json: CreateGroup, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
     response.status_code = user.create_group(json.name, json.description)
+
+
+@app.post(paths.get('create_race'))
+async def create_race(json: CreateRace, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response_2 = user.create_race(json.title, json.start_time, json.latitude, json.longitude, json.group_name)
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
 
 
 @app.post(paths.get('delete_challenge'))
@@ -109,7 +131,7 @@ async def get_group_settings(json: GetGroupSettings, response: Response):
 
 
 @app.post(paths.get('get_invitations'))
-async def get_challenge_data(json: GetInvitations, response: Response):
+async def get_invitations(json: GetInvitations, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
     response_2 = user.get_invitations()
     response.status_code = response_2.get('status')
@@ -159,14 +181,14 @@ async def register(json: Register, response: Response):
 
 
 @app.post(paths.get('send_email_reset_password'))
-async def register(json: SendEmailResetPassword, response: Response):
+async def send_email_reset_pw(json: SendEmailResetPassword, response: Response):
     response_2 = send_email_reset_password(json.email)
     response.status_code = response_2.get('status')
     return response_2.get('body')
 
 
 @app.post(paths.get('reset_password'))
-async def register(json: ResetPassword, response: Response):
+async def reset_password(json: ResetPassword, response: Response):
     user = User(email=json.email)
     response.status_code = user.reset_password(json.new_password)
 
@@ -193,6 +215,14 @@ async def get_messages(json: GetMessages, response: Response):
     return response_2.get('body')
 
 
+@app.post(paths.get('get_race'))
+async def get_race(json: GetRace, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response_2 = user.get_race(json.race_id, json.group_name)
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
+
+
 @app.post(paths.get('update_challenge'))
 async def update_challenge(json: UpdateChallenge, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
@@ -214,3 +244,25 @@ async def upload_pfp(response: Response, image: UploadFile = File(...), user_id:
 @app.get(paths.get('verify_account'))
 async def verify_account(email_verify_token: str):
     return verify_account_web(email_verify_token)
+
+
+@app.post(paths.get('join_race'))
+async def insert_race_location(json: JoinRace, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response_2 = user.insert_race_location(json.race_id, json.latitude, json.longitude)
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
+
+
+@app.post(paths.get('update_race_location'))
+async def update_race_location(json: UpdateRaceLocation, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response_2 = user.update_race_location(json.race_id, json.latitude, json.longitude)
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
+
+
+@app.post(paths.get('leave_race'))
+async def leave_race(json: LeaveRace, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response.status_code = user.leave_race(json.race_id)

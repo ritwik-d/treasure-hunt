@@ -9,41 +9,14 @@
     <fragment
         android:id="@+id/game_map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="32dp"
-        app:layout_constraintBottom_toTopOf="@+id/game_puzzle"
+        android:layout_marginBottom="127dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/game_start_challenge"
         tools:context=".ui.GameActivity" />
-
-    <TextView
-        android:id="@+id/game_puzzle"
-        android:layout_width="387dp"
-        android:layout_height="30dp"
-        android:layout_marginBottom="65dp"
-        android:gravity="start"
-        android:textAlignment="textStart"
-        android:textColor="@color/black"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/game_map" />
-
-    <TextView
-        android:id="@+id/game_creator"
-        android:layout_width="387dp"
-        android:layout_height="30dp"
-        android:layout_marginBottom="20dp"
-        android:gravity="start"
-        android:textAlignment="textStart"
-        android:textColor="@color/black"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/game_start_challenge"
@@ -56,5 +29,43 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/game_satellite"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:backgroundTint="@color/white"
+        android:scaleType="centerCrop"
+        android:src="@drawable/satellite"
+        app:layout_constraintStart_toStartOf="@+id/game_map"
+        app:layout_constraintTop_toTopOf="@+id/game_map" />
+
+    <TextView
+        android:id="@+id/game_puzzle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginBottom="68dp"
+        android:gravity="start"
+        android:textAlignment="textStart"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/game_creator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginBottom="26dp"
+        android:gravity="start"
+        android:textAlignment="textStart"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

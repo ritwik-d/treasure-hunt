@@ -9,11 +9,9 @@
     <Button
         android:id="@+id/main_login"
         android:layout_width="150dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="68dp"
-        android:layout_marginTop="300dp"
-        android:layout_marginEnd="68dp"
-        android:layout_marginBottom="27dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="150dp"
+        android:layout_marginBottom="13dp"
         android:text="@string/logIn"
         app:layout_constraintBottom_toTopOf="@+id/main_signup"
         app:layout_constraintEnd_toEndOf="parent"
@@ -23,14 +21,22 @@
     <Button
         android:id="@+id/main_signup"
         android:layout_width="150dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="65dp"
-        android:layout_marginEnd="65dp"
-        android:layout_marginBottom="290dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="167dp"
         android:text="@string/signUp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/main_sign_in_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/main_login" />
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/main_sign_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="177dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/main_signup" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

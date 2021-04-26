@@ -1,42 +1,48 @@
 package com.ritwikscompany.treasurehunt.ui
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.ArrayAdapter
-import android.widget.ListView
+import android.view.Menu
+import android.widget.SearchView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.fuel.core.isSuccessful
 import com.google.android.material.tabs.TabLayout
 import com.google.gson.Gson
 import com.ritwikscompany.treasurehunt.R
+import com.ritwikscompany.treasurehunt.utils.FindChallengeRVA
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class PickChallengeActivity : AppCompatActivity() {
 
     private val ctx = this@PickChallengeActivity
     private var userData = HashMap<String, Any>()
+    private lateinit var searchView: SearchView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pick_challenge)
 
-        this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
+        userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
         initialize()
     }
 
 
     private fun initialize() {
         val bodyJson = Gson().toJson(hashMapOf<String, Any>(
-            "user_id" to userData.get("user_id") as Int,
-            "pw" to userData.get("password") as String
+                "user_id" to userData["user_id"] as Int,
+                "pw" to userData["password"] as String
         ))
-        println(bodyJson)
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/get_challenges")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_challenges")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()
@@ -47,46 +53,36 @@ class PickChallengeActivity : AppCompatActivity() {
                         if (status == 200) {
                             val (bytes, _) = result
                             if (bytes != null) {
-                                val challengeData = Gson().fromJson(String(bytes), HashMap::class.java) as HashMap<String, MutableList<String>>
+                                val challengeData = Gson().fromJson(String(bytes), HashMap::class.java) as HashMap<String, ArrayList<String>>
                                 val tabLayout = findViewById<TabLayout>(R.id.pc_tab_layout)
-                                val listView = findViewById<ListView>(R.id.pc_list_view)
-                                for (group in challengeData.keys) {
-                                    tabLayout.addTab(tabLayout.newTab().setText(group))
+                                val rv = findViewById<RecyclerView>(R.id.pc_rview)
+                                val tabNames = challengeData.keys.toTypedArray()
+                                for (group in tabNames) {
+                                    if ((challengeData[group] as ArrayList<String>).isNotEmpty()) {
+                                        tabLayout.addTab(tabLayout.newTab().setText(group))
+                                    }
                                 }
 
                                 val firstTab = tabLayout.getTabAt(tabLayout.selectedTabPosition)?.text.toString()
-                                val listItems = challengeData.get(firstTab) as MutableList
-                                val adapter = ArrayAdapter(
-                                    ctx,
-                                    android.R.layout.simple_list_item_1,
-                                    listItems
-                                )
-                                listView.adapter = adapter
+                                val challenges = challengeData[firstTab] as ArrayList
 
-                                listView.setOnItemClickListener { _, _, position, _ ->
+                                val startOnClick = { challengeName: String ->
                                     val intent = Intent(ctx, GameActivity::class.java).apply {
                                         putExtra("userData", userData)
-                                        putExtra("challengeName", listItems[position])
+                                        putExtra("challengeName", challengeName)
                                     }
                                     startActivity(intent)
                                 }
 
+                                rv.layoutManager = LinearLayoutManager(ctx)
+                                rv.adapter = FindChallengeRVA(challenges, startOnClick)
+
                                 tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                                     override fun onTabSelected(tab: TabLayout.Tab?) {
-                                        val listItems = challengeData.get(tab?.text.toString()) as MutableList
-                                        val adapter = ArrayAdapter(
-                                                ctx,
-                                                android.R.layout.simple_list_item_1,
-                                                listItems
-                                        )
-                                        listView.adapter = adapter
+                                        rv.adapter = FindChallengeRVA(challengeData[tab?.text.toString()] as ArrayList, startOnClick)
 
-                                        listView.setOnItemClickListener { _, _, position, _ ->
-                                            val intent = Intent(ctx, GameActivity::class.java).apply {
-                                                putExtra("userData", userData)
-                                                putExtra("challengeName", listItems[position])
-                                            }
-                                            startActivity(intent)
+                                        if (ctx::searchView.isInitialized) {
+                                            searchView.setQuery("", true)
                                         }
                                     }
 
@@ -107,5 +103,95 @@ class PickChallengeActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun initializeMenu(menu: Menu?) {
+        val menuInflater = menuInflater
+        menuInflater.inflate(R.menu.menu_search, menu)
+
+        val menuItem = menu!!.findItem(R.id.menu_sb)
+        searchView = menuItem.actionView as SearchView
+
+        searchView.queryHint = getString(R.string.searchHint)
+
+        val bodyJson = Gson().toJson(hashMapOf<String, Any>(
+                "user_id" to userData["user_id"] as Int,
+                "pw" to userData["password"] as String
+        ))
+        println(bodyJson)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_challenges")
+                    .body(bodyJson)
+                    .header("Content-Type" to "application/json")
+                    .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    val status = response.statusCode
+                    if (status == 200) {
+                        val (bytes, _) = result
+
+                        if (bytes != null) {
+                            val startOnClick = { challengeName: String ->
+                                val intent = Intent(ctx, GameActivity::class.java).apply {
+                                    putExtra("userData", userData)
+                                    putExtra("challengeName", challengeName)
+                                }
+                                startActivity(intent)
+                            }
+
+                            val challengeData = Gson().fromJson(String(bytes), HashMap::class.java) as HashMap<String, ArrayList<String>>
+                            val tabNames = challengeData.keys.toTypedArray()
+                            val tabLayout = findViewById<TabLayout>(R.id.pc_tab_layout)
+                            val rv = findViewById<RecyclerView>(R.id.pc_rview)
+
+                            searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
+                                override fun onQueryTextSubmit(query: String?): Boolean {
+                                    val text = query!!.toLowerCase(Locale.ROOT)
+
+                                    val currentChallenges = challengeData[tabNames[tabLayout.selectedTabPosition]] as ArrayList
+                                    val newChallenges = arrayListOf<String>()
+
+                                    for (challenge in currentChallenges) {
+                                        val challenge2 = challenge.toLowerCase(Locale.ROOT)
+                                        if (text in challenge2) {
+                                            newChallenges.add(challenge)
+                                        }
+                                    }
+
+                                    rv.adapter = FindChallengeRVA(newChallenges, startOnClick)
+                                    return true
+                                }
+
+                                override fun onQueryTextChange(newText: String?): Boolean {
+                                    val text = newText!!.toLowerCase(Locale.ROOT)
+
+                                    val currentChallenges = challengeData[tabNames[tabLayout.selectedTabPosition]] as ArrayList
+                                    val newChallenges = arrayListOf<String>()
+
+                                    for (challenge in currentChallenges) {
+                                        val challenge2 = challenge.toLowerCase(Locale.ROOT)
+                                        if (text in challenge2) {
+                                            newChallenges.add(challenge)
+                                        }
+                                    }
+
+                                    rv.adapter = FindChallengeRVA(newChallenges, startOnClick)
+                                    return true
+                                }
+                            })
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
+        initializeMenu(menu)
+
+        return true
     }
 }

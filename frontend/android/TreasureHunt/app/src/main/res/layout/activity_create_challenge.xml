@@ -11,7 +11,6 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="80dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -82,5 +81,18 @@
         app:layout_constraintEnd_toStartOf="@+id/cc_diff"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cc_puzzle" />
+
+    <ImageButton
+        android:id="@+id/cc_satellite"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="340dp"
+        android:layout_marginRight="340dp"
+        android:backgroundTint="@color/white"
+        android:scaleType="centerCrop"
+        android:src="@drawable/satellite"
+        app:layout_constraintEnd_toEndOf="@+id/cc_map"
+        app:layout_constraintTop_toTopOf="@+id/cc_map" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

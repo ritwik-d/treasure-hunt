@@ -14,37 +14,6 @@ from threading import Timer
 from utils import *
 
 
-def authenticate(func):
-    def wrapper(user, *args, **kwargs):
-        db = DB()
-        db.connect()
-        if db.select('select * from users where user_id = %s and password = %s', params=(user.user_id, user.pw), dict_cursor=True) != tuple():
-            return func(user, *args, **kwargs)
-    return wrapper
-
-
-def get_group_id(gname: str):
-    db = DB()
-    db.connect()
-    group_id = db.select('select group_id from user_groups where name = %s', params=(gname,), dict_cursor=True)
-    if group_id != tuple():
-        return group_id[0].get('group_id')
-
-
-def get_user_id(value: str, column='email'):
-    db = DB()
-    db.connect()
-    user_id = db.select(f'select user_id from users where {column} = %s', params=(value,), dict_cursor=True)
-    if user_id != tuple():
-        return user_id[0].get('user_id')
-
-
-def get_users(self):
-    db = DB()
-    db.connect()
-    return {'status': 200, 'body': list(db.select('select email, username from users', dict_cursor=True))}
-
-
 def verify_account_web(email_verify_token: str):
     db = DB()
     db.connect()
@@ -109,7 +78,18 @@ class User:
         db.connect()
         db.delete('challenges', {'challenge_id': challenge_id})
         points = db.select('select points from users where user_id = %s', params=(self.user_id,))[0][0] + 1
-        db.update('users', {'points', points}, {'user_id': self.user_id})
+        db.update('users', {'points': points}, {'user_id': self.user_id})
+        return 200
+
+
+    @authenticate
+    def complete_race(self, race_id: int, group_name: str):
+        group_id = get_group_id(group_name)
+        db = DB()
+        db.connect()
+        db.delete('races', {'race_id': race_id})
+        db.delete('race_locations', {'race_id': race_id})
+        db.update('users', {'points': db.select('select points from users where user_id = %s', params=(self.user_id,), dict_cursor=True)[0].get('points') + 1}, {'user_id': self.user_id})
         return 200
 
 
@@ -159,6 +139,48 @@ class User:
         if row_id is None:
             return 400
         return 201
+
+
+    @authenticate
+    def create_race(self, title: str, start_time: str, latitude: float, longitude: float, group_name: str):
+        group_id = get_group_id(group_name)
+
+        start_time_obj = datetime.datetime.strptime(start_time, '%Y-%m-%d %H:%M:0.0')
+        race = Race(title, start_time_obj, latitude, longitude, group_id)
+        status = race.create(self.user_id)
+
+        if status == False:
+            return {'status': 400, 'body': {'error': 'title exists'}}
+        else:
+            db = DB()
+            race_id = db.select("select race_id from races where title = %s", (title,), True)[0][0]
+            return {'status': 201, 'body': {'error': 'success', 'race_id', race_id}}
+
+
+    @authenticate
+    def get_race(self, race_id: int, group_name: str):
+        group_id = get_group_id(group_name)
+        db = DB()
+        db.connect()
+        group = db.select("select * from races where race_id = %s", params=(race_id,), dict_cursor=True)
+
+        if group is None:
+            return {'status': 400, 'body': {}}
+
+        return {'status': 200, 'body': group[0]}
+
+
+    @authenticate
+    def get_races(self):
+        db = DB()
+        db.connect()
+        groups = list(itertools.chain(*db.select(f"select group_id from user_groups where JSON_CONTAINS(members, '{self.user_id}')")))
+        races = db.select(f'''select title, creator_id, start_time, group_id, race_id from races where group_id in ({','.join(groups)})''', dict_cursor=True)
+        for race in races:
+            race['start_time'] = str(start_time)
+            race['group_name'] = db.select('select name from user_groups where group_id = %s', params=(race['group_id'],), dict_cursor=True)[0].get('name')
+            race['creator_username'] = db.select('select username from users where user_id = %s', params=(race['creator_id'],), dict_cursor=True)[0].get('username')
+        return {'status': 200, 'body': races}
 
 
     @authenticate
@@ -224,7 +246,7 @@ class User:
     def get_groups(self, is_admin: int):
         db = DB()
         db.connect()
-        group1 = None
+        groups1 = None
         if is_admin == 0:
             groups1 = db.select(f"select name from user_groups where JSON_CONTAINS(members, '{self.user_id}')")
         else:
@@ -303,6 +325,27 @@ class User:
         db = DB()
         db.connect()
         return {'body': list(db.select('select * from challenges where creator_id = %s', params=(self.user_id,), dict_cursor=True)), 'status': 200}
+
+
+    @authenticate
+    def insert_race_location(self, race_id: int, latitude: float, longitude: float):
+        race = RaceInProgress(race_id)
+        race.add_user(self.user_id, latitude, longitude)
+        return {'body': race.get_users(), 'status': 200}
+
+
+    @authenticate
+    def update_race_location(self, race_id: int, latitude: float, longitude: float):
+        race = RaceInProgress(race_id)
+        race.update_user(self.user_id, latitude, longitude)
+        return {'body': race.get_users(), 'status': 200}
+
+
+    @authenticate
+    def leave_race(self, race_id: int):
+        race = RaceInProgress(race_id)
+        race.remove_user(self.user_id)
+        return 200
 
 
     @authenticate

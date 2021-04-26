@@ -56,4 +56,8 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'com.google.android.gms:play-services-location:18.0.0'
+
+    //google sign in implementation
+
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
 }

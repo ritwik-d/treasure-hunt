@@ -10,7 +10,6 @@ import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.Menu
@@ -37,8 +36,7 @@ class HomeActivity : AppCompatActivity() {
 
     private val ctx = this@HomeActivity
     private var userData = HashMap<String, Any>()
-    private val REQUEST_GALLERY = 200
-    private val PERMISSION_REQUEST_CODE = 1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
@@ -47,14 +45,10 @@ class HomeActivity : AppCompatActivity() {
 
         setProfilePicture()
 
-        findViewById<TextView>(R.id.home_name).text = "Hello ${userData.get("username").toString()}!"
+        findViewById<TextView>(R.id.home_name).text = "Hello ${userData["username"].toString()}!"
         findViewById<Button>(R.id.home_find_challenge).setOnClickListener {
             findChallengeOnClick()
         }
-
-//        findViewById<Button>(R.id.home_feedback).setOnClickListener {
-//            feedbackOnClick()
-//        }
 
         findViewById<Button>(R.id.home_my_challenges).setOnClickListener {
             myChallengesOnClick()
@@ -74,11 +68,14 @@ class HomeActivity : AppCompatActivity() {
             }
 
             R.id.menu_upload_pfp -> {
-                val intent = Intent().apply {
-                    type = "image/*"
-                    action = Intent.ACTION_GET_CONTENT
+                requestPermissions()
+            }
+
+            R.id.menu_race -> {
+                val intent = Intent(ctx, RacesActivity::class.java).apply {
+                    putExtra("userData", userData)
                 }
-                startActivityForResult(Intent.createChooser(intent, "Select an Image"), PERMISSION_REQUEST_CODE)
+                startActivity(intent)
             }
         }
         return true
@@ -98,10 +95,14 @@ class HomeActivity : AppCompatActivity() {
                     ctx, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
                     PERMISSION_REQUEST_CODE)
         }
+
+        if (checkPermissions()) {
+            filePicker()
+        }
     }
 
 
-    private fun convertToByteArray(filePath: String): ByteArray {
+    private fun convertToBitmap(filePath: String): Bitmap {
         val image = File(filePath)
         val bmOptions = BitmapFactory.Options()
         var bitmap = BitmapFactory.decodeFile(image.absolutePath, bmOptions)
@@ -113,20 +114,30 @@ class HomeActivity : AppCompatActivity() {
 
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 30, baos)
-        val data = baos.toByteArray()
-        return data
+        return bitmap
     }
 
+    private fun toByteArray(bitmap: Bitmap): ByteArray {
+
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 30, baos)
+
+        return baos.toByteArray()
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         val pfp: CircleImageView = findViewById(R.id.home_pfp)
         if (requestCode == REQUEST_GALLERY && resultCode == RESULT_OK) {
-            val filePath = getRealPathFromUri(data!!.data, ctx
-)
-            val image = convertToByteArray(filePath!!)
+            val filePath = getRealPathFromUri(data!!.data, ctx)
 
+            val image = convertToBitmap(filePath!!)
 
+            pfp.setImageBitmap(image)
+
+            val bytes = toByteArray(image)
+
+            bytes.size
         }
     }
 
@@ -157,10 +168,6 @@ class HomeActivity : AppCompatActivity() {
 
 
     private fun filePicker() {
-
-        //.Now Permission Working
-        Toast.makeText(ctx
-, "File Picker Call", Toast.LENGTH_SHORT).show()
         //Let's Pick File
         val openGallery = Intent(Intent.ACTION_PICK)
         openGallery.type = "image/*"
@@ -178,12 +185,12 @@ class HomeActivity : AppCompatActivity() {
     private fun setProfilePicture() {
         val bodyJson = Gson().toJson(
                 hashMapOf(
-                        "pw" to userData.get("password"),
-                        "user_id" to userData.get("user_id")
+                        "pw" to userData["password"],
+                        "user_id" to userData["user_id"]
                 )
         )
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/download_pfp")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/download_pfp")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()
@@ -193,7 +200,7 @@ class HomeActivity : AppCompatActivity() {
                     val status = response.statusCode
                     if (status == 200) {
                         val (bytes, _) = result
-                        val pfpImageView = findViewById<de.hdodenhof.circleimageview.CircleImageView>(R.id.home_pfp)
+                        val pfpImageView = findViewById<CircleImageView>(R.id.home_pfp)
                         if (bytes != null) {
                             val bitmap: Bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                             pfpImageView.setImageBitmap(bitmap)
@@ -221,12 +228,6 @@ class HomeActivity : AppCompatActivity() {
     }
 
 
-    private fun feedbackOnClick() {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.surveyLink)))
-        startActivity(intent)
-    }
-
-
     private fun myChallengesOnClick() {
         val intent = Intent(ctx, MyChallengesActivity::class.java).apply {
             putExtra("userData", userData)
@@ -250,5 +251,10 @@ class HomeActivity : AppCompatActivity() {
             remove("pw")
             apply()
         }
+    }
+
+    companion object {
+        private const val REQUEST_GALLERY = 200
+        private const val PERMISSION_REQUEST_CODE = 1
     }
 }

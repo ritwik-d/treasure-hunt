@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -36,14 +35,14 @@ class GroupMembersActivity : AppCompatActivity() {
 
         this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
         this.groupName = intent.getStringExtra("groupName") as String
-
-        initialize()
     }
 
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.group_members_menu, menu)
+
+        initialize(menu!!)
         return true
     }
 
@@ -51,24 +50,84 @@ class GroupMembersActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_add_person -> {
-                val builder = AlertDialog.Builder(ctx)
-                builder.setTitle("Add Group Member")
-                builder.setMessage("Enter the username of the person you would like to invite.")
                 val unameET = EditText(ctx)
                 unameET.hint = getString(R.string.username)
-                builder.setPositiveButton("Submit") { _, _ ->
 
-                }
-                builder.setNegativeButton("Cancel") { builder1, _ ->
-                    builder1.cancel()
-                }
+                AlertDialog.Builder(ctx)
+                        .setTitle("Add Member")
+                        .setMessage("Enter the username of the person you would like to invite.")
+                        .setView(unameET)
+                        .setPositiveButton("Submit") { _, _ ->
+                            inviteUser(unameET.text.toString())
+                        }
+                        .setNegativeButton("Cancel") { builder, _ ->
+                            builder.cancel()
+                        }
+                        .show()
             }
         }
         return true
     }
 
 
-    private fun initialize() {
+    private fun inviteUser(username: String) {
+        val bodyJson = Gson().toJson(hashMapOf(
+                "user_id" to userData["user_id"],
+                "pw" to userData["password"],
+                "group_name" to groupName,
+                "to_username" to username
+        ))
+        CoroutineScope(Dispatchers.IO).launch {
+            val (_, _, result) = Fuel.post("${getString(R.string.host)}/api/invite_user")
+                    .body(bodyJson)
+                    .header("Content-Type" to "application/json")
+                    .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    val (bytes, _) = result
+                    if (bytes != null) {
+                        when ((Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, Double>>(){}.type) as HashMap<String, Double>)["status"]!!.toInt()) {
+                            200 -> {
+                                Toast.makeText(
+                                        ctx,
+                                        "Invitation Successful",
+                                        Toast.LENGTH_LONG
+                                ).show()
+                            }
+                            400 -> {
+                                Toast.makeText(
+                                        ctx,
+                                        "$username has already been invited to $groupName",
+                                        Toast.LENGTH_LONG
+                                ).show()
+                            }
+                            404 -> {
+                                Toast.makeText(
+                                        ctx,
+                                        "There is no such player with username $username",
+                                        Toast.LENGTH_LONG
+                                ).show()
+                            }
+                            401 -> {
+                                Toast.makeText(
+                                        ctx,
+                                        "$username has already joined/created $groupName",
+                                        Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
+                    }
+                    else {
+                        Toast.makeText(ctx, "Network Error", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+    }
+
+
+    private fun initialize(menu: Menu? = null) {
         val bodyJson1 = Gson().toJson(hashMapOf(
             "user_id" to userData.get("user_id") as Int,
             "pw" to userData.get("password") as String,
@@ -88,6 +147,11 @@ class GroupMembersActivity : AppCompatActivity() {
                         if (bytes != null) {
                             val type = object: TypeToken<HashMap<String, Any>>(){}.type
                             val groupData: HashMap<String, Any> = Gson().fromJson(String(bytes), type) as HashMap<String, Any>
+
+                            if ((menu != null) && (userData["user_id"] as Int == (groupData["creator_id"] as Double).toInt())) {
+                                menu.findItem(R.id.menu_add_person).isVisible = true
+                            }
+
                             val bodyJson2 = Gson().toJson(hashMapOf<String, Any>(
                                 "user_id" to userData["user_id"] as Int,
                                 "pw" to userData["password"] as String,

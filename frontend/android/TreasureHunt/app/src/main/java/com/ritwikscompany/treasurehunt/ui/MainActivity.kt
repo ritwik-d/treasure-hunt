@@ -2,11 +2,19 @@ package com.ritwikscompany.treasurehunt.ui
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.github.kittinunf.fuel.Fuel
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.SignInButton
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
 import com.google.gson.Gson
 import com.ritwikscompany.treasurehunt.R
 import kotlinx.coroutines.CoroutineScope
@@ -14,14 +22,26 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+
+@Suppress("UNCHECKED_CAST")
 class MainActivity : AppCompatActivity() {
 
     private val ctx = this@MainActivity
+    private lateinit var mGoogleSignInClient: GoogleSignInClient
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        checkIsLoggedIn()
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.g_client))
+            .requestEmail()
+            .build()
+
+        mGoogleSignInClient = GoogleSignIn.getClient(ctx, gso)
+
+        val account = GoogleSignIn.getLastSignedInAccount(ctx)
+        updateUI(account)
 
         findViewById<Button>(R.id.main_login).setOnClickListener {
             logInOnClick()
@@ -30,18 +50,69 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.main_signup).setOnClickListener {
             signUpOnClick()
         }
+
+        findViewById<SignInButton>(R.id.main_sign_in_button)
+            .setOnClickListener {
+                signInWithGoogle()
+            }
     }
 
+    private fun signInWithGoogle() {
+        val signInIntent = mGoogleSignInClient.signInIntent
+        startActivityForResult(signInIntent, G_SIGN_IN)
+    }
+
+    private fun updateUI(account: GoogleSignInAccount?) {
+        if (account != null) {
+            val sharedPreferences = application.getSharedPreferences("userInfo", Context.MODE_PRIVATE)
+
+            with (sharedPreferences.edit()) {
+                putString("email", account.email)
+                putString("username", account.displayName)
+                putString("pw", null)
+                apply()
+            }
+
+            gSignUp(account)
+        }
+    }
+
+    private fun gSignUp(account: GoogleSignInAccount) {
+        val idToken = account.idToken
+
+        val nameValuePairs = ArrayList<NameValuePair>()
+
+        val bodyJson = Gson().toJson(nameValuePairs)
+    }
+
+    data class NameValuePair(var name: String, var value: String)
 
     private fun logInOnClick() {
         startActivity(Intent(ctx, LoginActivity::class.java))
     }
 
-
     private fun signUpOnClick() {
         startActivity(Intent(ctx, SignUpActivity::class.java))
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == G_SIGN_IN) {
+            val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
+            handleSignInResult(task)
+        }
+    }
+
+    private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
+        try {
+            val account = completedTask.getResult(ApiException::class.java)
+
+            updateUI(account)
+        } catch (e: ApiException) {
+            Log.w(TAG, "signInResult:failed code=" + e.statusCode)
+        }
+    }
 
     private fun checkIsLoggedIn() {
         val sharedPref = application.getSharedPreferences("userInfo", Context.MODE_PRIVATE)
@@ -55,13 +126,15 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun httpCall(email: String, pw: String) {
-        val bodyJson = Gson().toJson(hashMapOf(
-            "email" to email,
-            "pw" to pw,
-            "is_hashed" to 1
-        ))
+        val bodyJson = Gson().toJson(
+            hashMapOf(
+                "email" to email,
+                "pw" to pw,
+                "is_hashed" to 1
+            )
+        )
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/login")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/login")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
@@ -72,8 +145,11 @@ class MainActivity : AppCompatActivity() {
                     if (status == 200) {
                         val (bytes, _) = result
                         if (bytes != null) {
-                            val userData = Gson().fromJson(String(bytes), HashMap::class.java) as HashMap<String, Any>
-                            userData["user_id"] = userData.get("user_id").toString().toDouble().toInt()
+                            val userData: HashMap<String, Any> = Gson().fromJson(
+                                String(bytes),
+                                HashMap::class.java
+                            ) as HashMap<String, Any>
+                            userData["user_id"] = userData["user_id"].toString().toDouble().toInt()
 
                             val intent = Intent(ctx, HomeActivity::class.java).apply {
                                 putExtra("userData", userData)
@@ -92,5 +168,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val TAG = "MainActivity"
+        private const val G_SIGN_IN = 9567
     }
 }

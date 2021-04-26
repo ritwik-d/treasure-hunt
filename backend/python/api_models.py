@@ -19,6 +19,13 @@ class CompleteChallenge(BaseModel):
     user_id: int
 
 
+class CompleteRace(BaseModel):
+    group_name: str
+    race_id: int
+    pw: str
+    user_id: int
+
+
 class CreateChallenge(BaseModel):
     difficulty: str
     groups: list
@@ -33,6 +40,21 @@ class CreateChallenge(BaseModel):
 class CreateGroup(BaseModel):
     name: str
     description: Optional[str] = None
+    pw: str
+    user_id: int
+
+
+class CreateRace(BaseModel):
+    title: str
+    start_time: str
+    latitude: float
+    longitude: float
+    group_name: str
+    pw: str
+    user_id: int
+
+
+class GetRaces(BaseModel):
     pw: str
     user_id: int
 
@@ -160,6 +182,12 @@ class GetMessages(BaseModel):
     group_id: int
 
 
+class GetRace(BaseModel):
+    pw: str
+    user_id: int
+    race_id: int
+    group_name: str
+
 class UpdateChallenge(BaseModel):
     pw: str
     user_id: str
@@ -177,3 +205,25 @@ class UpdateGroupSettings(BaseModel):
     group_id: int
     allow_members_code: int
     min_points: int
+
+
+class JoinRace(BaseModel):
+    pw: str
+    user_id: int
+    race_id: int
+    latitude: float
+    longitude: float
+
+
+class UpdateRaceLocation(BaseModel):
+    pw: str
+    user_id: str
+    race_id: int
+    latitude: float
+    longitude: float
+
+
+class LeaveRace(BaseModel):
+    pw: str
+    user_id: str
+    race_id: int

@@ -33,6 +33,7 @@
     <string name="myChallenge">My Challenges</string>
     <string name="uploadPfp">Upload Profile Picture</string>
     <string name="treasureChestCD">Treasure Chest</string>
+    <string name="races">Races</string>
 
     <!--   challenges -->
 
@@ -45,6 +46,7 @@
     <string name="name">Name</string>
     <string name="difficulty">Difficulty</string>
     <string name="start">Start</string>
+    <string name="searchHint">Search Challenges</string>
     <string-array name="exerciseTypes">
         <item>Biking</item>
         <item>Walking</item>
@@ -56,6 +58,14 @@
         <item>Hard</item>
     </string-array>
     <string name="create">Create</string>
+
+    <!--   races -->
+
+    <string name="createRace">Create Race</string>
+    <string name="raceTitle">Race Title</string>
+    <string name="enter">Enter</string>
+    <string name="schedule">Schedule</string>
+    <string name="scheduleRace">Schedule Race</string>
 
     <!--   groups -->
 
@@ -86,8 +96,19 @@
     <string name="rank">Rank</string>
 
 
-    <!--   survey -->
+    <!--   misc -->
 
     <string name="surveyLink">https://docs.google.com/forms/d/e/1FAIpQLSecPydSBK134zt2Q2tXNKCxIAVKZwvYk37UH-8-F7GLqHYENw/viewform</string>
     <string name="title_activity_testactivity">Map</string>
+    <string name="search">Search</string>
+    <string name="find_race">Find Race</string>
+    <string name="upcoming_races">Upcoming Races</string>
+    <string name="click_here">Click Here</string>
+    <string name="creator_name">creator name</string>
+    <string name="group_name">group name</string>
+    <string name="race_title">race title</string>
+
+<!--    g sign in-->
+
+    <string name="g_client">http://730998725642-ckq8b3obokmq10d0uko2agjo46124kbo.apps.googleusercontent.com</string>
 </resources>

@@ -232,7 +232,7 @@ class GroupsActivity: AppCompatActivity() {
             "to_username" to username
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/invite_user")
+            val (_, _, result) = Fuel.post("${getString(R.string.host)}/api/invite_user")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()

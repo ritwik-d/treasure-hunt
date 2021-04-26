@@ -2,8 +2,10 @@ api:
   paths:
     accept_invitation: /api/accept_invitation
     complete_challenge: /api/complete_challenge
+    complete_race: /complete_race
     create_challenge: /api/create_challenge
     create_group: /api/create_group
+    create_race: /api/create_race
     decline_invitation: /api/decline_invitation
     delete_challenge: /api/delete_challenge
     download_pfp: /api/download_pfp
@@ -16,10 +18,14 @@ api:
     get_group_settings: /api/get_group_settings
     get_invitations: /api/get_invitations
     get_messages: /api/get_messages
+    get_race: /api/get_race
+    get_races: /api/get_races
     get_user_challenges: /api/get_user_challenges
     invite_user: /api/invite_user
     join_group: /api/join_group
+    join_race: /api/join_race
     leave_group: /api/leave_group
+    leave_race: /api/leave_race
     login: /api/login
     register: /api/register
     remove_group_member: /api/remove_group_member
@@ -28,8 +34,10 @@ api:
     send_message: /api/send_message
     update_challenge: /api/update_challenge
     update_group_settings: /api/update_group_settings
+    update_race_location: /api/update_race_location
     upload_pfp: /api/upload_pfp
     verify_account: /verify_account/{email_verify_token}
+    simulate_race_location: /api/simulate_race_location
 firebase_storage:
   db_backups: database_backups/
   profile_pictures: profile_pictures/
@@ -40,9 +48,9 @@ mysql:
   root_pw: mysqlpw5901
   user: treasure_hunt
 paths:
-  html_bodies: /home/ritwik/git_hub/TreasureHunt/backend/html_bodies/
   emails: /home/ritwik/git_hub/TreasureHunt/backend/emails/
   firebase_config: /home/ritwik/git_hub/TreasureHunt/backend/firebase_config.json
+  html_bodies: /home/ritwik/git_hub/TreasureHunt/backend/html_bodies/
   tmp: /home/ritwik/git_hub/TreasureHunt/backend/tmp/
 security:
   secret_key: 1p7TqwPUIZxfV09yMzXc
