@@ -145,7 +145,7 @@ class User:
     def create_race(self, title: str, start_time: str, latitude: float, longitude: float, group_name: str):
         group_id = get_group_id(group_name)
 
-        start_time_obj = datetime.datetime.strptime(start_time, '%Y-%m-%d %H:%M:0.0')
+        start_time_obj = datetime.datetime.strptime(start_time, '%Y-%m-%d %H:%M')
         race = Race(title, start_time_obj, latitude, longitude, group_id)
         status = race.create(self.user_id)
 
@@ -174,7 +174,7 @@ class User:
     def get_races(self):
         db = DB()
         db.connect()
-        groups = list(itertools.chain(*db.select(f"select group_id from user_groups where JSON_CONTAINS(members, '{self.user_id}')")))
+        groups = list(itertools.chain(*db.select(f"select CAST(group_id AS CHAR) from user_groups where JSON_CONTAINS(members, '{self.user_id}')")))
         races = db.select(f'''select title, creator_id, start_time, group_id, race_id from races where group_id in ({','.join(groups)})''', dict_cursor=True)
         for race in races:
             race['start_time'] = str(start_time)
