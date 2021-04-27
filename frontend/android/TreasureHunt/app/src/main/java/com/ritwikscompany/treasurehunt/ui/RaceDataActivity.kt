@@ -34,10 +34,11 @@ import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import kotlin.math.floor
 
+@Suppress("DEPRECATION", "RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     private val ctx = this@RaceDataActivity
     private lateinit var raceData: HashMap<*, *>
@@ -111,6 +112,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
     }
 
 
+    @SuppressLint("SimpleDateFormat")
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setUpRaceTimeRemaining() {
         val currentTime = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant())
@@ -123,7 +125,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
             val timer = object : CountDownTimer(timeRemaining, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
-                    startTimeTV.text = formatSeconds(millisUntilFinished / 1000)
+                    startTimeTV.text = format(millisUntilFinished / 1000)
 
                     if (millisUntilFinished / 1000 < 60) {
                         startTimeTV.setTextColor(
@@ -147,6 +149,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setUpRaceAndThread() {
         startTimeTV.text = "GO!"
 
@@ -386,9 +389,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         private const val DEFAULT_ZOOM = 15f
     }
 
-    fun format(timestamp: Date): String {
-        val millisFromNow = getMillisFromNow(timestamp)
-
+    fun format(millisFromNow: Long): String {
         val minutesFromNow = TimeUnit.MILLISECONDS.toMinutes(millisFromNow)
         if (minutesFromNow < 1) {
             return "about now"
@@ -413,12 +414,6 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         return if (yearsFromNow < 1) {
             formatMonths(monthsFromNow)
         } else formatYears(yearsFromNow)
-    }
-
-    private fun getMillisFromNow(futureTime: Date): Long {
-        val futureTimeMillis = futureTime.time
-        val nowMillis = System.currentTimeMillis()
-        return futureTimeMillis - nowMillis
     }
 
     private fun formatMinutes(minutes: Long): String {
