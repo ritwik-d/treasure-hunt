@@ -1,19 +1,19 @@
-[2021-04-26 16:39:18 -0700] [3767] [INFO] Starting gunicorn 20.0.4
-[2021-04-26 16:39:18 -0700] [3767] [INFO] Listening at: http://127.0.0.1:8000 (3767)
-[2021-04-26 16:39:18 -0700] [3767] [INFO] Using worker: uvicorn.workers.UvicornWorker
-[2021-04-26 16:39:18 -0700] [3769] [INFO] Booting worker with pid: 3769
-[2021-04-26 16:39:18 -0700] [3770] [INFO] Booting worker with pid: 3770
-[2021-04-26 16:39:18 -0700] [3771] [INFO] Booting worker with pid: 3771
-[2021-04-26 16:39:18 -0700] [3772] [INFO] Booting worker with pid: 3772
-[2021-04-26 16:39:18 -0700] [3769] [INFO] Started server process [3769]
-[2021-04-26 16:39:18 -0700] [3769] [INFO] Waiting for application startup.
-[2021-04-26 16:39:18 -0700] [3769] [INFO] Application startup complete.
-[2021-04-26 16:39:18 -0700] [3770] [INFO] Started server process [3770]
-[2021-04-26 16:39:18 -0700] [3770] [INFO] Waiting for application startup.
-[2021-04-26 16:39:18 -0700] [3770] [INFO] Application startup complete.
-[2021-04-26 16:39:18 -0700] [3771] [INFO] Started server process [3771]
-[2021-04-26 16:39:18 -0700] [3771] [INFO] Waiting for application startup.
-[2021-04-26 16:39:18 -0700] [3771] [INFO] Application startup complete.
-[2021-04-26 16:39:18 -0700] [3772] [INFO] Started server process [3772]
-[2021-04-26 16:39:18 -0700] [3772] [INFO] Waiting for application startup.
-[2021-04-26 16:39:18 -0700] [3772] [INFO] Application startup complete.
+[2021-04-27 09:49:53 -0700] [2171] [INFO] Starting gunicorn 20.0.4
+[2021-04-27 09:49:53 -0700] [2171] [INFO] Listening at: http://127.0.0.1:8000 (2171)
+[2021-04-27 09:49:53 -0700] [2171] [INFO] Using worker: uvicorn.workers.UvicornWorker
+[2021-04-27 09:49:53 -0700] [2173] [INFO] Booting worker with pid: 2173
+[2021-04-27 09:49:53 -0700] [2174] [INFO] Booting worker with pid: 2174
+[2021-04-27 09:49:54 -0700] [2175] [INFO] Booting worker with pid: 2175
+[2021-04-27 09:49:54 -0700] [2176] [INFO] Booting worker with pid: 2176
+[2021-04-27 09:49:54 -0700] [2173] [INFO] Started server process [2173]
+[2021-04-27 09:49:54 -0700] [2175] [INFO] Started server process [2175]
+[2021-04-27 09:49:54 -0700] [2173] [INFO] Waiting for application startup.
+[2021-04-27 09:49:54 -0700] [2175] [INFO] Waiting for application startup.
+[2021-04-27 09:49:54 -0700] [2174] [INFO] Started server process [2174]
+[2021-04-27 09:49:54 -0700] [2176] [INFO] Started server process [2176]
+[2021-04-27 09:49:54 -0700] [2175] [INFO] Application startup complete.
+[2021-04-27 09:49:54 -0700] [2174] [INFO] Waiting for application startup.
+[2021-04-27 09:49:54 -0700] [2176] [INFO] Waiting for application startup.
+[2021-04-27 09:49:54 -0700] [2173] [INFO] Application startup complete.
+[2021-04-27 09:49:54 -0700] [2174] [INFO] Application startup complete.
+[2021-04-27 09:49:54 -0700] [2176] [INFO] Application startup complete.
