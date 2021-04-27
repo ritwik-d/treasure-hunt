@@ -386,34 +386,70 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         private const val DEFAULT_ZOOM = 15f
     }
 
-    private fun formatSeconds(seconds: Long): String {
-        val secondsRemaining: Long
+    fun format(timestamp: Date): String {
+        val millisFromNow = getMillisFromNow(timestamp)
 
-        if (seconds < 60) {
-            return "$seconds"
+        val minutesFromNow = TimeUnit.MILLISECONDS.toMinutes(millisFromNow)
+        if (minutesFromNow < 1) {
+            return "about now"
+        }
+        val hoursFromNow = TimeUnit.MILLISECONDS.toHours(millisFromNow)
+        if (hoursFromNow < 1) {
+            return formatMinutes(minutesFromNow)
+        }
+        val daysFromNow = TimeUnit.MILLISECONDS.toDays(millisFromNow)
+        if (daysFromNow < 1) {
+            return formatHours(hoursFromNow)
+        }
+        val weeksFromNow = TimeUnit.MILLISECONDS.toDays(millisFromNow) / 7
+        if (weeksFromNow < 1) {
+            return formatDays(daysFromNow)
+        }
+        val monthsFromNow = TimeUnit.MILLISECONDS.toDays(millisFromNow) / 30
+        if (monthsFromNow < 1) {
+            return formatWeeks(weeksFromNow)
+        }
+        val yearsFromNow = TimeUnit.MILLISECONDS.toDays(millisFromNow) / 365
+        return if (yearsFromNow < 1) {
+            formatMonths(monthsFromNow)
+        } else formatYears(yearsFromNow)
+    }
+
+    private fun getMillisFromNow(futureTime: Date): Long {
+        val futureTimeMillis = futureTime.time
+        val nowMillis = System.currentTimeMillis()
+        return futureTimeMillis - nowMillis
+    }
+
+    private fun formatMinutes(minutes: Long): String {
+        return format(minutes, " minute to go", " minutes to go")
+    }
+
+    private fun formatHours(hours: Long): String {
+        return format(hours, " hour to go", " hours to go")
+    }
+
+    private fun formatDays(days: Long): String {
+        return format(days, " day to go", " days to go")
+    }
+
+    private fun formatWeeks(weeks: Long): String {
+        return format(weeks, " week to go", " weeks to go")
+    }
+
+    private fun formatMonths(months: Long): String {
+        return format(months, " month to go", " months to go")
+    }
+
+    private fun formatYears(years: Long): String {
+        return format(years, " year to go", " years to go")
+    }
+
+    private fun format(hand: Long, singular: String, plural: String): String {
+        return if (hand == 1L) {
+            hand.toString() + singular
         } else {
-            var formattedTime = ""
-            val minutes = floor((seconds / 60).toDouble()).toLong()
-            secondsRemaining = seconds - (minutes * 60)
-
-            if (minutes < 60) {
-                formattedTime += "$minutes:$secondsRemaining"
-                return formattedTime
-            } else {
-                val hours = floor((minutes / 60).toDouble()).toLong()
-                val minutesRemaining: Long = minutes - hours
-
-                return if (hours < 24) {
-                    formattedTime += "$hours:$minutesRemaining:$secondsRemaining"
-                    formattedTime
-                } else {
-                    val days = floor((hours / 24).toDouble()).toLong()
-                    val hoursRemaining = hours - (days * 24)
-
-                    formattedTime += "$days:$hoursRemaining:$minutesRemaining:$secondsRemaining"
-                    formattedTime
-                }
-            }
+            hand.toString() + plural
         }
     }
 
