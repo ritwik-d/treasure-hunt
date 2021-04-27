@@ -12,11 +12,11 @@ import com.ritwikscompany.treasurehunt.R
 
 
 class MyChallengesRVA(
-    var challenges: ArrayList<String>,
-    var deleteOnClick: (challengeName: String) -> Unit,
-    var editOnClick: (challengeName: String) -> Unit,
-    var minusButton: FloatingActionButton,
-    var checkedChallenges: ArrayList<String> = arrayListOf()
+        var challenges: ArrayList<String>,
+        var deleteOnClick: (challengeName: String) -> Unit,
+        var editOnClick: (challengeName: String) -> Unit,
+        private var minusButton: FloatingActionButton,
+        var checkedChallenges: ArrayList<String> = arrayListOf()
 ): RecyclerView.Adapter<MyChallengesRVA.ViewHolder>() {
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         val checkBox: CheckBox = itemView.findViewById(R.id.rowCheckBox)
