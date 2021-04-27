@@ -43,7 +43,6 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
     private var ctx = this@RaceDataActivity
     private lateinit var raceData: HashMap<*, *>
     private lateinit var userData: HashMap<*, *>
-    private lateinit var titleTV: TextView
     private lateinit var startTimeTV: TextView
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -92,7 +91,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
             }
         }
 
-        val mapFragment = supportFragmentManager.findFragmentById(R.id.race_data_map) as SupportMapFragment
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.rd_map) as SupportMapFragment
 
         mapFragment.getMapAsync(ctx)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(ctx)
@@ -364,9 +363,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
     }
 
     private fun setUpRaceTitle() {
-        titleTV = findViewById(R.id.race_data_race_title)
-
-        titleTV.text = raceData["title"] as String
+        title = raceData["title"] as String
     }
 
     override fun onMapReady(p0: GoogleMap?) {
@@ -435,7 +432,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
             return
         }
 
-        fusedLocationClient.requestLocationUpdates(locationRequest, object : LocationCallback() {
+        fusedLocationClient.requestLocationUpdates(locationRequest, object: LocationCallback() {
             override fun onLocationResult(p0: LocationResult) {
                 lastLocation = p0.lastLocation
             }
@@ -445,6 +442,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
     inner class UpdateRaceMapThread : Thread() {
         override fun run() {
             while (true) {
+                sleep(1000)
                 mainHandler.post {
                     updateRaceMap()
                 }
