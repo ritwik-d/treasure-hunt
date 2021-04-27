@@ -133,22 +133,24 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
                 @SuppressLint("SetTextI18n")
                 override fun onFinish() {
-                    startTimeTV.text = "GO!"
-
-                    setUpRaceMap()
-
-                    val updateRaceMapThread = UpdateRaceMapThread()
-                    updateRaceMapThread.start()
+                    setUpRaceAndThread()
                 }
             }
 
             timer.start()
         } else {
-            setUpRaceMap()
-
-            val updateRaceMapThread = UpdateRaceMapThread()
-            updateRaceMapThread.start()
+            setUpRaceAndThread()
         }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun setUpRaceAndThread() {
+        startTimeTV.text = "GO!"
+
+        setUpRaceMap()
+
+        val updateRaceMapThread = UpdateRaceMapThread()
+        updateRaceMapThread.start()
     }
 
     private fun updateRaceMap() {
