@@ -160,8 +160,8 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
         val bodyJson = Gson().toJson(hashMapOf(
             "pw" to userData["password"] as String,
-            "user_id" to userData["user_id"],
-            "race_id" to raceData["race_id"],
+            "user_id" to (userData["user_id"] as Double).toInt(),
+            "race_id" to (raceData["race_id"] as Double).toInt(),
             "latitude" to lastLocation.latitude,
             "longitude" to lastLocation.longitude
         ))
@@ -202,8 +202,8 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
     private fun checkForLocation() {
         val bodyJson = Gson().toJson(hashMapOf(
             "pw" to userData["password"] as String,
-            "user_id" to userData["user_id"] as Int,
-            "race_id" to raceData["race_id"] as Int,
+            "user_id" to (userData["user_id"] as Double).toInt(),
+            "race_id" to (raceData["race_id"] as Double).toInt(),
             "group_name" to raceData["group_name"] as String
         ))
 
@@ -241,8 +241,8 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
     private fun completeRace() {
         val bodyJson = Gson().toJson(hashMapOf(
             "pw" to userData["password"] as String,
-            "user_id" to userData["user_id"] as Int,
-            "race_id" to raceData["race_id"] as Int,
+            "user_id" to (userData["user_id"] as Double).toInt(),
+            "race_id" to (raceData["race_id"] as Double).toInt(),
             "group_name" to raceData["group_name"] as String
         ))
 
@@ -276,8 +276,8 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
         val bodyJson = Gson().toJson(hashMapOf(
             "pw" to userData["password"] as String,
-            "user_id" to userData["user_id"],
-            "race_id" to raceData["race_id"],
+            "user_id" to (userData["user_id"] as Double).toInt(),
+            "race_id" to (raceData["race_id"] as Double).toInt(),
             "latitude" to lastLocation.latitude,
             "longitude" to lastLocation.longitude
         ))
@@ -338,8 +338,8 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
     private fun leaveRace() {
         val bodyJson = Gson().toJson(hashMapOf(
             "pw" to userData["password"] as String,
-            "user_id" to userData["user_id"] as Int,
-            "race_id" to raceData["raceID"] as Int
+            "user_id" to (userData["user_id"] as Double).toInt(),
+            "race_id" to (raceData["race_id"] as Double).toInt(),
         ))
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -443,6 +443,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         override fun run() {
             while (true) {
                 sleep(1000)
+                
                 mainHandler.post {
                     updateRaceMap()
                 }
