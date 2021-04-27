@@ -38,9 +38,8 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.floor
 
-@Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS", "DEPRECATION")
 class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
-    private var ctx = this@RaceDataActivity
+    private val ctx = this@RaceDataActivity
     private lateinit var raceData: HashMap<*, *>
     private lateinit var userData: HashMap<*, *>
     private lateinit var startTimeTV: TextView
@@ -57,6 +56,12 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
         raceData = intent.getSerializableExtra("raceData") as HashMap<*, *>
         userData = intent.getSerializableExtra("userData") as HashMap<*, *>
+
+        val mapFragment = supportFragmentManager
+                .findFragmentById(R.id.rd_map) as SupportMapFragment
+        mapFragment.getMapAsync(ctx)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(ctx)
+        this.startTimeTV = findViewById(R.id.rd_start_time)
 
         setUpUI()
     }
@@ -105,7 +110,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         }
     }
 
-    @SuppressLint("SimpleDateFormat")
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setUpRaceTimeRemaining() {
         val currentTime = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant())
@@ -131,7 +136,6 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
                     }
                 }
 
-                @SuppressLint("SetTextI18n")
                 override fun onFinish() {
                     setUpRaceAndThread()
                 }
@@ -143,7 +147,6 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         }
     }
 
-    @SuppressLint("SetTextI18n")
     private fun setUpRaceAndThread() {
         startTimeTV.text = "GO!"
 
