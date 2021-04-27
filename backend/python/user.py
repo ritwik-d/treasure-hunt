@@ -154,7 +154,7 @@ class User:
         else:
             db = DB()
             db.connect()
-            race_id = db.select("select race_id from races where title = %s", params=(title,), dict_cursor=True)[0][0]
+            race_id = db.select("select race_id from races where title = %s", params=(title,), dict_cursor=True)[0].get('race_id')
             return {'status': 201, 'body': {'error': 'success', 'race_id': race_id}}
 
 
