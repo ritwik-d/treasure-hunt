@@ -454,11 +454,12 @@ class RacesActivity : AppCompatActivity(),
                                     "startTime" to startTime,
                                     "creator" to userData["username"] as String,
                                     "groupName" to groupName,
-                                    "raceID" to errorAndRaceID["race_id"] as Int
+                                    "raceID" to (errorAndRaceID["race_id"] as Double).toInt()
                                 )
 
                                 startActivity(Intent(ctx, RaceDataActivity::class.java).apply {
                                     putExtra("raceData", raceData)
+                                    putExtra("userData", userData)
                                 })
                             }
                         }
