@@ -19,6 +19,7 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.kittinunf.fuel.Fuel
@@ -69,8 +70,12 @@ class RacesActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_races)
 
-        Log.d(TAG, "onCreate: ")
+        val mapFragment = supportFragmentManager
+                .findFragmentById(R.id.race_create_map) as SupportMapFragment
+        mapFragment.getMapAsync(ctx)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(ctx)
 
+        startLocationUpdates()
         setUpUI()
     }
 
@@ -83,22 +88,16 @@ class RacesActivity : AppCompatActivity(),
         racesRV = findViewById(R.id.race_races_rv)
         groupsTB = findViewById(R.id.race_groups_tb)
 
-        Log.d(TAG, "setUpUI: ")
-
         setUpGroupsSpinner()
-
         setUpBottomNavigation()
-
         setUpRacesRVAndGroupsTB()
-
         setUpScheduleRace()
     }
 
     private fun setUpGroupsSpinner() {
         val bodyJson = Gson().toJson(hashMapOf(
             "pw" to userData["password"] as String,
-            "user_id" to userData["user_id"] as Int,
-            "is_hashed" to 1
+            "user_id" to userData["user_id"] as Int
         ))
 
         Log.d(TAG, "setUpGroupsSpinner: ")
@@ -291,17 +290,12 @@ class RacesActivity : AppCompatActivity(),
     private fun setUpScheduleRace() {
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.race_create_map) as SupportMapFragment
-
+        mapFragment.getMapAsync(ctx)
         val fm = supportFragmentManager
         fm.beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                 .show(mapFragment)
                 .commit()
-
-        mapFragment.getMapAsync(ctx)
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(ctx)
-
-        startLocationUpdates()
 
         val scheduleRaceBTN = findViewById<Button>(R.id.race_schedule)
         scheduleRaceBTN.visibility = View.VISIBLE
@@ -321,9 +315,7 @@ class RacesActivity : AppCompatActivity(),
 
     override fun onMapReady(p0: GoogleMap?) {
         map = p0!!
-
         map.uiSettings.isZoomControlsEnabled = true
-
         map.setOnMarkerClickListener(ctx)
 
         setUpMap()
