@@ -7,40 +7,25 @@
     tools:context=".ui.RaceDataActivity">
 
     <fragment
-        android:id="@+id/race_data_map"
+        android:id="@+id/rd_map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/race_data_race_start_time" />
-
-    <TextView
-        android:id="@+id/race_data_race_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="23dp"
-        android:text="@string/race_title"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toTopOf="@+id/race_data_race_start_time"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/rd_start_time"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <TextView
-        android:id="@+id/race_data_race_start_time"
+        android:id="@+id/rd_start_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="11dp"
-        android:layout_marginLeft="11dp"
-        android:layout_marginBottom="37dp"
-        android:text="Start Time"
+        android:text="10:00"
         android:textColor="@color/colorSave"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/race_data_map"
-        app:layout_constraintStart_toStartOf="@+id/race_data_race_title"
-        app:layout_constraintTop_toBottomOf="@+id/race_data_race_title" />
+        android:textSize="30sp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

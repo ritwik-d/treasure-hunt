@@ -30,6 +30,8 @@ class GroupChatActivity : AppCompatActivity() {
         this.groupName = intent.getStringExtra("groupName") as String
         this.linearLayout = findViewById(R.id.gc_linear_layout)
 
+        title = groupName
+
         val bodyJson = Gson().toJson(hashMapOf(
                 "user_id" to userData["user_id"],
                 "pw" to userData["password"],
@@ -92,7 +94,7 @@ class GroupChatActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             while (ctx.active) {
                 Thread.sleep(1000)
-                getMessages(groupId)
+                ctx.getMessages(groupId)
             }
         }
     }
