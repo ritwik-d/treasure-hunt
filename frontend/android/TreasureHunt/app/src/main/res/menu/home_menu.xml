@@ -14,6 +14,7 @@
         android:id="@+id/menu_race"
         android:title="@string/races"
         android:icon="@drawable/race"
+        android:iconTint="@color/white"
         app:showAsAction="ifRoom" />
 
 </menu>
