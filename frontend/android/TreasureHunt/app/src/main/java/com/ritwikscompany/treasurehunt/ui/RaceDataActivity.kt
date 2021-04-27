@@ -266,7 +266,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         }
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
+
     private fun setUpRaceMap() {
         if (!ctx::lastLocation.isInitialized || !ctx::map.isInitialized) {
             return
