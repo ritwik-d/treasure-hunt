@@ -153,8 +153,9 @@ class User:
             return {'status': 400, 'body': {'error': 'title exists'}}
         else:
             db = DB()
-            race_id = db.select("select race_id from races where title = %s", (title,), True)[0][0]
-            return {'status': 201, 'body': {'error': 'success', 'race_id': race_id}}
+            db.connect()
+            race_id = db.select("select race_id from races where title = %s", params=(title,), dict_cursor=True)[0][0]
+            return {'status': 201, 'body': {'error': 'success', 'race_id', race_id}}
 
 
     @authenticate

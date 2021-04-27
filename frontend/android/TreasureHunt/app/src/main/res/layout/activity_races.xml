@@ -8,34 +8,28 @@
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/race_groups_tb"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/race_diff"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="invisible"
+        android:layout_marginTop="16dp"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/race_bn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/race_schedule"
-        app:menu="@menu/bn_races" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/race_title"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="7dp"
-        android:layout_marginBottom="1dp"
+        android:layout_marginTop="32dp"
         android:hint="@string/raceTitle"
-        app:layout_constraintBottom_toTopOf="@+id/race_races_rv"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -43,7 +37,8 @@
         android:id="@+id/race_diff"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="14dp"
+        android:layout_marginTop="92dp"
+        android:layout_marginBottom="18dp"
         android:background="@android:drawable/btn_dropdown"
         android:entries="@array/difficulties"
         android:paddingStart="10dp"
@@ -51,56 +46,53 @@
         android:spinnerMode="dropdown"
         app:layout_constraintBottom_toTopOf="@+id/race_groups"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/race_groups_tb" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Spinner
         android:id="@+id/race_groups"
         android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="263dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="158dp"
+        android:layout_marginBottom="16dp"
         android:background="@android:drawable/btn_dropdown"
         android:paddingStart="10dp"
         android:paddingLeft="10dp"
         android:spinnerMode="dropdown"
-        app:layout_constraintBottom_toTopOf="@+id/race_schedule"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/race_diff" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/race_schedule"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="56dp"
+        android:layout_marginBottom="20dp"
         android:text="@string/schedule"
-        app:layout_constraintBottom_toTopOf="@+id/race_bn"
+        app:layout_constraintBottom_toTopOf="@id/race_bn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/race_groups" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <fragment
         android:id="@+id/race_create_map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="71dp"
-        android:layout_marginBottom="75dp"
-        app:layout_constraintBottom_toBottomOf="@+id/race_bn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/race_groups"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/race_bn"
+        app:layout_constraintTop_toBottomOf="@id/race_groups"
         tools:context=".ui.RacesActivity" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/race_races_rv"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="60dp"
+        android:layout_marginVertical="16dp"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/race_title" />
+        app:layout_constraintTop_toBottomOf="@+id/race_groups_tb"
+        app:layout_constraintBottom_toTopOf="@+id/race_bn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

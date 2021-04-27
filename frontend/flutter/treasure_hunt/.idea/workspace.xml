@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="4bd2a17f-431b-4363-b862-b39ae9c557f4" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../../../backend/python/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../../backend/python/user.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../.." />
+  </component>
+  <component name="ProjectId" id="1radSjcMZ6Swky9ODM1vPrfxKA1" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="dart.analysis.tool.window.force.activate" value="true" />
+    <property name="dart.analysis.tool.window.visible" value="false" />
+    <property name="io.flutter.reload.alreadyRun" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="show.migrate.to.gradle.popup" value="false" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4bd2a17f-431b-4363-b862-b39ae9c557f4" name="Default Changelist" comment="" />
+      <created>1619218135564</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1619218135564</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state width="1398" height="228" key="GridCell.Tab.0.bottom" timestamp="1619450762303">
+      <screen x="0" y="25" width="1440" height="875" />
+    </state>
+    <state width="1398" height="228" key="GridCell.Tab.0.bottom/0.25.1440.875@0.25.1440.875" timestamp="1619450762303" />
+    <state width="1398" height="228" key="GridCell.Tab.0.center" timestamp="1619450762302">
+      <screen x="0" y="25" width="1440" height="875" />
+    </state>
+    <state width="1398" height="228" key="GridCell.Tab.0.center/0.25.1440.875@0.25.1440.875" timestamp="1619450762302" />
+    <state width="1398" height="228" key="GridCell.Tab.0.left" timestamp="1619450762302">
+      <screen x="0" y="25" width="1440" height="875" />
+    </state>
+    <state width="1398" height="228" key="GridCell.Tab.0.left/0.25.1440.875@0.25.1440.875" timestamp="1619450762302" />
+    <state width="1398" height="228" key="GridCell.Tab.0.right" timestamp="1619450762303">
+      <screen x="0" y="25" width="1440" height="875" />
+    </state>
+    <state width="1398" height="228" key="GridCell.Tab.0.right/0.25.1440.875@0.25.1440.875" timestamp="1619450762303" />
+  </component>
+</project>
