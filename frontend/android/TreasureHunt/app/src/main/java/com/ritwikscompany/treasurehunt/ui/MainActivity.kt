@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import com.github.kittinunf.fuel.Fuel
+import com.google.android.gms.common.SignInButton
 import com.google.gson.Gson
 import com.ritwikscompany.treasurehunt.R
 import kotlinx.coroutines.CoroutineScope
@@ -14,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@Suppress("UNCHECKED_CAST")
 class MainActivity : AppCompatActivity() {
 
     private val ctx = this@MainActivity
@@ -30,6 +32,14 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.main_signup).setOnClickListener {
             signUpOnClick()
         }
+
+        findViewById<SignInButton>(R.id.signInButton).setOnClickListener {
+            signUpWithGoogle()
+        }
+    }
+
+    private fun signUpWithGoogle() {
+        TODO("Not yet implemented")
     }
 
 
@@ -61,7 +71,7 @@ class MainActivity : AppCompatActivity() {
             "is_hashed" to 1
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/login")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/login")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()

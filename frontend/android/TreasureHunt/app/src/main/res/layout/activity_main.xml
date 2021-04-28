@@ -10,23 +10,32 @@
         android:id="@+id/main_login"
         android:layout_width="150dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="273dp"
+        android:layout_marginBottom="194dp"
         android:text="@string/logIn"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/signInButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/main_signup" />
 
     <Button
         android:id="@+id/main_signup"
-        android:layout_width="150dp"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="268dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="154dp"
         android:text="@string/signUp"
         app:layout_constraintBottom_toTopOf="@+id/main_login"
+        app:layout_constraintEnd_toEndOf="@+id/main_login"
+        app:layout_constraintStart_toStartOf="@+id/main_login"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/signInButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="157dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/main_login" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

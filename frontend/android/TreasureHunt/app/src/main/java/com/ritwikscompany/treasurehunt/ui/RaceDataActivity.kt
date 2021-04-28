@@ -48,7 +48,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var lastLocation: Location
     private lateinit var locationRequest: LocationRequest
-    private val mainHandler = Handler()
+    @Volatile private var stopThread = false
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -160,7 +160,9 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
     }
 
     private fun updateRaceMap() {
-        if (!ctx::lastLocation.isInitialized || !ctx::map.isInitialized) {
+        if (!ctx::lastLocation.isInitialized
+                ||
+                !ctx::map.isInitialized) {
             return
         }
 
@@ -276,7 +278,9 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
 
     private fun setUpRaceMap() {
-        if (!ctx::lastLocation.isInitialized || !ctx::map.isInitialized) {
+        if (!ctx::lastLocation.isInitialized
+                ||
+                !ctx::map.isInitialized) {
             return
         }
 
@@ -339,6 +343,8 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
             return
         }
 
+        stopThread = true
+
         leaveRace()
         super.onBackPressed()
     }
@@ -366,8 +372,6 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
                 }
             }
         }
-
-        super.onBackPressed()
     }
 
     private fun setUpRaceTitle() {
@@ -376,6 +380,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
     override fun onMapReady(p0: GoogleMap?) {
         map = p0!!
+
         map.uiSettings.isZoomControlsEnabled = true
 
         map.setOnMarkerClickListener(ctx)
@@ -383,7 +388,9 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         setUpMap()
     }
 
-    override fun onMarkerClick(p0: Marker?): Boolean = false
+    override fun onMarkerClick(p0: Marker?): Boolean {
+        return false
+    }
 
     companion object {
         private const val DEFAULT_ZOOM = 15f
@@ -391,29 +398,42 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
     fun format(millisFromNow: Long): String {
         val minutesFromNow = TimeUnit.MILLISECONDS.toMinutes(millisFromNow)
+
         if (minutesFromNow < 1) {
             return "about now"
         }
+
         val hoursFromNow = TimeUnit.MILLISECONDS.toHours(millisFromNow)
+
         if (hoursFromNow < 1) {
             return formatMinutes(minutesFromNow)
         }
+
         val daysFromNow = TimeUnit.MILLISECONDS.toDays(millisFromNow)
+
         if (daysFromNow < 1) {
             return formatHours(hoursFromNow)
         }
+
         val weeksFromNow = TimeUnit.MILLISECONDS.toDays(millisFromNow) / 7
+
         if (weeksFromNow < 1) {
             return formatDays(daysFromNow)
         }
+
         val monthsFromNow = TimeUnit.MILLISECONDS.toDays(millisFromNow) / 30
+
         if (monthsFromNow < 1) {
             return formatWeeks(weeksFromNow)
         }
+
         val yearsFromNow = TimeUnit.MILLISECONDS.toDays(millisFromNow) / 365
+
         return if (yearsFromNow < 1) {
             formatMonths(monthsFromNow)
-        } else formatYears(yearsFromNow)
+        } else {
+            formatYears(yearsFromNow)
+        }
     }
 
     private fun formatMinutes(minutes: Long): String {
@@ -461,26 +481,30 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         settingsClient.checkLocationSettings(locationSettingsRequest)
 
         if (ActivityCompat.checkSelfPermission(ctx,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(ctx,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 Utils.LOCATION_PERMISSION_REQUEST_CODE)
             return
         }
 
-        fusedLocationClient.requestLocationUpdates(locationRequest, object: LocationCallback() {
-            override fun onLocationResult(p0: LocationResult) {
-                lastLocation = p0.lastLocation
-            }
-        }, Looper.myLooper()!!)
+        fusedLocationClient.requestLocationUpdates(
+                locationRequest,
+                object: LocationCallback() {
+                    override fun onLocationResult(p0: LocationResult) {
+                        lastLocation = p0.lastLocation
+                    }
+                },
+                Looper.myLooper()!!)
     }
 
     inner class UpdateRaceMapThread : Thread() {
         override fun run() {
-            while (true) {
+            while (!stopThread) {
                 sleep(1000)
                 
-                mainHandler.post {
+                runOnUiThread {
                     updateRaceMap()
                 }
             }
