@@ -142,6 +142,15 @@ class User:
 
 
     @authenticate
+    def exists(self):
+        db = DB()
+        db.connect()
+        users = db.select('select * from users where username = %s and email', (self.uname, self.email), dict_cursor=True)
+        if not users:
+            return {'exists': False, 'body': None}
+        return {'exists': True, 'body': users[0]}
+
+    @authenticate
     def create_race(self, title: str, start_time: str, latitude: float, longitude: float, group_name: str):
         group_id = get_group_id(group_name)
 
@@ -450,6 +459,21 @@ class User:
             'username': self.uname,
             'email_verify_token': email_verify_token
         }
+        row_id = db.insert('users', row)
+        if not row_id is None:
+            return 201
+        return 400
+
+
+    def sign_up_with_google(self):
+        row = {
+            'email' : self.email,
+            'password' : None,
+            'username' : self.uname,
+            'is_verified': 'true',
+            'auth_type' : 'google'
+        }
+        
         row_id = db.insert('users', row)
         if not row_id is None:
             return 201

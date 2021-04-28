@@ -121,6 +121,11 @@ class GetInvitations(BaseModel):
     user_id: int
 
 
+class GoogleSignIn(BaseModel):
+    email: str
+    username: str
+
+
 class InviteUser(BaseModel):
     group_name: str
     to_username: str

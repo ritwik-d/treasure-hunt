@@ -21,6 +21,7 @@ api:
     get_race: /api/get_race
     get_races: /api/get_races
     get_user_challenges: /api/get_user_challenges
+    google_sign_in: /api/google_sign_in
     invite_user: /api/invite_user
     join_group: /api/join_group
     join_race: /api/join_race
