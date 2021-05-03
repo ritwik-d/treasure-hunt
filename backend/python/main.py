@@ -146,17 +146,17 @@ async def get_user_challenges(json: GetUserChallenges, response: Response):
     return response_2.get('body')
 
 
-@app.post(paths.get('google_sign_in'))
-async def google_sign_in(json: GoogleSignIn, response: Response):
-    user = User(email=json.email, uname=json.username)
-    user_exists = user.exists()
-
-    if not user_exists['exists']:
-        response.status_code = user = user.sign_up_with_google()
-        return user.exists()['body']
-    else:
-        response.status_code = 200
-        return user_exists['body']
+# @app.post(paths.get('google_sign_in'))
+# async def google_sign_in(json: GoogleSignIn, response: Response):
+#    user = User(email=json.email, uname=json.username)
+#    user_exists = user.exists()
+#
+#    if not user_exists['exists']:
+#        response.status_code = user = user.sign_up_with_google()
+#        return user.exists()['body']
+#    else:
+#        response.status_code = 200
+#        return user_exists['body']
 
 
 @app.post(paths.get('invite_user'))

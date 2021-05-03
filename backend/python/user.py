@@ -141,14 +141,15 @@ class User:
         return 201
 
 
-    @authenticate
-    def exists(self):
-        db = DB()
-        db.connect()
-        users = db.select('select * from users where username = %s and email', (self.uname, self.email), dict_cursor=True)
-        if not users:
-            return {'exists': False, 'body': None}
-        return {'exists': True, 'body': users[0]}
+#    @authenticate
+#    def exists(self):
+#        db = DB()
+#        db.connect()
+#        users = db.select('select * from users where username = %s and email', (self.uname, self.email), dict_cursor=True)
+#        if not users:
+#            return {'exists': False, 'body': None}
+#        return {'exists': True, 'body': users[0]}
+
 
     @authenticate
     def create_race(self, title: str, start_time: str, latitude: float, longitude: float, group_name: str):
@@ -187,7 +188,7 @@ class User:
         groups = list(itertools.chain(*db.select(f"select CAST(group_id AS CHAR) from user_groups where JSON_CONTAINS(members, '{self.user_id}')")))
         races = db.select(f'''select title, creator_id, start_time, group_id, race_id from races where group_id in ({','.join(groups)})''', dict_cursor=True)
         for race in races:
-            race['start_time'] = str(start_time)
+            race['start_time'] = str(race['start_time'])
             race['group_name'] = db.select('select name from user_groups where group_id = %s', params=(race['group_id'],), dict_cursor=True)[0].get('name')
             race['creator_username'] = db.select('select username from users where user_id = %s', params=(race['creator_id'],), dict_cursor=True)[0].get('username')
         return {'status': 200, 'body': races}
