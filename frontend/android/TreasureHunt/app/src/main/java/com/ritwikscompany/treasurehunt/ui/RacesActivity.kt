@@ -397,11 +397,11 @@ class RacesActivity : AppCompatActivity(),
 
         when (difficulty) {
             "Easy" ->
-                circle.radius(500.0)
+                circle.radius(600.0)
             "Medium" ->
-                circle.radius(1000.0)
+                circle.radius(1100.0)
             "Hard" ->
-                circle.radius(1500.0)
+                circle.radius(1600.0)
         }
 
         circle.strokeColor(Color.BLACK)

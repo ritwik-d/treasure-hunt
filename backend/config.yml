@@ -42,6 +42,8 @@ api:
 firebase_storage:
   db_backups: database_backups/
   profile_pictures: profile_pictures/
+logs:
+  authentication: /home/ritwik/git_hub/TreasureHunt/backend/logs/authentication.log
 mysql:
   host: 192.168.1.56
   name: treasure_hunt_db

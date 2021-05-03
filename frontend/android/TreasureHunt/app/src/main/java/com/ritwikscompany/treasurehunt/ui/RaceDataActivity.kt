@@ -37,8 +37,8 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.math.floor
 
-@Suppress("DEPRECATION", "RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     private val ctx = this@RaceDataActivity
     private lateinit var raceData: HashMap<*, *>
@@ -93,7 +93,9 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
             if (location != null) {
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
-                moveCamera(currentLatLng, DEFAULT_ZOOM)
+                if (ctx::map.isInitialized) {
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17f))
+                }
             }
         }
 
@@ -105,14 +107,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         startLocationUpdates()
     }
 
-    private fun moveCamera(latLng: LatLng, zoom: Float) {
-        if (ctx::map.isInitialized) {
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom))
-        }
-    }
 
-
-    @SuppressLint("SimpleDateFormat")
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setUpRaceTimeRemaining() {
         val currentTime = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant())
@@ -125,8 +120,6 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
             val timer = object : CountDownTimer(timeRemaining, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
-                    startTimeTV.text = format(millisUntilFinished / 1000)
-
                     if (millisUntilFinished / 1000 < 60) {
                         startTimeTV.setTextColor(
                             ContextCompat.getColor(ctx, R.color.red)
@@ -136,21 +129,23 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
                             ContextCompat.getColor(ctx, R.color.yellow)
                         )
                     }
+
+                    startTimeTV.text = formatSeconds(millisUntilFinished)
                 }
 
                 override fun onFinish() {
-                    setUpRaceAndThread()
+                    setUpRace()
                 }
             }
 
             timer.start()
         } else {
-            setUpRaceAndThread()
+            setUpRace()
         }
     }
 
-    @SuppressLint("SetTextI18n")
-    private fun setUpRaceAndThread() {
+
+    private fun setUpRace() {
         startTimeTV.text = "GO!"
 
         setUpRaceMap()
@@ -160,9 +155,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
     }
 
     private fun updateRaceMap() {
-        if (!ctx::lastLocation.isInitialized
-                ||
-                !ctx::map.isInitialized) {
+        if (!ctx::lastLocation.isInitialized || !ctx::map.isInitialized) {
             return
         }
 
@@ -326,7 +319,6 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    @SuppressLint("SimpleDateFormat")
     override fun onBackPressed() {
         if (ctx::raceData.isInitialized) {
             super.onBackPressed()
@@ -380,9 +372,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
     override fun onMapReady(p0: GoogleMap?) {
         map = p0!!
-
         map.uiSettings.isZoomControlsEnabled = true
-
         map.setOnMarkerClickListener(ctx)
 
         setUpMap()
@@ -392,80 +382,16 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         return false
     }
 
-    companion object {
-        private const val DEFAULT_ZOOM = 15f
-    }
+    private fun formatSeconds(millisFromNow: Long): String {
+        var seconds = floor(millisFromNow.toDouble() / 1000)
+        val days = floor(seconds / (24 * 3600))
+        seconds %= (24 * 3600)
+        val hours = floor(seconds / 3600)
+        seconds %= 3600
+        val minutes = floor(seconds / 60)
+        seconds %= 60
 
-    fun format(millisFromNow: Long): String {
-        val minutesFromNow = TimeUnit.MILLISECONDS.toMinutes(millisFromNow)
-
-        if (minutesFromNow < 1) {
-            return "about now"
-        }
-
-        val hoursFromNow = TimeUnit.MILLISECONDS.toHours(millisFromNow)
-
-        if (hoursFromNow < 1) {
-            return formatMinutes(minutesFromNow)
-        }
-
-        val daysFromNow = TimeUnit.MILLISECONDS.toDays(millisFromNow)
-
-        if (daysFromNow < 1) {
-            return formatHours(hoursFromNow)
-        }
-
-        val weeksFromNow = TimeUnit.MILLISECONDS.toDays(millisFromNow) / 7
-
-        if (weeksFromNow < 1) {
-            return formatDays(daysFromNow)
-        }
-
-        val monthsFromNow = TimeUnit.MILLISECONDS.toDays(millisFromNow) / 30
-
-        if (monthsFromNow < 1) {
-            return formatWeeks(weeksFromNow)
-        }
-
-        val yearsFromNow = TimeUnit.MILLISECONDS.toDays(millisFromNow) / 365
-
-        return if (yearsFromNow < 1) {
-            formatMonths(monthsFromNow)
-        } else {
-            formatYears(yearsFromNow)
-        }
-    }
-
-    private fun formatMinutes(minutes: Long): String {
-        return format(minutes, " minute to go", " minutes to go")
-    }
-
-    private fun formatHours(hours: Long): String {
-        return format(hours, " hour to go", " hours to go")
-    }
-
-    private fun formatDays(days: Long): String {
-        return format(days, " day to go", " days to go")
-    }
-
-    private fun formatWeeks(weeks: Long): String {
-        return format(weeks, " week to go", " weeks to go")
-    }
-
-    private fun formatMonths(months: Long): String {
-        return format(months, " month to go", " months to go")
-    }
-
-    private fun formatYears(years: Long): String {
-        return format(years, " year to go", " years to go")
-    }
-
-    private fun format(hand: Long, singular: String, plural: String): String {
-        return if (hand == 1L) {
-            hand.toString() + singular
-        } else {
-            hand.toString() + plural
-        }
+        return "$days:$hours:$minutes:$seconds"
     }
 
     private fun startLocationUpdates() {

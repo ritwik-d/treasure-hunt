@@ -466,19 +466,19 @@ class User:
         return 400
 
 
-    def sign_up_with_google(self):
-        row = {
-            'email' : self.email,
-            'password' : None,
-            'username' : self.uname,
-            'is_verified': 'true',
-            'auth_type' : 'google'
-        }
-        
-        row_id = db.insert('users', row)
-        if not row_id is None:
-            return 201
-        return 400
+    # def sign_up_with_google(self):
+    #     row = {
+    #         'email' : self.email,
+    #         'password' : None,
+    #         'username' : self.uname,
+    #         'is_verified': 'true',
+    #         'auth_type' : 'google'
+    #     }
+    #
+    #     row_id = db.insert('users', row)
+    #     if not row_id is None:
+    #         return 201
+    #     return 400
 
 
     def reset_password(self, new_password: str):

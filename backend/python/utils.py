@@ -18,7 +18,10 @@ def authenticate(func):
     def wrapper(user, *args, **kwargs):
         db = DB()
         db.connect()
-        if db.select('select * from users where user_id = %s and password = %s', params=(user.user_id, user.pw), dict_cursor=True) != tuple():
+        user_data = db.select('select user_id from users where user_id = %s and password = %s', params=(user.user_id, user.pw), dict_cursor=True)
+        if user_data != tuple():
+            with open(config.get('logs', 'authentication'), 'a') as f:
+                f.write(f'''{datetime.datetime.now}: Authenticated {user_data[0].get('user_id')}\n''')
             return func(user, *args, **kwargs)
     return wrapper
 
