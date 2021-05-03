@@ -192,10 +192,10 @@ class RacesActivity : AppCompatActivity(),
                                 val race = Race(
                                         raceData["title"] as String,
                                         raceData["start_time"] as String,
-                                        raceData["creator_id"] as Int,
+                                        (raceData["creator_id"] as Double).toInt(),
                                         raceData["creator_username"] as String,
                                         raceData["group_name"] as String,
-                                        raceData["race_id"] as Int
+                                        (raceData["race_id"] as Double).toInt()
                                 )
 
                                 races.add(race)
