@@ -1,5 +1,6 @@
 package com.ritwikscompany.treasurehunt.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +21,7 @@ class GroupChatActivity : AppCompatActivity() {
     private var groupName = String()
     private lateinit var linearLayout: LinearLayout
     private val ctx = this@GroupChatActivity
-    var active = false
+    @Volatile private var stopThread = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,18 +82,28 @@ class GroupChatActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        active = true
+        stopThread = false
     }
 
     override fun onStop() {
         super.onStop()
-        active = false
+        stopThread = true
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        stopThread = true
+
+        val intent = Intent(ctx, GroupPageActivity::class.java).apply {
+            putExtra("userData", userData)
+            putExtra("groupName", groupName)
+        }
+        startActivity(intent)
+    }
 
     private fun getMessagesFinal(groupId: Int) {
         CoroutineScope(Dispatchers.IO).launch {
-            while (ctx.active) {
+            while (!ctx.stopThread) {
                 Thread.sleep(1000)
                 ctx.getMessages(groupId)
             }

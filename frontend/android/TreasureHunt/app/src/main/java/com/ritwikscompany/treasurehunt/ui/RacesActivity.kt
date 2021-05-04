@@ -100,10 +100,6 @@ class RacesActivity : AppCompatActivity(),
             "user_id" to userData["user_id"] as Int
         ))
 
-        Log.d(TAG, "setUpGroupsSpinner: ")
-
-        Log.d(TAG, "setUpGroupsSpinner: $bodyJson")
-
         CoroutineScope(Dispatchers.IO).launch {
             val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_groups")
                 .body(bodyJson)

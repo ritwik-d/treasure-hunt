@@ -67,6 +67,18 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         setUpUI()
     }
 
+    override fun onStart() {
+        super.onStart()
+        stopThread = false
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        stopThread = true
+        leaveRace()
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setUpUI() {
         setUpRaceTitle()
@@ -427,7 +439,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
     inner class UpdateRaceMapThread : Thread() {
         override fun run() {
-            while (!stopThread) {
+            while (!ctx.stopThread) {
                 sleep(1000)
                 
                 runOnUiThread {
