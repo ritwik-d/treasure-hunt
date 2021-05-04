@@ -121,9 +121,9 @@ class GetInvitations(BaseModel):
     user_id: int
 
 
-class GoogleSignIn(BaseModel):
-    email: str
-    username: str
+# class GoogleSignIn(BaseModel):
+#     email: str
+#     username: str
 
 
 class InviteUser(BaseModel):
