@@ -169,8 +169,7 @@ class User:
 
 
     @authenticate
-    def get_race(self, race_id: int, group_name: str):
-        group_id = get_group_id(group_name)
+    def get_race_data(self, race_id: int):
         db = DB()
         db.connect()
         group = db.select("select * from races where race_id = %s", params=(race_id,), dict_cursor=True)

@@ -18,7 +18,7 @@ api:
     get_group_settings: /api/get_group_settings
     get_invitations: /api/get_invitations
     get_messages: /api/get_messages
-    get_race: /api/get_race
+    get_race_data: /api/get_race_data
     get_races: /api/get_races
     get_user_challenges: /api/get_user_challenges
     google_sign_in: /api/google_sign_in
