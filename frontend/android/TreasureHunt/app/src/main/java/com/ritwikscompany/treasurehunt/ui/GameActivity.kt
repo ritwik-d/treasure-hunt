@@ -8,7 +8,6 @@ import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
-import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -44,6 +43,7 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private lateinit var lastLocation: Location
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
+    @Volatile private var stopThread = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,6 +107,15 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        stopThread = false
+    }
+
+    override fun onStop() {
+        super.onStop()
+        stopThread = true
+    }
 
     override fun onMapReady(p0: GoogleMap?) {
         map = p0!!
@@ -218,7 +227,7 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             if (ctx::lastLocation.isInitialized) {
                 previousLocation = lastLocation
             }
-            while (true) {
+            while (!ctx.stopThread) {
                 Thread.sleep(1000)
                 if (ctx::lastLocation.isInitialized && previousLocation != null) {
                     val resultsDistance = FloatArray(1)
