@@ -1,7 +1,12 @@
+import datetime
 from environment import *
 import MySQLdb
 
 db_connections = {}
+
+def log_sql(sql_type: str, sql: str, params):
+    with open(config.get('logs', 'sql'), 'a') as f:
+        f.write(f'''{datetime.datetime.now()}: {sql_type} sql: <{sql}>, params: <{params}>\n''')
 
 class DB:
     def __init__(self, autocommit=True, db_config=None):
@@ -41,7 +46,7 @@ class DB:
             cursor.execute(sql, params)
         else:
             cursor.execute(sql)
-        print(f'select sql: {sql}, params: <{params}>')
+        log_sql('select', sql, params)
         results = cursor.fetchall()
         return results
 
@@ -68,9 +73,10 @@ class DB:
         if self.db is None:
             return None
         cursor = self.db.cursor()
-        sql = f"""UPDATE {table_name} set {', '.join([f'{k} = %s' for k in update_params])} WHERE {', '.join([f'{k} = %s' for k in where_params])}"""
-        print(f'update sql: {sql}, params: {tuple(list(update_params.values()) + list(where_params.values()))}')
-        cursor.execute(sql, tuple(list(update_params.values()) + list(where_params.values())))
+        sql = f"""UPDATE {table_name} set {', '.join([f'{k} = %s' for k in update_params])} WHERE {' and '.join([f'{k} = %s' for k in where_params])}"""
+        params = tuple(list(update_params.values()) + list(where_params.values()))
+        log_sql('update', sql, params)
+        cursor.execute(sql, params)
         if aff_rows:
             return self.db.affected_rows()
         return cursor.lastrowid
@@ -83,7 +89,7 @@ class DB:
         cursor = self.db.cursor()
         sql = f"""DELETE FROM {table_name} WHERE {' and '.join([f'{k} = %s' for k in where_params])}"""
         params = tuple(where_params.values())
-        print(f'delete sql: <{sql}>, params: {params}')
+        log_sql('delete', sql, params)
         cursor.execute(sql, params)
         return cursor.lastrowid
 
@@ -92,6 +98,7 @@ class DB:
         if self.db is None:
             return None
         cursor = self.db.cursor()
+        log_sql('execute', sql, params)
         if params:
             cursor.execute(sql, params)
         else:

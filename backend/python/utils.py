@@ -126,8 +126,9 @@ class RaceLocation:
     def update(self):
         db = DB()
         db.connect()
-        row_id = db.update('race_locations', {'latitude': self.latitude, 'longitude': self.longitude}, {'race_id': self.race_id, 'user_id': self.user_id})
-        if row_id is None:
+        row_id = db.update('race_locations', {'latitude': self.latitude}, {'race_id': self.race_id, 'user_id': self.user_id})
+        row_id2 = db.update('race_locations', {'longitude': self.longitude}, {'race_id': self.race_id, 'user_id': self.user_id})
+        if row_id is None or row_id2 is None:
             return False
         return True
 
@@ -236,7 +237,7 @@ def send_email(file_name: str, receiver_email: str, subject: str, sender_email=N
 
 def create_random_race_location(latitude: float, longitude: float, difficulty: str):
     direction = random.randint(1, 360)
-    magnitude = random.randint(-100, 100) / 1000 # kilometers
+    magnitude = random.randint(-1, 1) / 10 # kilometers
     if difficulty == 'easy':
         magnitude += 0.5
     elif difficulty == 'medium':
