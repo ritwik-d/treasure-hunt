@@ -363,16 +363,19 @@ class User:
     def invite_user(self, group_name: str, to_username: str):
         db = DB()
         db.connect()
-        if db.select('select count(*) from users where username = %s', params=(to_username,))[0][0] != 1:
-            return 404
+        data_dict = db.select('select count(*) as count, points from users where username = %s', params=(to_username,), dict_cursor=True)[0]
+        if data_dict.get('count') != 1:
+            return {'status': 200, 'body': {'error': 'nouser'}}
+        if data_dict.get('points') < db.select('select minimum_points from user_groups where group_name = %s', params=(group_name,))[0][0]:
+            return {'status': 200, 'body': {'error': 'points'}}
 
         to_id = get_user_id(to_username, 'username')
         group_id = get_group_id(group_name)
         if len(db.select('select * from invitations where to_id = %s and group_id = %s', params=(to_id, group_id))) != 0:
-            return 400
+            return {'status': 200, 'body': {'error': 'ai'}}
 
         if get_user_id(to_username, 'username') in json.loads(db.select('select members from user_groups where group_id = %s', params=(group_id,), dict_cursor=True)[0].get('members')):
-            return 401
+            return {'status': 200, 'body': {'error': 'aj'}}
 
         row = {
             'from_id': self.user_id,
@@ -380,21 +383,24 @@ class User:
             'group_id': group_id
         }
         row_id = db.insert('invitations', row)
-        return 200
+        return {'status': 200, 'body': {'error': 'success'}}
 
 
     @authenticate
     def join_group(self, join_code: str):
         db = DB()
         db.connect()
+
         group = db.select('select * from user_groups where join_code = %s', params=(join_code,), dict_cursor=True)
         if group == tuple():
-            return 404
+            return {'status': 200, 'body': {'error': 'nogroup'}}
         if self.user_id in json.loads(group[0].get('members')):
-            return 400
+            return {'status': 200, 'body': {'error': 'joined'}}
+        if db.select('select points from users where user_id = %s', params=(self.user_id,), dict_cursor=True)[0].get('points') < group[0].get('minimum_points'):
+            return {'status': 200, 'body': {'error': 'points'}}
 
         db.update('user_groups', {'members': db.select("select JSON_ARRAY_APPEND(members, '$', %s) as 'result' from user_groups where group_id = %s", params=(self.user_id, group[0].get('group_id')), dict_cursor=True)[0].get('result')}, {'group_id': group[0].get('group_id')})
-        return 200
+        return {'status': 200, 'body': {'error': 'success'}}
 
 
     @authenticate

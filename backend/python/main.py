@@ -162,15 +162,17 @@ async def get_user_challenges(json: GetUserChallenges, response: Response):
 @app.post(paths.get('invite_user'))
 async def invite_user(json: InviteUser, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
-    scode = user.invite_user(json.group_name, json.to_username)
-    print({'status': scode})
-    return {'status': scode}
+    response_2 = user.invite_user(json.group_name, json.to_username)
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
 
 
 @app.post(paths.get('join_group'))
 async def join_group(json: JoinGroup, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
-    response.status_code = user.join_group(json.join_code)
+    response_2 = user.join_group(json.join_code)
+    response.status_code = response_2.get('status')
+    return response_2.get('body')
 
 
 @app.post(paths.get('leave_group'))
