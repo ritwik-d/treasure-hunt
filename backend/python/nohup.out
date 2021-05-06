@@ -1,136 +1,19 @@
-[2021-04-28 11:42:17 -0700] [3431] [INFO] Starting gunicorn 20.0.4
-[2021-04-28 11:42:17 -0700] [3431] [INFO] Listening at: http://127.0.0.1:8000 (3431)
-[2021-04-28 11:42:17 -0700] [3431] [INFO] Using worker: uvicorn.workers.UvicornWorker
-[2021-04-28 11:42:17 -0700] [3433] [INFO] Booting worker with pid: 3433
-[2021-04-28 11:42:18 -0700] [3434] [INFO] Booting worker with pid: 3434
-[2021-04-28 11:42:18 -0700] [3435] [INFO] Booting worker with pid: 3435
-[2021-04-28 11:42:18 -0700] [3436] [INFO] Booting worker with pid: 3436
-[2021-04-28 11:42:18 -0700] [3433] [INFO] Started server process [3433]
-[2021-04-28 11:42:18 -0700] [3433] [INFO] Waiting for application startup.
-[2021-04-28 11:42:18 -0700] [3433] [INFO] Application startup complete.
-[2021-04-28 11:42:18 -0700] [3434] [INFO] Started server process [3434]
-[2021-04-28 11:42:18 -0700] [3434] [INFO] Waiting for application startup.
-[2021-04-28 11:42:18 -0700] [3434] [INFO] Application startup complete.
-[2021-04-28 11:42:18 -0700] [3435] [INFO] Started server process [3435]
-[2021-04-28 11:42:18 -0700] [3435] [INFO] Waiting for application startup.
-[2021-04-28 11:42:18 -0700] [3435] [INFO] Application startup complete.
-[2021-04-28 11:42:18 -0700] [3436] [INFO] Started server process [3436]
-[2021-04-28 11:42:18 -0700] [3436] [INFO] Waiting for application startup.
-[2021-04-28 11:42:18 -0700] [3436] [INFO] Application startup complete.
-[2021-05-03 13:57:19 -0700] [3352] [INFO] Starting gunicorn 20.0.4
-[2021-05-03 13:57:19 -0700] [3352] [INFO] Listening at: http://127.0.0.1:8000 (3352)
-[2021-05-03 13:57:19 -0700] [3352] [INFO] Using worker: uvicorn.workers.UvicornWorker
-[2021-05-03 13:57:19 -0700] [3354] [INFO] Booting worker with pid: 3354
-[2021-05-03 13:57:19 -0700] [3355] [INFO] Booting worker with pid: 3355
-[2021-05-03 13:57:19 -0700] [3356] [INFO] Booting worker with pid: 3356
-[2021-05-03 13:57:19 -0700] [3357] [INFO] Booting worker with pid: 3357
-[2021-05-03 13:57:19 -0700] [3355] [INFO] Started server process [3355]
-[2021-05-03 13:57:19 -0700] [3354] [INFO] Started server process [3354]
-[2021-05-03 13:57:19 -0700] [3356] [INFO] Started server process [3356]
-[2021-05-03 13:57:19 -0700] [3355] [INFO] Waiting for application startup.
-[2021-05-03 13:57:19 -0700] [3354] [INFO] Waiting for application startup.
-[2021-05-03 13:57:19 -0700] [3356] [INFO] Waiting for application startup.
-[2021-05-03 13:57:19 -0700] [3355] [INFO] Application startup complete.
-[2021-05-03 13:57:19 -0700] [3356] [INFO] Application startup complete.
-[2021-05-03 13:57:19 -0700] [3354] [INFO] Application startup complete.
-[2021-05-03 13:57:19 -0700] [3357] [INFO] Started server process [3357]
-[2021-05-03 13:57:19 -0700] [3357] [INFO] Waiting for application startup.
-[2021-05-03 13:57:19 -0700] [3357] [INFO] Application startup complete.
-[2021-05-03 23:08:32 -0700] [3352] [INFO] Handling signal: term
-[2021-05-03 23:08:32 -0700] [3354] [INFO] Shutting down
-[2021-05-03 23:08:32 -0700] [3354] [INFO] Error while closing socket [Errno 9] Bad file descriptor
-[2021-05-03 23:08:32 -0700] [3355] [INFO] Shutting down
-[2021-05-03 23:08:32 -0700] [3355] [INFO] Error while closing socket [Errno 9] Bad file descriptor
-[2021-05-03 23:08:32 -0700] [3356] [INFO] Shutting down
-[2021-05-03 23:08:32 -0700] [3356] [INFO] Error while closing socket [Errno 9] Bad file descriptor
-[2021-05-03 23:08:32 -0700] [3357] [INFO] Shutting down
-[2021-05-03 23:08:32 -0700] [3357] [INFO] Error while closing socket [Errno 9] Bad file descriptor
-[2021-05-03 23:08:32 -0700] [3354] [INFO] Finished server process [3354]
-[2021-05-03 23:08:32 -0700] [3354] [INFO] Worker exiting (pid: 3354)
-[2021-05-03 23:08:32 -0700] [3356] [INFO] Finished server process [3356]
-[2021-05-03 23:08:32 -0700] [3356] [INFO] Worker exiting (pid: 3356)
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select members from user_groups where group_id = %s, params: <(7,)>
-select sql: select username from users where user_id = %s, params: <(18,)>
-select sql: select username from users where user_id = %s, params: <(21,)>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select from_id, group_id, invitation_id from invitations where to_id = %s, params: <(18,)>
-invites: []
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select name from user_groups where (creator_id = 18) or (JSON_CONTAINS(members, '18') and allow_members_code = 'true'), params: <None>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select name from user_groups where JSON_CONTAINS(members, '18'), params: <None>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select CAST(group_id AS CHAR) from user_groups where JSON_CONTAINS(members, '18'), params: <None>
-select sql: select title, creator_id, start_time, group_id, race_id from races where group_id in (4,5,7), params: <None>
-select sql: select name from user_groups where group_id = %s, params: <(4,)>
-select sql: select username from users where user_id = %s, params: <(18,)>
-select sql: select name from user_groups where group_id = %s, params: <(4,)>
-select sql: select username from users where user_id = %s, params: <(18,)>
-select sql: select user_id from users where email = %s, params: <('ritwik.deshpande.8@gmail.com',)>
-select sql: select * from users where user_id = %s and password = %s and is_verified = "true", params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-update sql: UPDATE users set date_last_login = %s WHERE user_id = %s, params: (datetime.datetime(2021, 5, 3, 14, 14, 7, 686800), 18)
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select name from user_groups where JSON_CONTAINS(members, '18'), params: <None>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select CAST(group_id AS CHAR) from user_groups where JSON_CONTAINS(members, '18'), params: <None>
-select sql: select title, creator_id, start_time, group_id, race_id from races where group_id in (4,5,7), params: <None>
-select sql: select name from user_groups where group_id = %s, params: <(4,)>
-select sql: select username from users where user_id = %s, params: <(18,)>
-select sql: select name from user_groups where group_id = %s, params: <(4,)>
-select sql: select username from users where user_id = %s, params: <(18,)>
-[2021-05-03 23:08:32 -0700] [3357] [INFO] Finished server process [3357]
-[2021-05-03 23:08:32 -0700] [3357] [INFO] Worker exiting (pid: 3357)
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-local path: /home/ritwik/git_hub/TreasureHunt/backend/tmp/dpfp18
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select members, creator_id, join_code from user_groups where name = %s, params: <('Lego Legions',)>
-select sql: select username, points, user_id from users where user_id in (18,21) order by points DESC, params: <None>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select group_id from user_groups where name = %s, params: <('Lego Legions',)>
-select sql: select allow_members_code, join_code, minimum_points, name, creator_id from user_groups where group_id = %s, params: <(7,)>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-local path: /home/ritwik/git_hub/TreasureHunt/backend/tmp/dpfp18
-[2021-05-03 23:08:32 -0700] [3355] [INFO] Finished server process [3355]
-[2021-05-03 23:08:32 -0700] [3355] [INFO] Worker exiting (pid: 3355)
-select sql: select user_id from users where email = %s, params: <('ritwik.deshpande.8@gmail.com',)>
-select sql: select * from users where user_id = %s and password = %s and is_verified = "true", params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-update sql: UPDATE users set date_last_login = %s WHERE user_id = %s, params: (datetime.datetime(2021, 5, 3, 14, 1, 56, 30027), 18)
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select name from user_groups where JSON_CONTAINS(members, '18'), params: <None>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select group_id from user_groups where name = %s, params: <('Lego Legions',)>
-select sql: select * from user_groups where group_id = %s, params: <(7,)>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-select sql: select group_id from user_groups where name = %s, params: <('Lego Legions',)>
-select sql: select * from user_groups where group_id = %s, params: <(7,)>
-select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
-local path: /home/ritwik/git_hub/TreasureHunt/backend/tmp/dpfp18
-[2021-05-03 23:08:32 -0700] [3352] [INFO] Shutting down: Master
+[2021-05-05 08:48:35 -0700] [1880] [INFO] Starting gunicorn 20.0.4
+[2021-05-05 08:48:35 -0700] [1880] [INFO] Listening at: http://127.0.0.1:8000 (1880)
+[2021-05-05 08:48:35 -0700] [1880] [INFO] Using worker: uvicorn.workers.UvicornWorker
+[2021-05-05 08:48:35 -0700] [1882] [INFO] Booting worker with pid: 1882
+[2021-05-05 08:48:35 -0700] [1883] [INFO] Booting worker with pid: 1883
+[2021-05-05 08:48:36 -0700] [1884] [INFO] Booting worker with pid: 1884
+[2021-05-05 08:48:36 -0700] [1885] [INFO] Booting worker with pid: 1885
+[2021-05-05 08:48:36 -0700] [1884] [INFO] Started server process [1884]
+[2021-05-05 08:48:36 -0700] [1883] [INFO] Started server process [1883]
+[2021-05-05 08:48:36 -0700] [1884] [INFO] Waiting for application startup.
+[2021-05-05 08:48:36 -0700] [1883] [INFO] Waiting for application startup.
+[2021-05-05 08:48:36 -0700] [1882] [INFO] Started server process [1882]
+[2021-05-05 08:48:36 -0700] [1885] [INFO] Started server process [1885]
+[2021-05-05 08:48:36 -0700] [1882] [INFO] Waiting for application startup.
+[2021-05-05 08:48:36 -0700] [1885] [INFO] Waiting for application startup.
+[2021-05-05 08:48:36 -0700] [1883] [INFO] Application startup complete.
+[2021-05-05 08:48:36 -0700] [1884] [INFO] Application startup complete.
+[2021-05-05 08:48:36 -0700] [1882] [INFO] Application startup complete.
+[2021-05-05 08:48:36 -0700] [1885] [INFO] Application startup complete.

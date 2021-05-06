@@ -187,11 +187,10 @@ class GetMessages(BaseModel):
     group_id: int
 
 
-class GetRace(BaseModel):
+class GetRaceData(BaseModel):
     pw: str
     user_id: int
     race_id: int
-    group_name: str
 
 class UpdateChallenge(BaseModel):
     pw: str
