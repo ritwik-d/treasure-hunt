@@ -153,8 +153,10 @@ class RaceInProgress:
 
     def get_users(self):
         db = DB()
+        db.connect()
         result = db.select('select user_id, latitude, longitude from race_locations where race_id = %s', params=(self.race_id,), dict_cursor=True)
-        result["username"] = db.select("select username from users where user_id = ", params=(result["user_id"],))[0][0]
+        for i in result:
+            i["username"] = db.select("select username from users where user_id = %s", params=(i["user_id"],))[0][0]
         return result
 
 

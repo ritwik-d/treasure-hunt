@@ -1,19 +1,88 @@
-[2021-05-05 08:48:35 -0700] [1880] [INFO] Starting gunicorn 20.0.4
-[2021-05-05 08:48:35 -0700] [1880] [INFO] Listening at: http://127.0.0.1:8000 (1880)
-[2021-05-05 08:48:35 -0700] [1880] [INFO] Using worker: uvicorn.workers.UvicornWorker
-[2021-05-05 08:48:35 -0700] [1882] [INFO] Booting worker with pid: 1882
-[2021-05-05 08:48:35 -0700] [1883] [INFO] Booting worker with pid: 1883
-[2021-05-05 08:48:36 -0700] [1884] [INFO] Booting worker with pid: 1884
-[2021-05-05 08:48:36 -0700] [1885] [INFO] Booting worker with pid: 1885
-[2021-05-05 08:48:36 -0700] [1884] [INFO] Started server process [1884]
-[2021-05-05 08:48:36 -0700] [1883] [INFO] Started server process [1883]
-[2021-05-05 08:48:36 -0700] [1884] [INFO] Waiting for application startup.
-[2021-05-05 08:48:36 -0700] [1883] [INFO] Waiting for application startup.
-[2021-05-05 08:48:36 -0700] [1882] [INFO] Started server process [1882]
-[2021-05-05 08:48:36 -0700] [1885] [INFO] Started server process [1885]
-[2021-05-05 08:48:36 -0700] [1882] [INFO] Waiting for application startup.
-[2021-05-05 08:48:36 -0700] [1885] [INFO] Waiting for application startup.
-[2021-05-05 08:48:36 -0700] [1883] [INFO] Application startup complete.
-[2021-05-05 08:48:36 -0700] [1884] [INFO] Application startup complete.
-[2021-05-05 08:48:36 -0700] [1882] [INFO] Application startup complete.
-[2021-05-05 08:48:36 -0700] [1885] [INFO] Application startup complete.
+[2021-05-05 14:23:07 -0700] [3651] [INFO] Starting gunicorn 20.0.4
+[2021-05-05 14:23:07 -0700] [3651] [INFO] Listening at: http://127.0.0.1:8000 (3651)
+[2021-05-05 14:23:07 -0700] [3651] [INFO] Using worker: uvicorn.workers.UvicornWorker
+[2021-05-05 14:23:07 -0700] [3653] [INFO] Booting worker with pid: 3653
+[2021-05-05 14:23:07 -0700] [3654] [INFO] Booting worker with pid: 3654
+[2021-05-05 14:23:07 -0700] [3655] [INFO] Booting worker with pid: 3655
+[2021-05-05 14:23:07 -0700] [3656] [INFO] Booting worker with pid: 3656
+[2021-05-05 14:23:07 -0700] [3653] [INFO] Started server process [3653]
+[2021-05-05 14:23:07 -0700] [3653] [INFO] Waiting for application startup.
+[2021-05-05 14:23:07 -0700] [3653] [INFO] Application startup complete.
+[2021-05-05 14:23:08 -0700] [3654] [INFO] Started server process [3654]
+[2021-05-05 14:23:08 -0700] [3654] [INFO] Waiting for application startup.
+[2021-05-05 14:23:08 -0700] [3654] [INFO] Application startup complete.
+[2021-05-05 14:23:08 -0700] [3655] [INFO] Started server process [3655]
+[2021-05-05 14:23:08 -0700] [3655] [INFO] Waiting for application startup.
+[2021-05-05 14:23:08 -0700] [3655] [INFO] Application startup complete.
+[2021-05-05 14:23:08 -0700] [3656] [INFO] Started server process [3656]
+[2021-05-05 14:23:08 -0700] [3656] [INFO] Waiting for application startup.
+[2021-05-05 14:23:08 -0700] [3656] [INFO] Application startup complete.
+select sql: select user_id from users where email = %s, params: <('ritwik.deshpande.8@gmail.com',)>
+select sql: select * from users where user_id = %s and password = %s and is_verified = "true", params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+update sql: UPDATE users set date_last_login = %s WHERE user_id = %s, params: (datetime.datetime(2021, 5, 5, 14, 30, 9, 517433), 18)
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select name from user_groups where JSON_CONTAINS(members, '18'), params: <None>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select members, creator_id, join_code from user_groups where name = %s, params: <('Lego Legions',)>
+select sql: select username, points, user_id from users where user_id in (18,21) order by points DESC, params: <None>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select group_id from user_groups where name = %s, params: <('Lego Legions',)>
+select sql: select * from user_groups where group_id = %s, params: <(7,)>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select username from users where user_id = %s, params: <(18,)>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select members, creator_id, join_code from user_groups where name = %s, params: <('Lego Legions',)>
+select sql: select username, points, user_id from users where user_id in (18,21) order by points DESC, params: <None>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select group_id from user_groups where name = %s, params: <('Lego Legions',)>
+select sql: select allow_members_code, join_code, minimum_points, name, creator_id from user_groups where group_id = %s, params: <(7,)>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select group_id from user_groups where name = %s, params: <('Lego Legions',)>
+select sql: select * from user_groups where group_id = %s, params: <(7,)>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select members from user_groups where group_id = %s, params: <(7,)>
+select sql: select username from users where user_id = %s, params: <(18,)>
+select sql: select username from users where user_id = %s, params: <(21,)>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select from_id, group_id, invitation_id from invitations where to_id = %s, params: <(18,)>
+invites: []
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select from_id, group_id, invitation_id from invitations where to_id = %s, params: <(18,)>
+invites: []
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select * from challenges where name = %s, params: <('blhablah',)>
+select sql: select username from users where user_id = %s, params: <(17,)>
+select sql: select name from user_groups where group_id = %s, params: <(4,)>
+select sql: select name from user_groups where group_id = %s, params: <(7,)>
+select sql: select user_id from users where email = %s, params: <('ritwik.deshpande.8@gmail.com',)>
+select sql: select * from users where user_id = %s and password = %s and is_verified = "true", params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+update sql: UPDATE users set date_last_login = %s WHERE user_id = %s, params: (datetime.datetime(2021, 5, 5, 14, 35, 16, 430240), 18)
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+local path: /home/ritwik/git_hub/TreasureHunt/backend/tmp/dpfp18
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select group_id, name from user_groups where JSON_CONTAINS(members, '18'), params: <None>
+groups: {4: 'myfristgroup', 5: "abc's group", 7: 'Lego Legions'}
+groups1: ((4, 'myfristgroup'), (5, "abc's group"), (7, 'Lego Legions'))
+select sql: select name from challenges where user_groups = cast(%s as json) and creator_id <> %s, params: <('[]', 18)>
+select sql: select name from challenges where JSON_CONTAINS(user_groups, %s) and creator_id <> %s, params: <('4', 18)>
+select sql: select name from challenges where JSON_CONTAINS(user_groups, %s) and creator_id <> %s, params: <('5', 18)>
+select sql: select name from challenges where JSON_CONTAINS(user_groups, %s) and creator_id <> %s, params: <('7', 18)>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
+select sql: select * from challenges where name = %s, params: <('blhablah',)>
+select sql: select username from users where user_id = %s, params: <(17,)>
+select sql: select name from user_groups where group_id = %s, params: <(4,)>
+select sql: select name from user_groups where group_id = %s, params: <(7,)>
+select sql: select user_id from users where user_id = %s and password = %s, params: <(18, '1d0e4c28130569cd59b75a5246a0b49bc0c146b7bd4371c86fd59004f8efc7de')>
