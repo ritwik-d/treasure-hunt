@@ -109,7 +109,7 @@ class EditChallengeActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap
             if (location != null) {
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17f))
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
             }
         }
     }
@@ -169,12 +169,17 @@ class EditChallengeActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap
                 diffArray
         )
 
+        val previousIndex = diffArray.indexOf(challengeData["difficulty"] as String)
+        val oldItem = diffArray[0] // always easy; just didn't want to hardcode
+        diffArray[0] = challengeData["difficulty"] as String
+        diffArray[previousIndex] = oldItem
+
         val bodyJson = Gson().toJson(hashMapOf(
             "user_id" to userData["user_id"],
             "pw" to userData["password"]
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/get_groups")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_groups")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()
@@ -189,6 +194,9 @@ class EditChallengeActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap
                             val groups = Gson().fromJson(String(bytes), type) as ArrayList<String>
 
                             findViewById<FloatingActionButton>(R.id.ec_edit_challenge).setOnClickListener {
+                                if (!ctx::lastLocation.isInitialized) {
+                                    return@setOnClickListener
+                                }
                                 createDialog(lastLocation.latitude, lastLocation.longitude, groups)
                             }
                         }
@@ -214,7 +222,7 @@ class EditChallengeActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap
                 "name" to challengeData["name"] as String
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/get_challenge_data")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_challenge_data")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()

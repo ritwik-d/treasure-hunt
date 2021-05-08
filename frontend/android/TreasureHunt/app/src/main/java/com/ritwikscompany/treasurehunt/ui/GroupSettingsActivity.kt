@@ -2,12 +2,15 @@ package com.ritwikscompany.treasurehunt.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.*
 import com.github.kittinunf.fuel.Fuel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.ritwikscompany.treasurehunt.R
+import com.ritwikscompany.treasurehunt.utils.Utils.Utils.getCheckMark
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,6 +42,36 @@ class GroupSettingsActivity : AppCompatActivity() {
         this.groupName = intent.getStringExtra("groupName") as String
 
         initialize()
+        setUp()
+    }
+
+
+    private fun setUp() {
+        minPoints.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                try {
+                    val num = p0.toString().toInt()
+                    if (num < 0) {
+                        minPoints.error = "Enter a whole number"
+                        saveButton.isEnabled = false
+                        return
+                    }
+                }
+                catch (e: java.lang.NumberFormatException) {
+                    minPoints.error = "Enter a whole number"
+                    saveButton.isEnabled = false
+                    return
+                }
+
+                minPoints.setError("Good", getCheckMark(ctx))
+                saveButton.isEnabled = true
+            }
+
+            override fun afterTextChanged(p0: Editable?) {}
+
+        })
     }
 
 

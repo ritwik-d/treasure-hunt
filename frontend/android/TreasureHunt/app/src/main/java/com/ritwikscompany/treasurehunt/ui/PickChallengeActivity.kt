@@ -56,8 +56,7 @@ class PickChallengeActivity : AppCompatActivity() {
                                 val challengeData = Gson().fromJson(String(bytes), HashMap::class.java) as HashMap<String, ArrayList<String>>
                                 val tabLayout = findViewById<TabLayout>(R.id.pc_tab_layout)
                                 val rv = findViewById<RecyclerView>(R.id.pc_rview)
-                                val tabNames = challengeData.keys.toTypedArray()
-                                for (group in tabNames) {
+                                for (group in challengeData.keys) {
                                     if ((challengeData[group] as ArrayList<String>).isNotEmpty()) {
                                         tabLayout.addTab(tabLayout.newTab().setText(group))
                                     }
@@ -82,7 +81,7 @@ class PickChallengeActivity : AppCompatActivity() {
                                         rv.adapter = FindChallengeRVA(challengeData[tab?.text.toString()] as ArrayList, startOnClick)
 
                                         if (ctx::searchView.isInitialized) {
-                                            searchView.setQuery("", true)
+                                            searchView.setQuery("", false)
                                         }
                                     }
 
@@ -142,15 +141,16 @@ class PickChallengeActivity : AppCompatActivity() {
                             }
 
                             val challengeData = Gson().fromJson(String(bytes), HashMap::class.java) as HashMap<String, ArrayList<String>>
-                            val tabNames = challengeData.keys.toTypedArray()
                             val tabLayout = findViewById<TabLayout>(R.id.pc_tab_layout)
                             val rv = findViewById<RecyclerView>(R.id.pc_rview)
 
-                            searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
+                            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                                 override fun onQueryTextSubmit(query: String?): Boolean {
                                     val text = query!!.toLowerCase(Locale.ROOT)
-
-                                    val currentChallenges = challengeData[tabNames[tabLayout.selectedTabPosition]] as ArrayList
+                                    val currentChallenges = challengeData[tabLayout.getTabAt(tabLayout.selectedTabPosition)!!.text.toString()] as ArrayList
+                                    println("currentchallenges: $currentChallenges")
+                                    println("challengedata: $challengeData")
+                                    println("sel tab pos: ${tabLayout.selectedTabPosition}")
                                     val newChallenges = arrayListOf<String>()
 
                                     for (challenge in currentChallenges) {
@@ -165,20 +165,7 @@ class PickChallengeActivity : AppCompatActivity() {
                                 }
 
                                 override fun onQueryTextChange(newText: String?): Boolean {
-                                    val text = newText!!.toLowerCase(Locale.ROOT)
-
-                                    val currentChallenges = challengeData[tabNames[tabLayout.selectedTabPosition]] as ArrayList
-                                    val newChallenges = arrayListOf<String>()
-
-                                    for (challenge in currentChallenges) {
-                                        val challenge2 = challenge.toLowerCase(Locale.ROOT)
-                                        if (text in challenge2) {
-                                            newChallenges.add(challenge)
-                                        }
-                                    }
-
-                                    rv.adapter = FindChallengeRVA(newChallenges, startOnClick)
-                                    return true
+                                    return this.onQueryTextSubmit(newText)
                                 }
                             })
                         }

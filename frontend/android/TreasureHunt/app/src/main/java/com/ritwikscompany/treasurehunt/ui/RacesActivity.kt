@@ -13,6 +13,8 @@ import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.*
@@ -39,6 +41,7 @@ import com.ritwikscompany.treasurehunt.R
 import com.ritwikscompany.treasurehunt.utils.Race
 import com.ritwikscompany.treasurehunt.utils.RacesRecyclerViewAdapter
 import com.ritwikscompany.treasurehunt.utils.Utils
+import com.ritwikscompany.treasurehunt.utils.Utils.Utils.getCheckMark
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -48,7 +51,6 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-@Suppress("DEPRECATION", "NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class RacesActivity : AppCompatActivity(),
     OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
     AdapterView.OnItemSelectedListener {
@@ -63,12 +65,14 @@ class RacesActivity : AppCompatActivity(),
     private lateinit var locationRequest: LocationRequest
     private lateinit var racesRV: RecyclerView
     private lateinit var groupsTB: TabLayout
-    private lateinit var userData: HashMap<*, *>
+    private lateinit var userData: HashMap<String, Any>
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_races)
+
+        userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
 
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.race_create_map) as SupportMapFragment
@@ -81,12 +85,36 @@ class RacesActivity : AppCompatActivity(),
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setUpUI() {
-        userData = intent.getSerializableExtra("userData") as HashMap<*, *>
         titleET = findViewById(R.id.race_title)
         diffSpinner = findViewById(R.id.race_diff)
         groupsSpinner = findViewById(R.id.race_groups)
         racesRV = findViewById(R.id.race_races_rv)
         groupsTB = findViewById(R.id.race_groups_tb)
+
+        val button = findViewById<Button>(R.id.race_schedule)
+
+        titleET.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                val text = p0.toString()
+
+                if (text.length < 3) {
+                    titleET.error = "Title must have greater than or equal to 3 characters"
+                    titleET.requestFocus()
+
+                    button.isEnabled = false
+                    return
+                }
+
+                titleET.setError("Good", getCheckMark(ctx))
+                titleET.requestFocus()
+
+                button.isEnabled = true
+            }
+
+            override fun afterTextChanged(p0: Editable?) {}
+        })
 
         setUpGroupsSpinner()
         setUpBottomNavigation()
@@ -122,21 +150,17 @@ class RacesActivity : AppCompatActivity(),
                                     Toast.LENGTH_SHORT
                                 ).show()
 
-                                Log.d(TAG, "setUpGroupsSpinner: here")
-
                                 startActivity(Intent(ctx, HomeActivity::class.java).apply {
                                     putExtra("userData", userData)
                                 })
                             }
-
-                            Log.d(TAG, "setUpGroupsSpinner: $groups")
 
                             val groupsAdapter = ArrayAdapter(ctx, android.R.layout.simple_dropdown_item_1line, groups)
 
                             groupsSpinner.adapter = groupsAdapter
                         }
                     } else {
-                        Log.d(TAG, "setUpGroupsSpinner: here1")
+                        Toast.makeText(ctx, "ERROR", Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -183,6 +207,7 @@ class RacesActivity : AppCompatActivity(),
                             val races = ArrayList<Race>()
                             val groups = ArrayList<String>()
                             val groupsRaces = HashMap<String, ArrayList<Race>>()
+                            groupsRaces["All"] = races
 
                             for (raceData in racesData) {
                                 val race = Race(
@@ -211,42 +236,29 @@ class RacesActivity : AppCompatActivity(),
                                 groupsTB.addTab(groupsTB.newTab().setText(group))
                             }
 
-                            val racesAdapter = RacesRecyclerViewAdapter(races) { race ->
+                            val enterClicked = { race: Race ->
                                 val raceData = hashMapOf(
                                         "title" to race.title,
                                         "startTime" to race.startTime,
                                         "creator" to race.creatorName,
-                                        "groupName" to race.groupName,
-                                        "raceID" to race.raceID
+                                        "group_name" to race.groupName,
+                                        "race_id" to race.raceID
                                 )
 
-                                startActivity(Intent(this@RacesActivity, RaceDataActivity::class.java).apply {
+                                startActivity(Intent(ctx, RaceDataActivity::class.java).apply {
                                     putExtra("raceData", raceData)
                                     putExtra("userData", userData)
                                 })
                             }
 
-                            racesRV.adapter = racesAdapter
+                            racesRV.adapter = RacesRecyclerViewAdapter(races, enterClicked)
                             racesRV.layoutManager = LinearLayoutManager(ctx)
 
                             groupsTB.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                                 override fun onTabSelected(tab: TabLayout.Tab?) {
                                     val racesOfGroup = groupsRaces[tab?.text.toString()]
 
-                                    val racesOfGroupAdapter = RacesRecyclerViewAdapter(racesOfGroup!!) { race ->
-                                        val raceData = hashMapOf(
-                                                "title" to race.title,
-                                                "startTime" to race.startTime,
-                                                "creator" to race.creatorName,
-                                                "groupName" to race.groupName,
-                                                "raceID" to race.raceID
-                                        )
-
-                                        startActivity(Intent(this@RacesActivity, RaceDataActivity::class.java).apply {
-                                            putExtra("raceData", raceData)
-                                            putExtra("userData", userData)
-                                        })
-                                    }
+                                    val racesOfGroupAdapter = RacesRecyclerViewAdapter(racesOfGroup!!, enterClicked)
 
                                     racesRV.adapter = racesOfGroupAdapter
                                 }
@@ -333,7 +345,9 @@ class RacesActivity : AppCompatActivity(),
             if (location != null) {
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
-                moveCamera(currentLatLng, DEFAULT_ZOOM)
+                if (ctx::map.isInitialized) {
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
+                }
                 placeMarkerOnMap("Easy")
             }
         }
@@ -368,12 +382,6 @@ class RacesActivity : AppCompatActivity(),
             Looper.myLooper())
     }
 
-    private fun moveCamera(latLng: LatLng, zoom: Float) {
-        if (ctx::map.isInitialized) {
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom))
-        }
-    }
-
 
     private fun placeMarkerOnMap(difficulty: String) {
         if (!ctx::lastLocation.isInitialized || !ctx::map.isInitialized) {
@@ -381,12 +389,10 @@ class RacesActivity : AppCompatActivity(),
         }
 
         map.clear()
-
         val circle = CircleOptions()
-
         val currentLocation = LatLng(
-                lastLocation.latitude,
-                lastLocation.longitude
+            lastLocation.latitude,
+            lastLocation.longitude
         )
 
         circle.center(currentLocation)
@@ -427,7 +433,7 @@ class RacesActivity : AppCompatActivity(),
                 runOnUiThread {
                     val (bytes, _) = result
                     if (bytes != null) {
-                        val errorAndRaceID = Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, *>>() {}.type) as HashMap<String, *>
+                        val errorAndRaceID = Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, Any>>() {}.type) as HashMap<String, Any>
                         when (errorAndRaceID["error"]) {
                             "title exists" -> {
                                 titleET.error = "Title already exists"
@@ -439,8 +445,8 @@ class RacesActivity : AppCompatActivity(),
                                     "title" to title,
                                     "startTime" to startTime,
                                     "creator" to userData["username"] as String,
-                                    "groupName" to groupName,
-                                    "raceID" to (errorAndRaceID["race_id"] as Double).toInt()
+                                    "group_name" to groupName,
+                                    "race_id" to (errorAndRaceID["race_id"] as Double).toInt()
                                 )
 
                                 startActivity(Intent(ctx, RaceDataActivity::class.java).apply {
@@ -460,7 +466,6 @@ class RacesActivity : AppCompatActivity(),
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    @SuppressLint("SimpleDateFormat")
     private fun showDateDialog() {
         val calendar: Calendar = Calendar.getInstance()
 
@@ -528,9 +533,4 @@ class RacesActivity : AppCompatActivity(),
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {}
-
-    companion object {
-        private const val DEFAULT_ZOOM = 15f
-        private const val TAG = "RacesActivity"
-    }
 }

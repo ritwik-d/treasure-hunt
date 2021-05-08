@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.children
 import com.github.kittinunf.fuel.Fuel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -19,6 +20,8 @@ class GroupChatActivity : AppCompatActivity() {
 
     private var userData = HashMap<String, Any>()
     private var groupName = String()
+    private lateinit var scrollView: ScrollView
+    private lateinit var inflater: LayoutInflater
     private lateinit var linearLayout: LinearLayout
     private val ctx = this@GroupChatActivity
     @Volatile private var stopThread = false
@@ -30,6 +33,8 @@ class GroupChatActivity : AppCompatActivity() {
         this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
         this.groupName = intent.getStringExtra("groupName") as String
         this.linearLayout = findViewById(R.id.gc_linear_layout)
+        this.inflater = LayoutInflater.from(ctx)
+        this.scrollView = findViewById(R.id.gc_sv)
 
         title = groupName
 
@@ -55,15 +60,21 @@ class GroupChatActivity : AppCompatActivity() {
                             val groupId: Int = (groupData["group_id"] as Double).toInt()
                             val messageET = findViewById<EditText>(R.id.gc_message)
 
+                            scrollView.post {
+                                scrollView.fullScroll(View.FOCUS_DOWN)
+                            }
+
                             findViewById<ImageButton>(R.id.gc_send).setOnClickListener {
                                 val message = messageET.text.toString()
                                 sendMessage(groupId, message)
                                 messageET.setText("")
+
+                                scrollView.post {
+                                    scrollView.fullScroll(View.FOCUS_DOWN)
+                                }
                             }
 
                             getMessagesFinal(groupId)
-                            val scrollView = findViewById<ScrollView>(R.id.gc_sv)
-                            scrollView.fullScroll(ScrollView.FOCUS_DOWN)
                         }
 
                         else {
@@ -91,7 +102,6 @@ class GroupChatActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
         stopThread = true
 
         val intent = Intent(ctx, GroupPageActivity::class.java).apply {
@@ -102,14 +112,33 @@ class GroupChatActivity : AppCompatActivity() {
     }
 
     private fun getMessagesFinal(groupId: Int) {
-        CoroutineScope(Dispatchers.IO).launch {
-            while (!ctx.stopThread) {
-                Thread.sleep(1000)
-                ctx.getMessages(groupId)
-            }
-        }
+        val updateChatThread = UpdateChatThread(groupId)
+        updateChatThread.start()
     }
 
+    private fun updateLinearLayout(messages: ArrayList<HashMap<String, String>>) {
+        for (index in (linearLayout.childCount) until messages.size) {
+            val message = messages[index]
+            val viewGroup: View =
+
+            if (message["username"] as String == (userData["username"] as String)) {
+                inflater.inflate(R.layout.row_chat_user_pov, linearLayout, false)
+            }
+
+            else {
+                inflater.inflate(R.layout.row_chat_other_pov, linearLayout, false)
+            }
+
+            viewGroup.findViewById<TextView>(R.id.chat_timestamp).text = message["timestamp"] as String
+            viewGroup.findViewById<TextView>(R.id.chat_message).text = message["message"] as String
+
+            if (message["username"] as String != (userData["username"] as String)) {
+                viewGroup.findViewById<TextView>(R.id.chat_uname).text = message["username"]
+            }
+
+            linearLayout.addView(viewGroup)
+        }
+    }
 
     private fun getMessages(groupId: Int) {
         val bodyJson = Gson().toJson(hashMapOf(
@@ -118,7 +147,7 @@ class GroupChatActivity : AppCompatActivity() {
                 "group_id" to groupId
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/get_messages")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_messages")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()
@@ -132,29 +161,7 @@ class GroupChatActivity : AppCompatActivity() {
                             val type = object: TypeToken<ArrayList<HashMap<String, String>>>(){}.type
                             val messages = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, String>>
 
-                            linearLayout.removeAllViews()
-                            val inflater = LayoutInflater.from(ctx)
-
-                            for (message in messages) {
-                                val viewGroup: View =
-
-                                if (message["username"] as String == (userData["username"] as String)) {
-                                    inflater.inflate(R.layout.row_chat_user_pov, linearLayout, false)
-                                }
-
-                                else {
-                                    inflater.inflate(R.layout.row_chat_other_pov, linearLayout, false)
-                                }
-
-                                viewGroup.findViewById<TextView>(R.id.chat_timestamp).text = message["timestamp"] as String
-                                viewGroup.findViewById<TextView>(R.id.chat_message).text = message["message"] as String
-
-                                if (message["username"] as String != (userData["username"] as String)) {
-                                    viewGroup.findViewById<TextView>(R.id.chat_uname).text = message["username"]
-                                }
-
-                                linearLayout.addView(viewGroup)
-                            }
+                            updateLinearLayout(messages)
                         }
 
                         else {
@@ -187,8 +194,9 @@ class GroupChatActivity : AppCompatActivity() {
                         val (bytes, _) = result
                         if (bytes != null) {
                             val type = object: TypeToken<ArrayList<HashMap<String, Any>>>(){}.type
-                            val messages = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, Any>>
+                            val messages = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, String>>
 
+                            updateLinearLayout(messages)
                         }
 
                         else {
@@ -199,6 +207,18 @@ class GroupChatActivity : AppCompatActivity() {
                     else if (status == 404) {
                         Toast.makeText(ctx, "Log In Failure", Toast.LENGTH_LONG).show()
                     }
+                }
+            }
+        }
+    }
+
+
+    inner class UpdateChatThread(private val groupId: Int): Thread() {
+        override fun run() {
+            while (!ctx.stopThread) {
+                sleep(1000)
+                runOnUiThread {
+                    ctx.getMessages(this.groupId)
                 }
             }
         }

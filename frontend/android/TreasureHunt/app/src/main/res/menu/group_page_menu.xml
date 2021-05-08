@@ -29,4 +29,10 @@
         android:icon="@drawable/ic_baseline_chat_24"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/menu_group_info"
+        android:title="@string/info"
+        android:icon="@drawable/ic_baseline_info_24"
+        app:showAsAction="always" />
+
 </menu>

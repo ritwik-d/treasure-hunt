@@ -39,11 +39,11 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private val ctx = this@GameActivity
     private var userData = HashMap<String, Any>()
     private var challengeName = ""
-    private lateinit var map: GoogleMap
-    private lateinit var lastLocation: Location
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
+    @Volatile private lateinit var map: GoogleMap
     @Volatile private var stopThread = false
+    @Volatile private lateinit var lastLocation: Location
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,8 +62,8 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         startLocationUpdates()
 
         val bodyJson = Gson().toJson(hashMapOf(
-                "user_id" to userData.get("user_id"),
-                "pw" to userData.get("password"),
+                "user_id" to userData["user_id"],
+                "pw" to userData["password"],
                 "name" to challengeName
         ))
         CoroutineScope(Dispatchers.IO).launch {
@@ -92,7 +92,9 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                             findViewById<TextView>(R.id.game_puzzle).text = "Puzzle: ${challengeData["puzzle"] as String}"
                             findViewById<TextView>(R.id.game_creator).text = "Creator: ${challengeData["creator_name"] as String}"
 
-                            launchDaemon(challengeData)
+                            findViewById<Button>(R.id.game_start_challenge).setOnClickListener {
+                                launchDaemon(challengeData)
+                            }
                         }
                         else {
                             Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
@@ -132,6 +134,15 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 map.mapType = GoogleMap.MAP_TYPE_NORMAL
             }
         }
+    }
+
+    override fun onBackPressed() {
+        stopThread = true
+
+        val intent = Intent(ctx, PickChallengeActivity::class.java).apply {
+            putExtra("userData", userData)
+        }
+        startActivity(intent)
     }
 
 
@@ -221,46 +232,8 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
 
     private fun launchDaemon(challengeData: HashMap<String, Any>) {
-        CoroutineScope(Dispatchers.IO).launch {
-            var distanceTraveled = 0.0
-            var previousLocation: Location? = null
-            if (ctx::lastLocation.isInitialized) {
-                previousLocation = lastLocation
-            }
-            while (!ctx.stopThread) {
-                Thread.sleep(1000)
-                if (ctx::lastLocation.isInitialized && previousLocation != null) {
-                    val resultsDistance = FloatArray(1)
-                    Location.distanceBetween(
-                            previousLocation.latitude,
-                            previousLocation.longitude,
-                            lastLocation.latitude,
-                            lastLocation.longitude,
-                            resultsDistance
-                    )
-
-                    distanceTraveled += resultsDistance[0]
-
-                    val results = FloatArray(1)
-                    Location.distanceBetween(
-                            lastLocation.latitude,
-                            lastLocation.longitude,
-                            challengeData["latitude"] as Double,
-                            challengeData["longitude"] as Double,
-                            results
-                    )
-
-                    if (results[0] <= 1) {
-                        completeChallenge(challengeData)
-                        break
-                    }
-                }
-
-                if (ctx::lastLocation.isInitialized) {
-                    previousLocation = lastLocation
-                }
-            }
-        }
+        val isCompletedThread = IsCompletedThread(challengeData)
+        isCompletedThread.start()
     }
 
 
@@ -303,4 +276,32 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     override fun onMarkerClick(p0: Marker?): Boolean = false
+
+    inner class IsCompletedThread(private val challengeData: HashMap<String, Any>): Thread() {
+        override fun run() {
+            while (!ctx.stopThread) {
+                sleep(1000)
+
+                if (!ctx::lastLocation.isInitialized || !ctx::map.isInitialized) {
+                    continue
+                }
+
+                val results = FloatArray(1)
+                Location.distanceBetween(
+                        lastLocation.latitude,
+                        lastLocation.longitude,
+                        this.challengeData["latitude"] as Double,
+                        this.challengeData["longitude"] as Double,
+                        results
+                )
+
+                if (results[0] <= 0.5) {
+                    runOnUiThread {
+                        ctx.completeChallenge(this.challengeData)
+                    }
+                    break
+                }
+            }
+        }
+    }
 }

@@ -155,6 +155,8 @@ class CreateChallengeActivity : AppCompatActivity(), OnMapReadyCallback {
         nameET = findViewById(R.id.cc_name)
         name = nameET.text.toString()
 
+        val button = findViewById<Button>(R.id.cc_create)
+
         puzzleET.addTextChangedListener ( object: TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
@@ -164,12 +166,15 @@ class CreateChallengeActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (puzzle.length < 3) {
                     puzzleET.error = "Puzzle must be at least 3 characters"
                     puzzleET.requestFocus()
+                    button.isEnabled = false
                     return
                 }
 
-                else {
-                    puzzleET.setError("Good", checkMark)
-                    puzzleET.requestFocus()
+                puzzleET.setError("Good", checkMark)
+                puzzleET.requestFocus()
+
+                if (puzzleET.error == "Good" && nameET.error == "Good") {
+                    button.isEnabled = true
                 }
             }
 
@@ -185,12 +190,15 @@ class CreateChallengeActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (name.length < 3) {
                     nameET.error = "Puzzle must be at least 3 characters"
                     nameET.requestFocus()
+                    button.isEnabled = false
                     return
                 }
 
-                else {
-                    nameET.setError("Good", checkMark)
-                    nameET.requestFocus()
+                nameET.setError("Good", checkMark)
+                nameET.requestFocus()
+
+                if (puzzleET.error == "Good" && nameET.error == "Good") {
+                    button.isEnabled = true
                 }
             }
 

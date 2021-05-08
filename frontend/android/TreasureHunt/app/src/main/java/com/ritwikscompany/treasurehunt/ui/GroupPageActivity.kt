@@ -83,6 +83,49 @@ class GroupPageActivity : AppCompatActivity() {
                 }
                 startActivity(intent)
             }
+
+            R.id.menu_group_info -> {
+                val bodyJson = Gson().toJson(hashMapOf(
+                        "user_id" to userData["user_id"],
+                        "pw" to userData["password"],
+                        "group_name" to groupName
+                ))
+                CoroutineScope(Dispatchers.IO).launch {
+                    val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_group_row")
+                            .body(bodyJson)
+                            .header("Content-Type" to "application/json")
+                            .response()
+
+                    withContext(Dispatchers.Main) {
+                        runOnUiThread {
+                            val status = response.statusCode
+                            if (status == 200) {
+                                val (bytes, _) = result
+                                if (bytes != null) {
+                                    val type = object: TypeToken<HashMap<String, Any>>(){}.type
+                                    val groupData = Gson().fromJson(String(bytes), type) as HashMap<String, Any>
+
+                                    AlertDialog.Builder(ctx)
+                                            .setTitle("Group Info")
+                                            .setMessage(groupData["description"] as String)
+                                            .setPositiveButton("OK") { builder, _ ->
+                                                builder.cancel()
+                                            }
+                                            .show()
+                                }
+
+                                else {
+                                    Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
+                                }
+                            }
+
+                            else if (status == 404) {
+                                Toast.makeText(ctx, "Log In Failure", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    }
+                }
+            }
         }
         return true
     }
