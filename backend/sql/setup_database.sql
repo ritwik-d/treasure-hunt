@@ -62,8 +62,8 @@ create table challenges (
   user_groups json not null,
   latitude double(12, 10) not null,
   longitude double(13, 10) not null,
-  name varchar(25) not null,
-  puzzle varchar(50) not null,
+  name varchar(255) not null,
+  puzzle varchar(255) not null,
   foreign key (creator_id) references users(user_id)
 ) engine=innodb;
 
@@ -98,7 +98,7 @@ create table races (
   longitude double(13, 10) not null,
   group_id bigint unsigned not null,
   start_time datetime not null,
-  title varchar(25) not null
+  title varchar(255) not null
 ) engine=innodb;
 
 -- create index on group_id

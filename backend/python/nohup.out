@@ -1,19 +1,56 @@
-[2021-05-06 10:48:29 -0700] [3230] [INFO] Starting gunicorn 20.0.4
-[2021-05-06 10:48:29 -0700] [3230] [INFO] Listening at: http://127.0.0.1:8000 (3230)
-[2021-05-06 10:48:29 -0700] [3230] [INFO] Using worker: uvicorn.workers.UvicornWorker
-[2021-05-06 10:48:29 -0700] [3232] [INFO] Booting worker with pid: 3232
-[2021-05-06 10:48:29 -0700] [3233] [INFO] Booting worker with pid: 3233
-[2021-05-06 10:48:29 -0700] [3234] [INFO] Booting worker with pid: 3234
-[2021-05-06 10:48:29 -0700] [3235] [INFO] Booting worker with pid: 3235
-[2021-05-06 10:48:29 -0700] [3232] [INFO] Started server process [3232]
-[2021-05-06 10:48:29 -0700] [3232] [INFO] Waiting for application startup.
-[2021-05-06 10:48:29 -0700] [3232] [INFO] Application startup complete.
-[2021-05-06 10:48:29 -0700] [3233] [INFO] Started server process [3233]
-[2021-05-06 10:48:29 -0700] [3233] [INFO] Waiting for application startup.
-[2021-05-06 10:48:29 -0700] [3233] [INFO] Application startup complete.
-[2021-05-06 10:48:29 -0700] [3234] [INFO] Started server process [3234]
-[2021-05-06 10:48:29 -0700] [3234] [INFO] Waiting for application startup.
-[2021-05-06 10:48:29 -0700] [3234] [INFO] Application startup complete.
-[2021-05-06 10:48:30 -0700] [3235] [INFO] Started server process [3235]
-[2021-05-06 10:48:30 -0700] [3235] [INFO] Waiting for application startup.
-[2021-05-06 10:48:30 -0700] [3235] [INFO] Application startup complete.
+[2021-05-08 12:52:09 -0700] [3125] [INFO] Starting gunicorn 20.0.4
+[2021-05-08 12:52:09 -0700] [3125] [INFO] Listening at: http://127.0.0.1:8000 (3125)
+[2021-05-08 12:52:09 -0700] [3125] [INFO] Using worker: uvicorn.workers.UvicornWorker
+[2021-05-08 12:52:09 -0700] [3127] [INFO] Booting worker with pid: 3127
+[2021-05-08 12:52:09 -0700] [3128] [INFO] Booting worker with pid: 3128
+[2021-05-08 12:52:09 -0700] [3129] [INFO] Booting worker with pid: 3129
+[2021-05-08 12:52:09 -0700] [3131] [INFO] Booting worker with pid: 3131
+[2021-05-08 12:52:09 -0700] [3127] [INFO] Started server process [3127]
+[2021-05-08 12:52:09 -0700] [3127] [INFO] Waiting for application startup.
+[2021-05-08 12:52:09 -0700] [3127] [INFO] Application startup complete.
+[2021-05-08 12:52:09 -0700] [3128] [INFO] Started server process [3128]
+[2021-05-08 12:52:09 -0700] [3128] [INFO] Waiting for application startup.
+[2021-05-08 12:52:09 -0700] [3128] [INFO] Application startup complete.
+[2021-05-08 12:52:10 -0700] [3129] [INFO] Started server process [3129]
+[2021-05-08 12:52:10 -0700] [3129] [INFO] Waiting for application startup.
+[2021-05-08 12:52:10 -0700] [3129] [INFO] Application startup complete.
+[2021-05-08 12:52:10 -0700] [3131] [INFO] Started server process [3131]
+[2021-05-08 12:52:10 -0700] [3131] [INFO] Waiting for application startup.
+[2021-05-08 12:52:10 -0700] [3131] [INFO] Application startup complete.
+[2021-05-08 13:21:24 -0700] [3125] [INFO] Handling signal: term
+[2021-05-08 13:21:24 -0700] [3131] [INFO] Shutting down
+[2021-05-08 13:21:24 -0700] [3128] [INFO] Shutting down
+[2021-05-08 13:21:24 -0700] [3129] [INFO] Shutting down
+[2021-05-08 13:21:24 -0700] [3128] [INFO] Error while closing socket [Errno 9] Bad file descriptor
+[2021-05-08 13:21:24 -0700] [3131] [INFO] Error while closing socket [Errno 9] Bad file descriptor
+[2021-05-08 13:21:24 -0700] [3129] [INFO] Error while closing socket [Errno 9] Bad file descriptor
+[2021-05-08 13:21:24 -0700] [3127] [INFO] Shutting down
+[2021-05-08 13:21:24 -0700] [3127] [INFO] Error while closing socket [Errno 9] Bad file descriptor
+[2021-05-08 13:21:25 -0700] [3129] [INFO] Finished server process [3129]
+[2021-05-08 13:21:25 -0700] [3128] [INFO] Finished server process [3128]
+[2021-05-08 13:21:25 -0700] [3131] [INFO] Finished server process [3131]
+[2021-05-08 13:21:25 -0700] [3129] [INFO] Worker exiting (pid: 3129)
+[2021-05-08 13:21:25 -0700] [3128] [INFO] Worker exiting (pid: 3128)
+[2021-05-08 13:21:25 -0700] [3131] [INFO] Worker exiting (pid: 3131)
+[2021-05-08 13:21:25 -0700] [3127] [INFO] Finished server process [3127]
+[2021-05-08 13:21:25 -0700] [3127] [INFO] Worker exiting (pid: 3127)
+[2021-05-08 13:21:25 -0700] [3125] [INFO] Shutting down: Master
+[2021-05-08 13:21:38 -0700] [3455] [INFO] Starting gunicorn 20.0.4
+[2021-05-08 13:21:38 -0700] [3455] [INFO] Listening at: http://127.0.0.1:8000 (3455)
+[2021-05-08 13:21:38 -0700] [3455] [INFO] Using worker: uvicorn.workers.UvicornWorker
+[2021-05-08 13:21:38 -0700] [3457] [INFO] Booting worker with pid: 3457
+[2021-05-08 13:21:39 -0700] [3458] [INFO] Booting worker with pid: 3458
+[2021-05-08 13:21:39 -0700] [3459] [INFO] Booting worker with pid: 3459
+[2021-05-08 13:21:39 -0700] [3460] [INFO] Booting worker with pid: 3460
+[2021-05-08 13:21:39 -0700] [3457] [INFO] Started server process [3457]
+[2021-05-08 13:21:39 -0700] [3457] [INFO] Waiting for application startup.
+[2021-05-08 13:21:39 -0700] [3457] [INFO] Application startup complete.
+[2021-05-08 13:21:39 -0700] [3458] [INFO] Started server process [3458]
+[2021-05-08 13:21:39 -0700] [3458] [INFO] Waiting for application startup.
+[2021-05-08 13:21:39 -0700] [3458] [INFO] Application startup complete.
+[2021-05-08 13:21:39 -0700] [3459] [INFO] Started server process [3459]
+[2021-05-08 13:21:39 -0700] [3459] [INFO] Waiting for application startup.
+[2021-05-08 13:21:39 -0700] [3459] [INFO] Application startup complete.
+[2021-05-08 13:21:39 -0700] [3460] [INFO] Started server process [3460]
+[2021-05-08 13:21:39 -0700] [3460] [INFO] Waiting for application startup.
+[2021-05-08 13:21:39 -0700] [3460] [INFO] Application startup complete.
