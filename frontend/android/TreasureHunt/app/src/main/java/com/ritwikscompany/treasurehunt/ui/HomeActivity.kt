@@ -60,6 +60,12 @@ class HomeActivity : AppCompatActivity() {
     }
 
 
+    override fun onBackPressed() {
+        val intent = Intent(ctx, MainActivity::class.java)
+        startActivity(intent)
+    }
+
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_log_out -> {

@@ -3,6 +3,8 @@ package com.ritwikscompany.treasurehunt.ui
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
@@ -10,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.github.kittinunf.fuel.Fuel
 import com.google.gson.Gson
 import com.ritwikscompany.treasurehunt.R
+import com.ritwikscompany.treasurehunt.utils.Utils.Utils.getCheckMark
 import com.ritwikscompany.treasurehunt.utils.Utils.Utils.isValid
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,10 +26,20 @@ class SignUpActivity : AppCompatActivity() {
     private lateinit var emailET: EditText
     private lateinit var pwET: EditText
     private lateinit var usernameET: EditText
+    private lateinit var button: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
+
+        emailET = findViewById(R.id.su_email)
+        pwET = findViewById(R.id.su_pw)
+        usernameET = findViewById(R.id.su_username)
+        button = findViewById(R.id.su_sign_up)
+
+        button.isEnabled = false
+
+        setUp()
 
         findViewById<Button>(R.id.su_cancel).setOnClickListener {
             cancelOnClick()
@@ -35,6 +48,80 @@ class SignUpActivity : AppCompatActivity() {
         findViewById<Button>(R.id.su_sign_up).setOnClickListener {
             signUpOnClick()
         }
+    }
+
+
+    private fun setUp() {
+        emailET.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                val text = p0.toString()
+
+                if ((!isValid(text)) or (!Patterns.EMAIL_ADDRESS.matcher(text).matches())) {
+                    emailET.error = "Enter a valid email"
+                    emailET.requestFocus()
+                    button.isEnabled = false
+                    return
+                }
+                else {
+                    emailET.setError("Good", getCheckMark(ctx))
+                    if (usernameET.error == "Good" && pwET.error == "Good" && emailET.error == "Good") {
+                        button.isEnabled = true
+                    }
+                }
+            }
+
+            override fun afterTextChanged(p0: Editable?) {}
+        })
+
+        pwET.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                val text = p0.toString()
+
+                if (text.length < 8) {
+                    pwET.error = "Password length must be 8 or more characters"
+                    pwET.requestFocus()
+                    button.isEnabled = false
+
+                    return
+                }
+                else {
+                    pwET.setError("Good", getCheckMark(ctx))
+                    if (usernameET.error == "Good" && pwET.error == "Good" && emailET.error == "Good") {
+                        button.isEnabled = true
+                    }
+                }
+            }
+
+            override fun afterTextChanged(p0: Editable?) {}
+        })
+
+        usernameET.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                val text = p0.toString()
+
+                if (text.length < 2) {
+                    usernameET.error = "Username length must be 3 or more characters"
+                    usernameET.requestFocus()
+                    button.isEnabled = false
+
+                    return
+                }
+                else {
+                    usernameET.setError("Good", getCheckMark(ctx))
+                    if (usernameET.error == "Good" && pwET.error == "Good" && emailET.error == "Good") {
+                        button.isEnabled = true
+                    }
+                }
+            }
+
+            override fun afterTextChanged(p0: Editable?) {}
+        })
     }
 
 
@@ -84,35 +171,9 @@ class SignUpActivity : AppCompatActivity() {
 
 
     private fun signUpOnClick() {
-        // get ui objects
-
-        emailET = findViewById(R.id.su_email)
-        pwET = findViewById(R.id.su_pw)
-        usernameET = findViewById(R.id.su_username)
-
         val email = emailET.text.toString()
         val pw = pwET.text.toString()
         val username = usernameET.text.toString()
-
-        // verifies info
-
-        if ((!isValid(email)) or (!Patterns.EMAIL_ADDRESS.matcher(email).matches())) {
-            emailET.error = "Enter a valid email"
-            emailET.requestFocus()
-            return
-        }
-
-        if (pw.length < 8) {
-            pwET.error = "Password length must be 8 or more characters"
-            pwET.requestFocus()
-            return
-        }
-
-        if (username.length < 2) {
-            usernameET.error = "Username length must be 3 or more characters"
-            usernameET.requestFocus()
-            return
-        }
 
         // makes api call
 

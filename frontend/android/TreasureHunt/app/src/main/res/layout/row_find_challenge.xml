@@ -15,18 +15,17 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginTop="8dp"
             android:textAlignment="textStart"
             android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:gravity="start" />
 
         <ImageButton
             android:id="@+id/row_start_challenge"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginTop="5dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:backgroundTint="@color/white"
             android:src="@drawable/ic_baseline_play_circle_outline_24"
             app:layout_constraintStart_toEndOf="@+id/row_challenge_name"

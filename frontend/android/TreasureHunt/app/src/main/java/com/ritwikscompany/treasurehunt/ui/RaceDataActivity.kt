@@ -2,6 +2,7 @@ package com.ritwikscompany.treasurehunt.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -30,6 +31,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -41,30 +43,32 @@ import kotlin.math.floor
 
 class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     private val ctx = this@RaceDataActivity
-    private lateinit var raceData: HashMap<*, *>
-    private lateinit var userData: HashMap<*, *>
+    private lateinit var userData: HashMap<String, Any>
     private lateinit var startTimeTV: TextView
-    private lateinit var map: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var lastLocation: Location
     private lateinit var locationRequest: LocationRequest
     @Volatile private var stopThread = false
+    @Volatile private lateinit var lastLocation: Location
+    @Volatile private lateinit var map: GoogleMap
+    @Volatile private lateinit var raceData: HashMap<String, Any>
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_race_data)
 
-        raceData = intent.getSerializableExtra("raceData") as HashMap<*, *>
-        userData = intent.getSerializableExtra("userData") as HashMap<*, *>
+        this.raceData = intent.getSerializableExtra("raceData") as HashMap<String, Any>
+        this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
+        this.startTimeTV = findViewById(R.id.rd_start_time)
+
+        getRaceData()
 
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.rd_map) as SupportMapFragment
         mapFragment.getMapAsync(ctx)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(ctx)
-        this.startTimeTV = findViewById(R.id.rd_start_time)
 
-        setUpUI()
+        initialize()
     }
 
     override fun onStart() {
@@ -80,20 +84,53 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun setUpUI() {
-        setUpRaceTitle()
-        setUpRaceTimeRemaining()
+    override fun onBackPressed() {
+//        if (ctx::raceData.isInitialized) {
+//            super.onBackPressed()
+//            return
+//        }
+//
+//        val currentTime = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant())
+//
+//        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
+//        val startTime = simpleDateFormat.parse(raceData["startTime"] as String)
+//
+//        if (startTime.after(currentTime)) {
+//            super.onBackPressed()
+//            return
+//        }
+
+        stopThread = true
+        leaveRace()
+
+        val intent = Intent(ctx, RacesActivity::class.java).apply {
+            putExtra("userData", userData)
+        }
+        startActivity(intent)
     }
+
+
+    override fun onMapReady(p0: GoogleMap?) {
+        map = p0!!
+        map.uiSettings.isZoomControlsEnabled = true
+        map.setOnMarkerClickListener(ctx)
+
+        setUpMap()
+    }
+
+
+    override fun onMarkerClick(p0: Marker?): Boolean = false
+
 
     private fun setUpMap() {
         if (ActivityCompat.checkSelfPermission(
-                ctx,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED) {
+                        ctx,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(
-                ctx,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                Utils.LOCATION_PERMISSION_REQUEST_CODE
+                    ctx,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    Utils.LOCATION_PERMISSION_REQUEST_CODE
             )
             return
         }
@@ -106,7 +143,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
                 if (ctx::map.isInitialized) {
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17f))
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
                 }
             }
         }
@@ -120,8 +157,44 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
     }
 
 
+    private fun startLocationUpdates() {
+        locationRequest = LocationRequest()
+        locationRequest.interval = Utils.UPDATE_INTERVAL
+        locationRequest.fastestInterval = Utils.FASTEST_INTERVAL
+        locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+
+        val builder = LocationSettingsRequest.Builder()
+        builder.addLocationRequest(locationRequest)
+        val locationSettingsRequest = builder.build()
+        val settingsClient = LocationServices.getSettingsClient(ctx)
+        settingsClient.checkLocationSettings(locationSettingsRequest)
+
+        if (ActivityCompat.checkSelfPermission(ctx,
+                        Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(ctx,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    Utils.LOCATION_PERMISSION_REQUEST_CODE)
+            return
+        }
+
+        fusedLocationClient.requestLocationUpdates(
+                locationRequest,
+                object: LocationCallback() {
+                    override fun onLocationResult(p0: LocationResult) {
+                        lastLocation = p0.lastLocation
+                    }
+                },
+                Looper.myLooper())
+    }
+
+
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun setUpRaceTimeRemaining() {
+    private fun initialize() {
+        title = raceData["title"] as String
+
+        // set up time remaining
+
         val currentTime = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant())
 
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
@@ -130,15 +203,15 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         if (startTime.after(currentTime)) {
             val timeRemaining = (startTime.time - currentTime.time)
 
-            val timer = object : CountDownTimer(timeRemaining, 1000) {
+            val timer = object: CountDownTimer(timeRemaining, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
                     if (millisUntilFinished / 1000 < 60) {
                         startTimeTV.setTextColor(
-                            ContextCompat.getColor(ctx, R.color.red)
+                                ContextCompat.getColor(ctx, R.color.red)
                         )
                     } else if (millisUntilFinished / 1000 < 600) {
                         startTimeTV.setTextColor(
-                            ContextCompat.getColor(ctx, R.color.yellow)
+                                ContextCompat.getColor(ctx, R.color.yellow)
                         )
                     }
 
@@ -146,119 +219,70 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
                 }
 
                 override fun onFinish() {
-                    setUpRace()
+                    startRace()
                 }
             }
 
             timer.start()
         } else {
-            setUpRace()
+            startRace()
+        }
+    }
+
+    private fun getRaceData() {
+        val bodyJson = Gson().toJson(hashMapOf<String, Any>(
+            "user_id" to userData["user_id"] as Int,
+            "pw" to userData["password"] as String,
+            "race_id" to raceData["race_id"] as Int
+        ))
+        CoroutineScope(Dispatchers.IO).launch {
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_race_data")
+                    .body(bodyJson)
+                    .header("Content-Type" to "application/json")
+                    .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    val status = response.statusCode
+                    if (status == 200) {
+                        val (bytes, _) = result
+                        if (bytes != null) {
+                            val type = object: TypeToken<HashMap<String, Any>>(){}.type
+                            ctx.raceData = Gson().fromJson(String(bytes), type) as HashMap<String, Any>
+                        }
+
+                        else {
+                            Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show()
+                        }
+                    }
+
+                    else if (status == 404) {
+                        Toast.makeText(ctx, "Log In Failure", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
         }
     }
 
 
-    private fun setUpRace() {
+    private fun startRace() {
         startTimeTV.text = "GO!"
 
         setUpRaceMap()
 
         val updateRaceMapThread = UpdateRaceMapThread()
         updateRaceMapThread.start()
+
+        val isCompletedThread = IsCompletedThread()
+        isCompletedThread.start()
     }
 
-    private fun updateRaceMap() {
-        if (!ctx::lastLocation.isInitialized || !ctx::map.isInitialized) {
-            return
-        }
-
-        map.clear()
-
-        val bodyJson = Gson().toJson(hashMapOf(
-            "pw" to userData["password"] as String,
-            "user_id" to (userData["user_id"] as Double).toInt(),
-            "race_id" to (raceData["race_id"] as Double).toInt(),
-            "latitude" to lastLocation.latitude,
-            "longitude" to lastLocation.longitude
-        ))
-
-        checkForLocation()
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, result) = Fuel.post("${getString(R.string.host)}/update_race_location")
-                .body(bodyJson)
-                .header("Content-Type" to "application/json")
-                .response()
-
-            withContext(Dispatchers.Main) {
-                runOnUiThread {
-                    if (response.statusCode == 200) {
-                        val (bytes, _) = result
-
-                        if (bytes != null) {
-                            val type = object : TypeToken<ArrayList<HashMap<String, Any>>>() {}.type
-                            val usersInRace = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, Any>>
-
-                            for (userInRace in usersInRace) {
-                                val noPFP = BitmapDescriptorFactory.fromResource(R.drawable.no_pfp)
-
-                                val user = MarkerOptions()
-                                    .icon(noPFP)
-                                    .title(userInRace["username"] as String)
-
-                                map.addMarker(user)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun checkForLocation() {
-        val bodyJson = Gson().toJson(hashMapOf(
-            "pw" to userData["password"] as String,
-            "user_id" to (userData["user_id"] as Double).toInt(),
-            "race_id" to (raceData["race_id"] as Double).toInt(),
-            "group_name" to raceData["group_name"] as String
-        ))
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, result) = Fuel.post("${getString(R.string.host)}/get_race")
-                .body(bodyJson)
-                .header("Content-Type" to "application/json")
-                .response()
-
-            withContext(Dispatchers.Main) {
-                runOnUiThread {
-                    if (response.statusCode == 200) {
-                        val (bytes, _) = result
-
-                        if (bytes != null) {
-                            val type = object : TypeToken<HashMap<String, Any>>() {}.type
-                            val usersInRace = Gson().fromJson(String(bytes), type) as HashMap<String, Any>
-
-                            if (usersInRace["longitude"] == lastLocation.longitude && usersInRace["latitude"] == lastLocation.latitude) {
-                                completeRace()
-                            }
-                        }
-                    } else {
-                        Toast.makeText(
-                            ctx,
-                            "You have failed to complete the race",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            }
-        }
-    }
 
     private fun completeRace() {
         val bodyJson = Gson().toJson(hashMapOf(
             "pw" to userData["password"] as String,
-            "user_id" to (userData["user_id"] as Double).toInt(),
-            "race_id" to (raceData["race_id"] as Double).toInt(),
-            "group_name" to raceData["group_name"] as String
+            "user_id" to userData["user_id"],
+            "race_id" to raceData["race_id"],
         ))
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -270,11 +294,8 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
             withContext(Dispatchers.Main) {
                 runOnUiThread {
                     if (response.statusCode == 200) {
-                        Toast.makeText(
-                            ctx,
-                            "You have successfully completed the race before anyone else",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        ctx.stopThread = true
+                        // show dialog
                     }
                 }
             }
@@ -283,9 +304,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
 
     private fun setUpRaceMap() {
-        if (!ctx::lastLocation.isInitialized
-                ||
-                !ctx::map.isInitialized) {
+        if (!ctx::lastLocation.isInitialized || !ctx::map.isInitialized) {
             return
         }
 
@@ -293,8 +312,8 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
         val bodyJson = Gson().toJson(hashMapOf(
             "pw" to userData["password"] as String,
-            "user_id" to (userData["user_id"] as Double).toInt(),
-            "race_id" to (raceData["race_id"] as Double).toInt(),
+            "user_id" to userData["user_id"],
+            "race_id" to raceData["race_id"],
             "latitude" to lastLocation.latitude,
             "longitude" to lastLocation.longitude
         ))
@@ -311,12 +330,11 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
                         val (bytes, _) = result
 
                         if (bytes != null) {
-                            val type = object : TypeToken<ArrayList<HashMap<String, Any>>>() {}.type
+                            val type = object: TypeToken<ArrayList<HashMap<String, Any>>>() {}.type
                             val usersInRace = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, Any>>
+                            val noPFP = BitmapDescriptorFactory.fromResource(R.drawable.no_pfp)
 
                             for (userInRace in usersInRace) {
-                                val noPFP = BitmapDescriptorFactory.fromResource(R.drawable.no_pfp)
-
                                 val user = MarkerOptions()
                                     .icon(noPFP)
                                     .title(userInRace["username"] as String)
@@ -330,34 +348,11 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onBackPressed() {
-        if (ctx::raceData.isInitialized) {
-            super.onBackPressed()
-            return
-        }
-
-        val currentTime = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant())
-
-        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
-        val startTime = simpleDateFormat.parse(raceData["startTime"] as String)
-
-        if (startTime.after(currentTime)) {
-            super.onBackPressed()
-            return
-        }
-
-        stopThread = true
-
-        leaveRace()
-        super.onBackPressed()
-    }
-
     private fun leaveRace() {
         val bodyJson = Gson().toJson(hashMapOf(
-            "pw" to userData["password"] as String,
-            "user_id" to (userData["user_id"] as Double).toInt(),
-            "race_id" to (raceData["race_id"] as Double).toInt(),
+                "pw" to userData["password"] as String,
+                "user_id" to userData["user_id"] ,
+                "race_id" to raceData["race_id"],
         ))
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -369,30 +364,16 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
             withContext(Dispatchers.Main) {
                 runOnUiThread {
                     if (response.statusCode == 200) {
-                        startActivity(Intent(ctx, RacesActivity::class.java).apply {
+                        val intent = Intent(ctx, RacesActivity::class.java).apply {
                             putExtra("userData", userData)
-                        })
+                        }
+                        startActivity(intent)
                     }
                 }
             }
         }
     }
 
-    private fun setUpRaceTitle() {
-        title = raceData["title"] as String
-    }
-
-    override fun onMapReady(p0: GoogleMap?) {
-        map = p0!!
-        map.uiSettings.isZoomControlsEnabled = true
-        map.setOnMarkerClickListener(ctx)
-
-        setUpMap()
-    }
-
-    override fun onMarkerClick(p0: Marker?): Boolean {
-        return false
-    }
 
     private fun formatSeconds(millisFromNow: Long): String {
         var seconds = floor(millisFromNow.toDouble() / 1000)
@@ -403,49 +384,176 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         val minutes = floor(seconds / 60)
         seconds %= 60
 
-        return "$days:$hours:$minutes:$seconds"
+        return "${days.toInt()}:${hours.toInt()}:${minutes.toInt()}:${seconds.toInt()}"
     }
 
-    private fun startLocationUpdates() {
-        locationRequest = LocationRequest()
-        locationRequest.interval = Utils.UPDATE_INTERVAL
-        locationRequest.fastestInterval = Utils.FASTEST_INTERVAL
-        locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
 
-        val builder = LocationSettingsRequest.Builder()
-        builder.addLocationRequest(locationRequest)
-        val locationSettingsRequest = builder.build()
-        val settingsClient = LocationServices.getSettingsClient(ctx)
-        settingsClient.checkLocationSettings(locationSettingsRequest)
-
-        if (ActivityCompat.checkSelfPermission(ctx,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(ctx,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                Utils.LOCATION_PERMISSION_REQUEST_CODE)
+    private fun updateRaceLocation() {
+        if (!ctx::lastLocation.isInitialized || !ctx::map.isInitialized) {
             return
         }
 
-        fusedLocationClient.requestLocationUpdates(
-                locationRequest,
-                object: LocationCallback() {
-                    override fun onLocationResult(p0: LocationResult) {
-                        lastLocation = p0.lastLocation
+        val bodyJson = Gson().toJson(hashMapOf(
+                "user_id" to userData["user_id"],
+                "pw" to userData["password"] as String,
+                "race_id" to raceData["race_id"],
+                "latitude" to lastLocation.latitude,
+                "longitude" to lastLocation.longitude
+        ))
+        CoroutineScope(Dispatchers.IO).launch {
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/update_race_location")
+                    .body(bodyJson)
+                    .header("Content-Type" to "application/json")
+                    .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    val (bytes, _) = result
+                    if (response.statusCode == 200 && bytes != null) {
+                        val type = object: TypeToken<ArrayList<HashMap<String, Any>>>(){}.type
+                        val userLocations = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, Any>>
+                        ctx.map.clear()
+
+                        for (user in userLocations) {
+                            val marker = MarkerOptions()
+                            marker.position(LatLng(
+                                user["latitude"] as Double,
+                                user["longitude"] as Double
+                            ))
+                            marker.title(user["username"] as String)
+
+                            ctx.map.addMarker(marker)
+                        }
                     }
-                },
-                Looper.myLooper()!!)
+                }
+            }
+        }
     }
 
-    inner class UpdateRaceMapThread : Thread() {
+
+    inner class UpdateRaceMapThread: Thread() {
         override fun run() {
             while (!ctx.stopThread) {
                 sleep(1000)
-                
+
                 runOnUiThread {
-                    updateRaceMap()
+                    ctx.updateRaceLocation()
+                }
+            }
+        }
+    }
+
+    inner class IsCompletedThread: Thread() {
+        override fun run() {
+            while (!ctx.stopThread) {
+                sleep(1000)
+
+                if (!ctx::lastLocation.isInitialized || !ctx::map.isInitialized || !raceData.containsKey("latitude")) {
+                    continue
+                }
+
+                val results = FloatArray(1)
+                Location.distanceBetween(
+                    lastLocation.latitude,
+                    lastLocation.longitude,
+                    raceData["latitude"] as Double,
+                    raceData["longitude"] as Double,
+                    results
+                )
+
+                if (results[0] <= 0.5) {
+                    runOnUiThread {
+                        ctx.completeRace()
+                    }
                 }
             }
         }
     }
 }
+
+
+//    private fun updateRaceMap() {
+//        if (!ctx::lastLocation.isInitialized || !ctx::map.isInitialized) {
+//            return
+//        }
+//
+//        map.clear()
+//
+//        val bodyJson = Gson().toJson(hashMapOf(
+//            "pw" to userData["password"] as String,
+//            "user_id" to userData["user_id"] as Int,
+//            "race_id" to raceData["race_id"] as Int,
+//            "latitude" to lastLocation.latitude,
+//            "longitude" to lastLocation.longitude
+//        ))
+//
+//        checkForLocation()
+//
+//        CoroutineScope(Dispatchers.IO).launch {
+//            val (_, response, result) = Fuel.post("${getString(R.string.host)}/update_race_location")
+//                .body(bodyJson)
+//                .header("Content-Type" to "application/json")
+//                .response()
+//
+//            withContext(Dispatchers.Main) {
+//                runOnUiThread {
+//                    if (response.statusCode == 200) {
+//                        val (bytes, _) = result
+//
+//                        if (bytes != null) {
+//                            val type = object : TypeToken<ArrayList<HashMap<String, Any>>>(){}.type
+//                            val usersInRace = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, Any>>
+//
+//                            for (userInRace in usersInRace) {
+//                                val noPFP = BitmapDescriptorFactory.fromResource(R.drawable.no_pfp)
+//
+//                                val user = MarkerOptions()
+//                                    .icon(noPFP)
+//                                    .title(userInRace["username"] as String)
+//
+//                                map.addMarker(user)
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+//    private fun checkForLocation() {
+//        val bodyJson = Gson().toJson(hashMapOf(
+//            "pw" to userData["password"] as String,
+//            "user_id" to userData["user_id"],
+//            "race_id" to raceData["race_id"]
+//        ))
+//
+//        CoroutineScope(Dispatchers.IO).launch {
+//            val (_, response, result) = Fuel.post("${getString(R.string.host)}/get_race")
+//                .body(bodyJson)
+//                .header("Content-Type" to "application/json")
+//                .response()
+//
+//            withContext(Dispatchers.Main) {
+//                runOnUiThread {
+//                    if (response.statusCode == 200) {
+//                        val (bytes, _) = result
+//
+//                        if (bytes != null) {
+//                            val type = object: TypeToken<HashMap<String, Any>>() {}.type
+//                            val usersInRace = Gson().fromJson(String(bytes), type) as HashMap<String, Any>
+//
+//                            if (usersInRace["longitude"] == lastLocation.longitude && usersInRace["latitude"] == lastLocation.latitude) {
+//                                completeRace()
+//                            }
+//                        }
+//                    } else {
+//                        Toast.makeText(
+//                            ctx,
+//                            "You have failed to complete the race",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                    }
+//                }
+//            }
+//        }
+//    }

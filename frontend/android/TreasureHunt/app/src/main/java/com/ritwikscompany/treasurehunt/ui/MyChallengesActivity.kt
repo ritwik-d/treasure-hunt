@@ -25,6 +25,7 @@ import kotlinx.coroutines.withContext
 class MyChallengesActivity : AppCompatActivity() {
 
     private val ctx = this@MyChallengesActivity
+    private lateinit var rview: RecyclerView
     private lateinit var minusButton: FloatingActionButton
     private lateinit var plusButton: FloatingActionButton
 
@@ -36,6 +37,7 @@ class MyChallengesActivity : AppCompatActivity() {
         this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
         this.minusButton = findViewById(R.id.mc_del_challenge)
         this.plusButton = findViewById(R.id.mc_create_challenge)
+        this.rview = findViewById(R.id.mc_rview)
 
         initialize()
 
@@ -66,19 +68,20 @@ class MyChallengesActivity : AppCompatActivity() {
                             val userChallenges = Gson().fromJson(String(bytes), type) as MutableList<HashMap<String, Any>>
                             when (userChallenges.size) {
                                 0 -> {
+                                    rview.visibility = View.INVISIBLE
                                     findViewById<TextView>(R.id.mc_no_chal).visibility = View.VISIBLE
                                 }
-                                10 -> {
+                                25 -> {
                                     plusButton.isEnabled = false
                                     plusButton.contentDescription = "You have reached the limit for the number of challenges that you are allowed to create."
                                 }
                                 else -> {
+                                    rview.visibility = View.VISIBLE
                                     val challengeNames = ArrayList<String>()
                                     for (challenge in userChallenges) {
                                         challengeNames.add(challenge.get("name") as String)
                                     }
 
-                                    val rview = findViewById<RecyclerView>(R.id.mc_rview)
                                     val adapter = MyChallengesRVA(challengeNames,
                                         { challengeName ->
                                             val builder = AlertDialog.Builder(ctx)

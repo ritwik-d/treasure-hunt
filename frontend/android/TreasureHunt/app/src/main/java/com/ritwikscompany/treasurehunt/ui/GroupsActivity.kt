@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.core.isSuccessful
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -65,11 +66,14 @@ class GroupsActivity: AppCompatActivity() {
                 if (groupName.length < 3) {
                     cgName.error = "Group name must be greater than or equal to 3 characters"
                     cgName.requestFocus()
+                    cgCreate.isEnabled = false
+                    return
                 }
-                else {
-                    cgName.setError("Good", getCheckMark(ctx))
-                    cgName.requestFocus()
-                }
+
+                cgName.setError("Good", getCheckMark(ctx))
+                cgName.requestFocus()
+
+                cgCreate.isEnabled = true
             }
 
 
@@ -232,7 +236,7 @@ class GroupsActivity: AppCompatActivity() {
             "to_username" to username
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (_, _, result) = Fuel.post("${getString(R.string.host)}/api/invite_user")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/invite_user")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
@@ -240,34 +244,41 @@ class GroupsActivity: AppCompatActivity() {
             withContext(Dispatchers.Main) {
                 runOnUiThread {
                     val (bytes, _) = result
-                    if (bytes != null) {
-                        when ((Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, Double>>(){}.type) as HashMap<String, Double>)["status"]!!.toInt()) {
-                            200 -> {
+                    if (bytes != null && response.isSuccessful) {
+                        when ((Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, String>>(){}.type) as HashMap<String, String>)["error"]!!) {
+                            "success" -> {
                                 Toast.makeText(
                                     ctx,
                                     "Invitation Successful",
                                     Toast.LENGTH_LONG
                                 ).show()
                             }
-                            400 -> {
+                            "ai" -> {
                                 Toast.makeText(
                                     ctx,
                                     "$username has already been invited to $groupName",
                                     Toast.LENGTH_LONG
                                 ).show()
                             }
-                            404 -> {
+                            "nouser" -> {
                                 Toast.makeText(
                                     ctx,
                                     "There is no such player with username $username",
                                     Toast.LENGTH_LONG
                                 ).show()
                             }
-                            401 -> {
+                            "aj" -> {
                                 Toast.makeText(
                                     ctx,
                                     "$username has already joined/created $groupName",
                                     Toast.LENGTH_LONG
+                                ).show()
+                            }
+                            "points" -> {
+                                Toast.makeText(
+                                        ctx,
+                                        "$username does not meet the minimum points requirements of $groupName",
+                                        Toast.LENGTH_LONG
                                 ).show()
                             }
                         }
@@ -283,8 +294,8 @@ class GroupsActivity: AppCompatActivity() {
 
     private fun initializeRview(invRview: RecyclerView) {
         val bodyJson = Gson().toJson(hashMapOf<String, Any>(
-            "user_id" to userData.get("user_id") as Int,
-            "pw" to userData.get("password") as String
+            "user_id" to userData["user_id"] as Int,
+            "pw" to userData["password"] as String
         ))
         CoroutineScope(Dispatchers.IO).launch {
             val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/get_invitations")
@@ -428,19 +439,26 @@ class GroupsActivity: AppCompatActivity() {
 
             withContext(Dispatchers.Main) {
                 runOnUiThread {
-                    when (response.statusCode) {
-                        200 -> {
-                            val intent = Intent(ctx, GroupsActivity::class.java).apply {
-                                putExtra("userData", userData)
+                    val (bytes, _) = result
+                    val type = object: TypeToken<HashMap<String, String>>(){}.type
+                    if (response.isSuccessful && bytes != null) {
+                        when ((Gson().fromJson(String(bytes), type) as HashMap<String, String>)["error"] as String) {
+                            "success" -> {
+                                val intent = Intent(ctx, GroupsActivity::class.java).apply {
+                                    putExtra("userData", userData)
+                                }
+                                startActivity(intent)
                             }
-                            startActivity(intent)
-                        }
-                        404 -> {
-                            joinCodeET.error = "Invalid join code"
-                            joinCodeET.requestFocus()
-                        }
-                        400 -> {
-                            joinCodeET.error = "You have already joined/created this group"
+                            "nogroup" -> {
+                                joinCodeET.error = "Invalid join code"
+                                joinCodeET.requestFocus()
+                            }
+                            "joined" -> {
+                                joinCodeET.error = "You have already joined/created this group"
+                            }
+                            "points" -> {
+                                joinCodeET.error = "You do not meet the minimum points requirements of this group"
+                            }
                         }
                     }
                 }
