@@ -295,7 +295,7 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                         results
                 )
 
-                if (results[0] <= 0.5) {
+                if (results[0] <= 3) {
                     runOnUiThread {
                         ctx.completeChallenge(this.challengeData)
                     }

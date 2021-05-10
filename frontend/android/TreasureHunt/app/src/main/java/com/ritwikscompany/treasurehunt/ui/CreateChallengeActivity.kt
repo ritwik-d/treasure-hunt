@@ -73,6 +73,14 @@ class CreateChallengeActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
+    override fun onBackPressed() {
+        val intent = Intent(ctx, MyChallengesActivity::class.java).apply {
+            putExtra("userData", userData)
+        }
+        startActivity(intent)
+    }
+
+
     override fun onMapReady(p0: GoogleMap?) {
         map = p0!!
         map.uiSettings.isZoomControlsEnabled = true

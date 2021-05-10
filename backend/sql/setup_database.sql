@@ -101,7 +101,7 @@ create table races (
   title varchar(255) not null
 ) engine=innodb;
 
--- create index on group_id
+-- create index on group_id and title
 create index ix_group_id on races(group_id);
 create unique index uix_title on races(title);
 

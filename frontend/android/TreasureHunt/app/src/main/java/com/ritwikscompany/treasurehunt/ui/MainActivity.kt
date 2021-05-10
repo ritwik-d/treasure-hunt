@@ -45,10 +45,8 @@ class MainActivity : AppCompatActivity() {
 //        }
     }
 
-//    private fun signUpWithGoogle() {
-//        val signInIntent = mGoogleSignInClient.signInIntent
-//        startActivityForResult(signInIntent, RC_G_SIGN_IN)
-//    }
+
+    override fun onBackPressed() {}
 
 
     private fun logInOnClick() {
@@ -180,5 +178,11 @@ class MainActivity : AppCompatActivity() {
 //                }
 //            }
 //        }
+//    }
+//
+//
+//    private fun signUpWithGoogle() {
+//        val signInIntent = mGoogleSignInClient.signInIntent
+//        startActivityForResult(signInIntent, RC_G_SIGN_IN)
 //    }
 }

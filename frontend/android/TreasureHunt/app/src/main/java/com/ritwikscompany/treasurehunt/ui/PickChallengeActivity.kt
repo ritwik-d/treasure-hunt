@@ -36,6 +36,14 @@ class PickChallengeActivity : AppCompatActivity() {
     }
 
 
+    override fun onBackPressed() {
+        val intent = Intent(ctx, HomeActivity::class.java).apply {
+            putExtra("userData", userData)
+        }
+        startActivity(intent)
+    }
+
+
     private fun initialize() {
         val bodyJson = Gson().toJson(hashMapOf<String, Any>(
                 "user_id" to userData["user_id"] as Int,
@@ -110,14 +118,12 @@ class PickChallengeActivity : AppCompatActivity() {
 
         val menuItem = menu!!.findItem(R.id.menu_sb)
         searchView = menuItem.actionView as SearchView
-
         searchView.queryHint = getString(R.string.searchHint)
 
         val bodyJson = Gson().toJson(hashMapOf<String, Any>(
                 "user_id" to userData["user_id"] as Int,
                 "pw" to userData["password"] as String
         ))
-        println(bodyJson)
 
         CoroutineScope(Dispatchers.IO).launch {
             val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/get_challenges")
@@ -144,14 +150,11 @@ class PickChallengeActivity : AppCompatActivity() {
                             val tabLayout = findViewById<TabLayout>(R.id.pc_tab_layout)
                             val rv = findViewById<RecyclerView>(R.id.pc_rview)
 
-                            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                            searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
                                 override fun onQueryTextSubmit(query: String?): Boolean {
                                     val text = query!!.toLowerCase(Locale.ROOT)
                                     val currentChallenges = challengeData[tabLayout.getTabAt(tabLayout.selectedTabPosition)!!.text.toString()] as ArrayList
-                                    println("currentchallenges: $currentChallenges")
-                                    println("challengedata: $challengeData")
-                                    println("sel tab pos: ${tabLayout.selectedTabPosition}")
-                                    val newChallenges = arrayListOf<String>()
+                                    val newChallenges = ArrayList<String>()
 
                                     for (challenge in currentChallenges) {
                                         val challenge2 = challenge.toLowerCase(Locale.ROOT)

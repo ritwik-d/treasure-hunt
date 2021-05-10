@@ -94,7 +94,8 @@ class Race:
             'group_id': self.group_id,
             'start_time': self.start_time,
             'title': self.title,
-            'creator_id': creator_id
+            'creator_id': creator_id,
+            'difficulty': self.difficulty
         }
         row_id = db.insert('races', row)
         if row_id is None:
@@ -256,7 +257,7 @@ def create_random_race_location(latitude: float, longitude: float, difficulty: s
 
     final_longitude = longitude + (x_displacement / radius_earth) * (180 / math.pi) / math.cos(latitude * math.pi / 180)
     final_latitude = latitude + (y_displacement / radius_earth) * (180 / math.pi)
-    
+
     return {
         'latitude': round(final_latitude, 10),
         'longitude': round(final_longitude, 10)

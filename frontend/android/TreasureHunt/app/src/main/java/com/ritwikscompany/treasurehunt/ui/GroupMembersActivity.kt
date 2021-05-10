@@ -1,5 +1,6 @@
 package com.ritwikscompany.treasurehunt.ui
 
+import android.content.Intent
 import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -35,6 +36,15 @@ class GroupMembersActivity : AppCompatActivity() {
 
         this.userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
         this.groupName = intent.getStringExtra("groupName") as String
+    }
+
+
+    override fun onBackPressed() {
+        val intent = Intent(ctx, GroupPageActivity::class.java).apply {
+            putExtra("userData", userData)
+            putExtra("groupName", groupName)
+        }
+        startActivity(intent)
     }
 
 

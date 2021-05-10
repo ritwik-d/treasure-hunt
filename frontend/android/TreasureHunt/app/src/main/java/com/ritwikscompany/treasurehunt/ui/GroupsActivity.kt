@@ -40,7 +40,16 @@ class GroupsActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_groups)
+
         userData = intent.getSerializableExtra("userData") as HashMap<String, Any>
+    }
+
+
+    override fun onBackPressed() {
+        val intent = Intent(ctx, HomeActivity::class.java).apply {
+            putExtra("userData", userData)
+        }
+        startActivity(intent)
     }
 
 

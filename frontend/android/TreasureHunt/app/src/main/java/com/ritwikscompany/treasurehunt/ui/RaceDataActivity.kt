@@ -2,9 +2,9 @@ package com.ritwikscompany.treasurehunt.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
 import android.os.*
 import android.widget.TextView
@@ -19,10 +19,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.ritwikscompany.treasurehunt.R
@@ -31,16 +28,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
-import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
+import kotlin.math.cos
 import kotlin.math.floor
 
+@Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     private val ctx = this@RaceDataActivity
     private lateinit var userData: HashMap<String, Any>
@@ -51,6 +47,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
     @Volatile private lateinit var lastLocation: Location
     @Volatile private lateinit var map: GoogleMap
     @Volatile private lateinit var raceData: HashMap<String, Any>
+    @Volatile private var markers = ArrayList<Marker>()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,6 +70,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
     override fun onStart() {
         super.onStart()
+
         stopThread = false
     }
 
@@ -81,6 +79,11 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
         stopThread = true
         leaveRace()
+
+        val intent = Intent(ctx, RacesActivity::class.java).apply {
+            putExtra("userData", userData)
+        }
+        startActivity(intent)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -157,6 +160,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
     }
 
 
+    @Suppress("DEPRECATION")
     private fun startLocationUpdates() {
         locationRequest = LocationRequest()
         locationRequest.interval = Utils.UPDATE_INTERVAL
@@ -189,6 +193,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
     }
 
 
+    @SuppressLint("SimpleDateFormat")
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initialize() {
         title = raceData["title"] as String
@@ -266,7 +271,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
 
     private fun startRace() {
-        startTimeTV.text = "GO!"
+        startTimeTV.text = getString(R.string.go)
 
         setUpRaceMap()
 
@@ -286,7 +291,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         ))
 
         CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, _) = Fuel.post("${getString(R.string.host)}/complete_race")
+            val (_, response, _) = Fuel.post("${getString(R.string.host)}/api/complete_race")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
@@ -295,7 +300,6 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
                 runOnUiThread {
                     if (response.statusCode == 200) {
                         ctx.stopThread = true
-                        // show dialog
                     }
                 }
             }
@@ -308,8 +312,6 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
             return
         }
 
-        map.clear()
-
         val bodyJson = Gson().toJson(hashMapOf(
             "pw" to userData["password"] as String,
             "user_id" to userData["user_id"],
@@ -319,7 +321,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         ))
 
         CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, result) = Fuel.post("${getString(R.string.host)}/join_race")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/join_race")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
@@ -334,12 +336,48 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
                             val usersInRace = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, Any>>
                             val noPFP = BitmapDescriptorFactory.fromResource(R.drawable.no_pfp)
 
-                            for (userInRace in usersInRace) {
-                                val user = MarkerOptions()
+                            for (user in usersInRace) {
+                                val userMarker = MarkerOptions()
                                     .icon(noPFP)
-                                    .title(userInRace["username"] as String)
+                                    .title(user["username"] as String)
+                                    .position(LatLng(
+                                        user["latitude"] as Double,
+                                        user["longitude"] as Double
+                                    ))
 
-                                map.addMarker(user)
+                                map.addMarker(userMarker)
+                            }
+
+                            if (ctx.raceData.containsKey("latitude")) {
+                                var chalLatFinal = raceData["latitude"] as Double
+                                var chalLongFinal = raceData["longitude"] as Double
+                                val circleOptions = CircleOptions()
+
+                                var radius: Double = Double.MIN_VALUE
+                                when (raceData["difficulty"] as String) {
+                                    "easy" -> radius = 20.0
+                                    "medium" -> radius = 60.0
+                                    "hard" -> radius = 100.0
+                                }
+
+                                val random = Random()
+                                val latRandom = (random.nextInt() % (radius * 2 / 3)) / 111111
+                                chalLatFinal += latRandom
+                                val longRandom = (random.nextInt() % (radius * 2 / 3)) / (111111 * cos(Math.toRadians(chalLatFinal)))
+                                chalLongFinal += longRandom
+
+                                circleOptions.center(LatLng(chalLatFinal, chalLongFinal))
+                                circleOptions.radius(radius)
+                                circleOptions.fillColor(Color.TRANSPARENT)
+                                circleOptions.strokeColor(Color.BLACK)
+
+                                map.addCircle(circleOptions)
+
+                                val marker = MarkerOptions()
+                                marker.position(LatLng(chalLatFinal, chalLongFinal))
+                                marker.title("This challenge's general area")
+
+                                map.addMarker(marker)
                             }
                         }
                     }
@@ -356,21 +394,10 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
         ))
 
         CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, _) = Fuel.post("${getString(R.string.host)}/leave_race")
+            val (_, _, _) = Fuel.post("${getString(R.string.host)}/api/leave_race")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
-
-            withContext(Dispatchers.Main) {
-                runOnUiThread {
-                    if (response.statusCode == 200) {
-                        val intent = Intent(ctx, RacesActivity::class.java).apply {
-                            putExtra("userData", userData)
-                        }
-                        startActivity(intent)
-                    }
-                }
-            }
         }
     }
 
@@ -412,7 +439,11 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
                     if (response.statusCode == 200 && bytes != null) {
                         val type = object: TypeToken<ArrayList<HashMap<String, Any>>>(){}.type
                         val userLocations = Gson().fromJson(String(bytes), type) as ArrayList<HashMap<String, Any>>
-                        ctx.map.clear()
+                        val noPFP = BitmapDescriptorFactory.fromResource(R.drawable.no_pfp)
+
+                        for (currentMarker in ctx.markers) {
+                            currentMarker.remove()
+                        }
 
                         for (user in userLocations) {
                             val marker = MarkerOptions()
@@ -421,8 +452,10 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
                                 user["longitude"] as Double
                             ))
                             marker.title(user["username"] as String)
+                            marker.icon(noPFP)
 
-                            ctx.map.addMarker(marker)
+                            val markerObject = ctx.map.addMarker(marker)
+                            ctx.markers.add(markerObject)
                         }
                     }
                 }
@@ -461,7 +494,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
                     results
                 )
 
-                if (results[0] <= 0.5) {
+                if (results[0] <= 3) {
                     runOnUiThread {
                         ctx.completeRace()
                     }

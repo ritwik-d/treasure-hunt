@@ -47,6 +47,14 @@ class GroupPageActivity : AppCompatActivity() {
     }
 
 
+    override fun onBackPressed() {
+        val intent = Intent(ctx, GroupsActivity::class.java).apply {
+            putExtra("userData", userData)
+        }
+        startActivity(intent)
+    }
+
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.group_page_menu, menu)
@@ -104,10 +112,14 @@ class GroupPageActivity : AppCompatActivity() {
                                 if (bytes != null) {
                                     val type = object: TypeToken<HashMap<String, Any>>(){}.type
                                     val groupData = Gson().fromJson(String(bytes), type) as HashMap<String, Any>
+                                    var desc: String? = groupData["description"] as String?
+                                    if (desc == null) {
+                                        desc = "This group has no description"
+                                    }
 
                                     AlertDialog.Builder(ctx)
                                             .setTitle("Group Info")
-                                            .setMessage(groupData["description"] as String)
+                                            .setMessage(desc)
                                             .setPositiveButton("OK") { builder, _ ->
                                                 builder.cancel()
                                             }

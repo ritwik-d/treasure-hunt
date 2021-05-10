@@ -1,5 +1,6 @@
 package com.ritwikscompany.treasurehunt.ui
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -44,6 +45,16 @@ class GroupSettingsActivity : AppCompatActivity() {
         initialize()
         setUp()
     }
+
+
+    override fun onBackPressed() {
+        val intent = Intent(ctx, GroupPageActivity::class.java).apply {
+            putExtra("userData", userData)
+            putExtra("groupName", groupName)
+        }
+        startActivity(intent)
+    }
+
 
 
     private fun setUp() {

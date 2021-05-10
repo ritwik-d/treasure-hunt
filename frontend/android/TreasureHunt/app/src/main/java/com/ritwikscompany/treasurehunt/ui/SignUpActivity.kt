@@ -51,6 +51,11 @@ class SignUpActivity : AppCompatActivity() {
     }
 
 
+    override fun onBackPressed() {
+        startActivity(Intent(ctx, MainActivity::class.java))
+    }
+
+
     private fun setUp() {
         emailET.addTextChangedListener(object: TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}

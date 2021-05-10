@@ -28,8 +28,8 @@ class MyChallengesActivity : AppCompatActivity() {
     private lateinit var rview: RecyclerView
     private lateinit var minusButton: FloatingActionButton
     private lateinit var plusButton: FloatingActionButton
-
     private var userData = HashMap<String, Any>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_challenges)
@@ -44,6 +44,14 @@ class MyChallengesActivity : AppCompatActivity() {
         plusButton.setOnClickListener {
             createChallengeOnClick()
         }
+    }
+
+
+    override fun onBackPressed() {
+        val intent = Intent(ctx, HomeActivity::class.java).apply {
+            putExtra("userData", userData)
+        }
+        startActivity(intent)
     }
 
 

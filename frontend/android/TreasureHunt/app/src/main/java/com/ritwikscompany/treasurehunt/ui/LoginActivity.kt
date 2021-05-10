@@ -41,6 +41,11 @@ class LoginActivity : AppCompatActivity() {
     }
 
 
+    override fun onBackPressed() {
+        startActivity(Intent(ctx, MainActivity::class.java))
+    }
+
+
     private fun cancelOnClick() {
         startActivity(Intent(ctx, MainActivity::class.java))
     }
@@ -141,7 +146,7 @@ class LoginActivity : AppCompatActivity() {
                 "pw" to pw
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/login")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/login")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()
@@ -153,12 +158,12 @@ class LoginActivity : AppCompatActivity() {
                         val (bytes, _) = result
                         if (bytes != null) {
                             val userData = Gson().fromJson(String(bytes), HashMap::class.java) as HashMap<String, Any>
-                            userData["user_id"] = userData.get("user_id").toString().toDouble().toInt()
+                            userData["user_id"] = (userData["user_id"] as Double).toInt()
 
                             val sharedPref = application.getSharedPreferences("userInfo", Context.MODE_PRIVATE)
                             with(sharedPref.edit()) {
-                                putString("email", userData.get("email") as String)
-                                putString("pw", userData.get("password") as String)
+                                putString("email", userData["email"] as String)
+                                putString("pw", userData["password"] as String)
                                 apply()
                             }
 

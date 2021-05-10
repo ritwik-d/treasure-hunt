@@ -83,6 +83,13 @@ class RacesActivity : AppCompatActivity(),
         setUpUI()
     }
 
+    override fun onBackPressed() {
+        val intent = Intent(ctx, HomeActivity::class.java).apply {
+            putExtra("userData", userData)
+        }
+        startActivity(intent)
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setUpUI() {
         titleET = findViewById(R.id.race_title)
@@ -377,9 +384,13 @@ class RacesActivity : AppCompatActivity(),
         fusedLocationClient.requestLocationUpdates(locationRequest, object: LocationCallback() {
             override fun onLocationResult(p0: LocationResult) {
                 lastLocation = p0.lastLocation
+
+                // update circle on map
+
+                placeMarkerOnMap(diffSpinner.selectedItem.toString())
             }
         },
-            Looper.myLooper())
+            Looper.myLooper()!!)
     }
 
 
@@ -420,7 +431,8 @@ class RacesActivity : AppCompatActivity(),
                 "start_time" to startTime,
                 "latitude" to latitude,
                 "longitude" to longitude,
-                "group_name" to groupName
+                "group_name" to groupName,
+                "difficulty" to diffSpinner.selectedItem.toString().toLowerCase(Locale.ROOT)
         ))
 
         CoroutineScope(Dispatchers.IO).launch {

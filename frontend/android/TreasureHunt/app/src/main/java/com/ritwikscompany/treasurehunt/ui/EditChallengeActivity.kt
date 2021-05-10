@@ -66,6 +66,14 @@ class EditChallengeActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap
     }
 
 
+    override fun onBackPressed() {
+        val intent = Intent(ctx, MyChallengesActivity::class.java).apply {
+            putExtra("userData", userData)
+        }
+        startActivity(intent)
+    }
+
+
     override fun onMapReady(p0: GoogleMap?) {
         map = p0!!
         map.setPadding(0, 0, 0, 250)
@@ -149,7 +157,7 @@ class EditChallengeActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap
             override fun onLocationResult(p0: LocationResult) {
                 lastLocation = p0.lastLocation
             }
-        }, Looper.myLooper())
+        }, Looper.myLooper()!!)
     }
 
 
@@ -161,7 +169,18 @@ class EditChallengeActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap
         puzzleET.setText(challengeData["puzzle"] as String)
         nameTV.text = challengeData["name"] as String
 
-        val diffArray = ctx.resources.getStringArray(R.array.difficulties).toMutableList()
+        var diffArray: ArrayList<String> = ArrayList()
+        when (challengeData["difficulty"]) {
+            "easy" -> {
+                diffArray = arrayListOf("Easy", "Medium", "Hard")
+            }
+            "medium" -> {
+                diffArray = arrayListOf("Medium", "Easy", "Hard")
+            }
+            "hard" -> {
+                diffArray = arrayListOf("Hard", "Easy", "Medium")
+            }
+        }
 
         spinnerDiff.adapter = ArrayAdapter(
                 ctx,
@@ -169,10 +188,10 @@ class EditChallengeActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap
                 diffArray
         )
 
-        val previousIndex = diffArray.indexOf(challengeData["difficulty"] as String)
-        val oldItem = diffArray[0] // always easy; just didn't want to hardcode
-        diffArray[0] = challengeData["difficulty"] as String
-        diffArray[previousIndex] = oldItem
+//        val previousIndex = diffArray.indexOf(challengeData["difficulty"] as String)
+//        val oldItem = diffArray[0] // always easy; just didn't want to hardcode
+//        diffArray[0] = challengeData["difficulty"] as String
+//        diffArray[previousIndex] = oldItem
 
         val bodyJson = Gson().toJson(hashMapOf(
             "user_id" to userData["user_id"],
