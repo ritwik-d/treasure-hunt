@@ -152,11 +152,11 @@ class User:
 
 
     @authenticate
-    def create_race(self, title: str, start_time: str, latitude: float, longitude: float, group_name: str):
+    def create_race(self, title: str, start_time: str, latitude: float, longitude: float, group_name: str, difficulty: str):
         group_id = get_group_id(group_name)
 
         start_time_obj = datetime.datetime.strptime(start_time, '%Y-%m-%d %H:%M')
-        race = Race(title, start_time_obj, latitude, longitude, group_id)
+        race = Race(title, start_time_obj, latitude, longitude, group_id, difficulty)
         status = race.create(self.user_id)
 
         if status == False:

@@ -75,20 +75,22 @@ class ChatDB:
 
 
 class Race:
-    def __init__(self, title=None, start_time=None, latitude=None, longitude=None, group_id=None):
+    def __init__(self, title=None, start_time=None, latitude=None, longitude=None, group_id=None, difficulty=None):
         self.title = title
         self.start_time = start_time
         self.latitude = latitude
         self.longitude = longitude
         self.group_id = group_id
+        self.difficulty = difficulty
 
 
     def create(self, creator_id: int):
         db = DB()
         db.connect()
+        location = create_random_race_location(self.latitude, self.longitude, self.difficulty)
         row = {
-            'latitude': self.latitude,
-            'longitude': self.longitude,
+            'latitude': location.get('latitude'),
+            'longitude': location.get('longitude'),
             'group_id': self.group_id,
             'start_time': self.start_time,
             'title': self.title,
@@ -254,5 +256,8 @@ def create_random_race_location(latitude: float, longitude: float, difficulty: s
 
     final_longitude = longitude + (x_displacement / radius_earth) * (180 / math.pi) / math.cos(latitude * math.pi / 180)
     final_latitude = latitude + (y_displacement / radius_earth) * (180 / math.pi)
-
-    return [round(final_latitude, 10), round(final_longitude, 10)]
+    
+    return {
+        'latitude': round(final_latitude, 10),
+        'longitude': round(final_longitude, 10)
+    }

@@ -49,6 +49,7 @@ class CreateRace(BaseModel):
     start_time: str
     latitude: float
     longitude: float
+    difficulty: str
     group_name: str
     pw: str
     user_id: int
