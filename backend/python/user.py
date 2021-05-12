@@ -458,7 +458,7 @@ class User:
 
         status = send_email('account_verification.html', self.email, 'Treasure Hunt Account Verification', params=(self.uname, email_verify_token))
         if not status:
-            return 402
+            return {'error': 'noemail'}
         row = {
             'email': self.email,
             'password': hash_password(self.email, self.pw),
@@ -467,8 +467,8 @@ class User:
         }
         row_id = db.insert('users', row)
         if not row_id is None:
-            return 201
-        return 400
+            return {'error': 'success'}
+        return {'error': 'taken'}
 
 
     # def sign_up_with_google(self):
