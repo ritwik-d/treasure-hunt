@@ -2,6 +2,8 @@ package com.ritwikscompany.treasurehunt.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
@@ -182,7 +184,7 @@ class GroupChatActivity : AppCompatActivity() {
                 "message" to message
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/send_message")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/send_message")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()
@@ -210,6 +212,24 @@ class GroupChatActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+
+    private fun setUp() {
+        findViewById<EditText>(R.id.gc_message).addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                if (p0.toString().isEmpty()) {
+                    findViewById<ImageButton>(R.id.gc_send).isEnabled = false
+                    return
+                }
+                findViewById<ImageButton>(R.id.gc_send).isEnabled = true
+            }
+
+            override fun afterTextChanged(p0: Editable?) {}
+
+        })
     }
 
 

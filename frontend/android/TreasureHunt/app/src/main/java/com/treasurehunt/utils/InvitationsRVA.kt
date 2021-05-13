@@ -13,7 +13,7 @@ class InvitationsRVA(
     var acceptOnClick: (invitationId: Int) -> Unit,
     var declineOnClick: (invitationId: Int) -> Unit
 ): RecyclerView.Adapter<InvitationsRVA.ViewHolder>() {
-    inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val groupName: TextView = itemView.findViewById(R.id.row_invite_group)
         val fromName: TextView = itemView.findViewById(R.id.row_invite_from)
         val acceptButton: ImageButton = itemView.findViewById(R.id.row_invite_accept)
@@ -32,10 +32,10 @@ class InvitationsRVA(
         holder.groupName.text = this.invitations[position]["group_name"] as String
         holder.fromName.text = this.invitations[position]["from_username"] as String
         holder.acceptButton.setOnClickListener {
-            acceptOnClick((this.invitations[position]["invitation_id"] as Double).toInt())
+            this.acceptOnClick((this.invitations[position]["invitation_id"] as Double).toInt())
         }
         holder.declineButton.setOnClickListener {
-            declineOnClick((this.invitations[position]["invitation_id"] as Double).toInt())
+            this.declineOnClick((this.invitations[position]["invitation_id"] as Double).toInt())
         }
     }
 

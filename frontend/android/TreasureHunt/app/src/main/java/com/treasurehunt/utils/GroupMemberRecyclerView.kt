@@ -1,7 +1,6 @@
 package com.ritwikscompany.treasurehunt.utils
 
 import android.graphics.Bitmap
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +19,6 @@ class GroupMemberRecyclerView(var users: ArrayList<String>, var pfps: ArrayList<
         val context = parent.context
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.group_member_row_member, parent, false)
-        Log.d("TAG", "onCreateViewHolder: $rows")
         return ViewHolder(view)
     }
 
@@ -33,7 +31,7 @@ class GroupMemberRecyclerView(var users: ArrayList<String>, var pfps: ArrayList<
 
 
     override fun getItemCount(): Int {
-        return users.size
+        return this.users.size
     }
 
 

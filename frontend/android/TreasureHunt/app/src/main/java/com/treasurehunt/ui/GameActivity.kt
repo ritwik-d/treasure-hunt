@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -78,7 +79,7 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     if (status == 200) {
                         val (bytes, _) = result
                         if (bytes != null) {
-                            val type = object : TypeToken<HashMap<String, Any>>() {}.type
+                            val type = object: TypeToken<HashMap<String, Any>>() {}.type
                             val challengeData: HashMap<String, Any> = Gson().fromJson(String(bytes), type) as HashMap<String, Any>
                             var radius: Double = Double.MIN_VALUE
 
@@ -92,7 +93,12 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                             findViewById<TextView>(R.id.game_puzzle).text = "Puzzle: ${challengeData["puzzle"] as String}"
                             findViewById<TextView>(R.id.game_creator).text = "Creator: ${challengeData["creator_name"] as String}"
 
-                            findViewById<Button>(R.id.game_start_challenge).setOnClickListener {
+                            val startButton = findViewById<Button>(R.id.game_start_challenge)
+
+                            startButton.setOnClickListener {
+                                startButton.visibility = View.INVISIBLE
+
+                                startChallengeAPI((challengeData["challenge_id"] as Double).toInt())
                                 launchDaemon(challengeData)
                             }
                         }
@@ -116,7 +122,9 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     override fun onStop() {
         super.onStop()
+
         stopThread = true
+        exitChallengeAPI()
     }
 
     override fun onMapReady(p0: GoogleMap?) {
@@ -138,11 +146,38 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     override fun onBackPressed() {
         stopThread = true
+        exitChallengeAPI()
 
         val intent = Intent(ctx, PickChallengeActivity::class.java).apply {
             putExtra("userData", userData)
         }
         startActivity(intent)
+    }
+
+
+    private fun startChallengeAPI(challengeId: Any, key: String = "challenge_id", path: String = "start_challenge") {
+        val bodyJson = Gson().toJson(hashMapOf(
+            "user_id" to userData["user_id"] as Int,
+            "pw" to userData["password"] as String,
+            key to challengeId
+        ))
+        CoroutineScope(Dispatchers.IO).launch {
+            val (_, response, _) = Fuel.post("${getString(R.string.host)}/api/$path")
+                .body(bodyJson)
+                .header("Content-Type" to "application/json")
+                .response()
+
+            withContext(Dispatchers.Main) {
+                runOnUiThread {
+                    if (response.statusCode == 400) { Toast.makeText(ctx, "Network Error", Toast.LENGTH_LONG).show() }
+                }
+            }
+        }
+    }
+
+
+    private fun exitChallengeAPI() {
+        startChallengeAPI(challengeName, "name", "exit_challenge")
     }
 
 
