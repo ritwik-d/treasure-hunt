@@ -73,9 +73,9 @@ class HomeActivity : AppCompatActivity() {
                 startActivity(Intent(ctx, MainActivity::class.java))
             }
 
-            R.id.menu_upload_pfp -> {
-                requestPermissions()
-            }
+//            R.id.menu_upload_pfp -> {
+//                requestPermissions()
+//            }
 
             R.id.menu_race -> {
                 val intent = Intent(ctx, RacesActivity::class.java).apply {

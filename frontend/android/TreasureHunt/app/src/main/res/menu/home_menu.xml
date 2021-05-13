@@ -2,19 +2,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/menu_log_out"
-        android:title="@string/logOut" />
-
-    <item
-        android:id="@+id/menu_upload_pfp"
-        android:title="@string/uploadPfp" />
+<!--    <item-->
+<!--        android:id="@+id/menu_upload_pfp"-->
+<!--        android:title="@string/uploadPfp" />-->
 
     <item
         android:id="@+id/menu_race"
         android:title="@string/races"
         android:icon="@drawable/race"
-        android:iconTint="@color/white"
+        app:iconTint="@color/white"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_log_out"
+        android:icon="@drawable/ic_baseline_exit_to_app_24"
+        android:title="@string/logOut"
+        app:showAsAction="always" />
 
 </menu>

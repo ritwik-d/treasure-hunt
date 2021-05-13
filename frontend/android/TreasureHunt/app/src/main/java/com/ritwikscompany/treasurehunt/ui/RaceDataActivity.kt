@@ -79,11 +79,6 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
         stopThread = true
         leaveRace()
-
-        val intent = Intent(ctx, RacesActivity::class.java).apply {
-            putExtra("userData", userData)
-        }
-        startActivity(intent)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -309,6 +304,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
     private fun setUpRaceMap() {
         if (!ctx::lastLocation.isInitialized || !ctx::map.isInitialized) {
+            println("NOOOOOOOOOOOOOO")
             return
         }
 
