@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Bitmap
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +25,7 @@ class GroupAdminRecyclerView(var users: ArrayList<String>, var pfps: ArrayList<B
         val context = parent.context
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.group_member_row_admin, parent, false)
+        Log.d("TAG", "onCreateViewHolder: $rows")
         return ViewHolder(view)
     }
 
@@ -32,7 +34,7 @@ class GroupAdminRecyclerView(var users: ArrayList<String>, var pfps: ArrayList<B
         holder.memberTV.text = users[position]
         holder.pfpCIV.setImageBitmap(pfps[position])
 
-        if (this.userData["username"] == holder.memberTV.text.toString()) {
+        if (this.userData.get("username") == holder.memberTV.text.toString()) {
             holder.removeMemberButton.visibility = View.INVISIBLE
         }
 

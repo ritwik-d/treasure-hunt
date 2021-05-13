@@ -46,8 +46,6 @@ class HomeActivity : AppCompatActivity() {
         setProfilePicture()
 
         findViewById<TextView>(R.id.home_name).text = "Hello ${userData["username"].toString()}!"
-        findViewById<TextView>(R.id.home_points).text = "${(userData["points"] as Double).toInt()} Points"
-
         findViewById<Button>(R.id.home_find_challenge).setOnClickListener {
             findChallengeOnClick()
         }
