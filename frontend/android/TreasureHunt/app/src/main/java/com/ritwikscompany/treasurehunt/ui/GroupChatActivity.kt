@@ -182,7 +182,7 @@ class GroupChatActivity : AppCompatActivity() {
                 "message" to message
         ))
         CoroutineScope(Dispatchers.IO).launch {
-            val (request, response, result) = Fuel.post("${getString(R.string.host)}/api/send_message")
+            val (_, response, result) = Fuel.post("${getString(R.string.host)}/api/send_message")
                     .body(bodyJson)
                     .header("Content-Type" to "application/json")
                     .response()
