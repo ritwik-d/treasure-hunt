@@ -131,6 +131,7 @@ class GroupChatActivity : AppCompatActivity() {
 
             viewGroup.findViewById<TextView>(R.id.chat_timestamp).text = message["timestamp"] as String
             viewGroup.findViewById<TextView>(R.id.chat_message).text = message["message"] as String
+            vi
 
             if (message["username"] as String != (userData["username"] as String)) {
                 viewGroup.findViewById<TextView>(R.id.chat_uname).text = message["username"]
