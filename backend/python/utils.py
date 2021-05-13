@@ -34,6 +34,12 @@ def get_group_id(gname: str):
         return group_id[0].get('group_id')
 
 
+def get_challenge_id(name: str):
+    db = DB()
+    db.connect()
+    return db.select('select challenge_id from challenges where name = %s', params=(name,), dict_cursor=True)[0].get('challenge_id')
+
+
 def get_user_id(value: str, column='email'):
     db = DB()
     db.connect()

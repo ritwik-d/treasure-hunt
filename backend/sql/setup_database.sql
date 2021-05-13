@@ -62,6 +62,7 @@ create table challenges (
   user_groups json not null,
   latitude double(12, 10) not null,
   longitude double(13, 10) not null,
+  is_active enum ('true', 'false') not null default 'false',
   name varchar(255) not null,
   puzzle varchar(255) not null,
   foreign key (creator_id) references users(user_id)

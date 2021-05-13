@@ -9,6 +9,7 @@ api:
     decline_invitation: /api/decline_invitation
     delete_challenge: /api/delete_challenge
     download_pfp: /api/download_pfp
+    exit_challenge: /api/exit_challenge
     get_challenge_data: /api/get_challenge_data
     get_challenges: /api/get_challenges
     get_group_data: /api/get_group_data
@@ -38,7 +39,7 @@ api:
     update_race_location: /api/update_race_location
     upload_pfp: /api/upload_pfp
     verify_account: /verify_account/{email_verify_token}
-    simulate_race_location: /api/simulate_race_location
+    start_challenge: /api/start_challenge
 firebase_storage:
   db_backups: database_backups/
   profile_pictures: profile_pictures/

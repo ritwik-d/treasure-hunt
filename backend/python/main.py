@@ -281,3 +281,15 @@ async def update_race_location(json: UpdateRaceLocation, response: Response):
 async def leave_race(json: LeaveRace, response: Response):
     user = User(pw=json.pw, user_id=json.user_id)
     response.status_code = user.leave_race(json.race_id)
+
+
+@app.post(paths.get('exit_challenge'))
+async def exit_challenge(json: ExitChallenge, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response.status_code = user.exit_challenge(json.name)
+
+
+@app.post(paths.get('start_challenge'))
+async def exit_challenge(json: StartChallenge, response: Response):
+    user = User(pw=json.pw, user_id=json.user_id)
+    response.status_code = user.start_challenge(json.challenge_id)

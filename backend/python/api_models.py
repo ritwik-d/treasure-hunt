@@ -232,3 +232,15 @@ class LeaveRace(BaseModel):
     pw: str
     user_id: str
     race_id: int
+
+
+class ExitChallenge(BaseModel):
+    pw: str
+    user_id: str
+    name: str
+
+
+class StartChallenge(BaseModel):
+    pw: str
+    user_id: str
+    challenge_id: int

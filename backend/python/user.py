@@ -241,13 +241,12 @@ class User:
         groups = {}
         for i in groups1:
             groups[i[0]] = i[1]
-        print(f'groups: {groups}\ngroups1: {groups1}')
         final = {}
-        pub_chals = list(itertools.chain(*db.select('select name from challenges where user_groups = cast(%s as json) and creator_id <> %s', params=('[]', self.user_id))))
+        pub_chals = list(itertools.chain(*db.select("select name from challenges where user_groups = cast(%s as json) and creator_id <> %s and is_active = 'false'", params=('[]', self.user_id))))
         final['Public'] = pub_chals
 
         for group in groups:
-            group_chals = list(itertools.chain(*db.select('select name from challenges where JSON_CONTAINS(user_groups, %s) and creator_id <> %s', params=(str(group), self.user_id))))
+            group_chals = list(itertools.chain(*db.select("select name from challenges where JSON_CONTAINS(user_groups, %s) and creator_id <> %s and is_active = 'false'", params=(str(group), self.user_id))))
             final[groups[group]] = group_chals
         return {'body': final, 'status': 200}
 
@@ -411,7 +410,7 @@ class User:
         creator_id = info.get('creator_id')
         if (self.user_id == creator_id) and (new_admin is None):
             return 404
-        elif (self.user_id == creator_id) and (not new_admin is None):
+        elif (self.user_id == creator_id) and (new_admin is not None):
             new_admin_id = get_user_id(new_admin, 'username')
             db.update('user_groups', {'creator_id': new_admin_id}, {'group_id': group_id})
         members = json.loads(info.get('members'))
@@ -566,3 +565,18 @@ class User:
 
         os.remove(config.get('paths', 'tmp') + f'upfp{self.user_id}')
         return 201
+
+
+    @authenticate
+    def start_challenge(self, challenge_id: int, param='true'):
+        db = DB()
+        db.connect()
+        row_id = db.update('challenges', {'is_active': param}, {'challenge_id': challenge_id})
+        if row_id is None:
+            return 400
+        return 200
+
+
+    @authenticate
+    def exit_challenge(self, name: str):
+        return self.start_challenge(get_challenge_id(name), param='false')
