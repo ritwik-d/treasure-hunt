@@ -236,11 +236,11 @@ class LeaveRace(BaseModel):
 
 class ExitChallenge(BaseModel):
     pw: str
-    user_id: str
+    user_id: int
     name: str
 
 
 class StartChallenge(BaseModel):
     pw: str
-    user_id: str
+    user_id: int
     challenge_id: int
