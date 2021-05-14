@@ -135,7 +135,7 @@ class GroupChatActivity : AppCompatActivity() {
             }
 
             var timestamp = message["timestamp"] as String
-            timestamp = timestamp.subSequence(0, timestamp.length - 7).toString()
+            timestamp = timestamp.subSequence(0, timestamp.length - 10).toString()
 
             viewGroup.findViewById<TextView>(R.id.chat_timestamp).text = timestamp
             viewGroup.findViewById<TextView>(R.id.chat_message).text = message["message"] as String
