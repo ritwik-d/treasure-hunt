@@ -240,7 +240,7 @@ def send_email(file_name: str, receiver_email: str, subject: str, sender_email=N
             server.login(sender_email, password)
             server.sendmail(sender_email, receiver_email, msg.as_string())
             return True
-    except smtplib.SMTPRecipientsRefused:
+    except smtplib.SMTPException:
         return False
 
 
