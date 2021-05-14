@@ -18,6 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
 
 class GroupChatActivity : AppCompatActivity() {
 
@@ -71,10 +72,6 @@ class GroupChatActivity : AppCompatActivity() {
                                 val message = messageET.text.toString()
                                 sendMessage(groupId, message)
                                 messageET.setText("")
-
-                                scrollView.post {
-                                    scrollView.fullScroll(View.FOCUS_DOWN)
-                                }
                             }
 
                             getMessagesFinal(groupId)
@@ -90,6 +87,10 @@ class GroupChatActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
+	
+	    scrollView.post {
+            scrollView.fullScroll(View.FOCUS_DOWN)
         }
     }
 
@@ -133,7 +134,10 @@ class GroupChatActivity : AppCompatActivity() {
                 inflater.inflate(R.layout.row_chat_other_pov, linearLayout, false)
             }
 
-            viewGroup.findViewById<TextView>(R.id.chat_timestamp).text = message["timestamp"] as String
+            var timestamp = message["timestamp"] as String
+            timestamp = timestamp.subSequence(0, timestamp.length - 10).toString()
+
+            viewGroup.findViewById<TextView>(R.id.chat_timestamp).text = timestamp
             viewGroup.findViewById<TextView>(R.id.chat_message).text = message["message"] as String
 
             try {
