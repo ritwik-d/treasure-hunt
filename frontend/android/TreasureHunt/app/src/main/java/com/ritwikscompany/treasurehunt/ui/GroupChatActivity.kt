@@ -89,7 +89,7 @@ class GroupChatActivity : AppCompatActivity() {
             }
         }
 	
-	scrollView.post {
+	    scrollView.post {
             scrollView.fullScroll(View.FOCUS_DOWN)
         }
     }
