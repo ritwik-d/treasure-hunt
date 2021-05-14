@@ -8,9 +8,11 @@ import android.text.TextWatcher
 import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.github.kittinunf.fuel.Fuel
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.ritwikscompany.treasurehunt.R
 import com.ritwikscompany.treasurehunt.utils.Utils.Utils.getCheckMark
 import com.ritwikscompany.treasurehunt.utils.Utils.Utils.isValid
@@ -144,29 +146,29 @@ class SignUpActivity : AppCompatActivity() {
             )
         )
         CoroutineScope(Dispatchers.IO).launch {
-            val (_, response, _) = Fuel.post("${getString(R.string.host)}/api/register")
+            val (_, _, result) = Fuel.post("${getString(R.string.host)}/api/register")
                 .body(bodyJson)
                 .header("Content-Type" to "application/json")
                 .response()
 
             withContext(Dispatchers.Main) {
                 runOnUiThread {
-                    when (response.statusCode) {
-                        201 -> {
-                            makeDialog()
-                        }
-                        400 -> {
-                            emailET.error = "An account has already been created with this email"
-                            emailET.requestFocus()
-                        }
-                        402 -> {
-                            emailET.error = "Enter a valid email"
-                            emailET.requestFocus()
-                        }
-                        401 -> {
-                            usernameET.error =
-                                "An account has already been created with this username"
-                            usernameET.requestFocus()
+                    val (bytes, _) = result
+                    if (bytes != null) {
+                        println("blah : ${(Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, String>>(){}.type) as HashMap<String, Any>)["error"] as String}")
+                        when ((Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, String>>(){}.type) as HashMap<String, Any>)["error"] as String) {
+                            "success" -> {
+                                makeDialog()
+                            }
+                            "email_taken" -> {
+                                Toast.makeText(ctx, "ERROR", Toast.LENGTH_LONG).show()
+                            }
+                            "noemail" -> {
+                                Toast.makeText(ctx, "ERROR", Toast.LENGTH_LONG).show()
+                            }
+                            "username_taken" -> {
+                                Toast.makeText(ctx, "ERROR", Toast.LENGTH_LONG).show()
+                            }
                         }
                     }
                 }
