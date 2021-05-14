@@ -4,13 +4,16 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.children
 import com.github.kittinunf.fuel.Fuel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.ritwikscompany.treasurehunt.R
+import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -119,6 +122,7 @@ class GroupChatActivity : AppCompatActivity() {
     private fun updateLinearLayout(messages: ArrayList<HashMap<String, String>>) {
         for (index in (linearLayout.childCount) until messages.size) {
             val message = messages[index]
+
             val viewGroup: View =
 
             if (message["username"] as String == (userData["username"] as String)) {
@@ -131,7 +135,16 @@ class GroupChatActivity : AppCompatActivity() {
 
             viewGroup.findViewById<TextView>(R.id.chat_timestamp).text = message["timestamp"] as String
             viewGroup.findViewById<TextView>(R.id.chat_message).text = message["message"] as String
-            vi
+
+            try {
+                val pfp = viewGroup.findViewById<CircleImageView>(R.id.chat_pfp)
+                val scale = ctx.resources.displayMetrics.density
+                val dimension = (30 * scale + 0.5f).toInt()
+
+                pfp.layoutParams.height = dimension
+                pfp.layoutParams.width = dimension
+            }
+            catch (e: java.lang.NullPointerException) { }
 
             if (message["username"] as String != (userData["username"] as String)) {
                 viewGroup.findViewById<TextView>(R.id.chat_uname).text = message["username"]
