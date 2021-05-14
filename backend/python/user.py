@@ -364,7 +364,7 @@ class User:
         data_dict = db.select('select count(*) as count, points from users where username = %s', params=(to_username,), dict_cursor=True)[0]
         if data_dict.get('count') != 1:
             return {'status': 200, 'body': {'error': 'nouser'}}
-        if data_dict.get('points') < db.select('select minimum_points from user_groups where group_name = %s', params=(group_name,))[0][0]:
+        if data_dict.get('points') < db.select('select minimum_points from user_groups where name = %s', params=(group_name,))[0][0]:
             return {'status': 200, 'body': {'error': 'points'}}
 
         to_id = get_user_id(to_username, 'username')
