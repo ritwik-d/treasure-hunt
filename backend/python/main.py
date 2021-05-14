@@ -192,7 +192,9 @@ async def login(json: LogIn, response: Response):
 @app.post(paths.get('register'))
 async def register(json: Register, response: Response):
     user = User(email=json.email, pw=json.pw, uname=json.username)
-    return user.register()
+    r = user.register()
+    response.status_code = r.get('status')
+    return r.get('body')
 
 
 @app.post(paths.get('send_email_reset_password'))
