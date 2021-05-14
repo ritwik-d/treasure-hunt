@@ -18,6 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
 
 class GroupChatActivity : AppCompatActivity() {
 
@@ -133,7 +134,10 @@ class GroupChatActivity : AppCompatActivity() {
                 inflater.inflate(R.layout.row_chat_other_pov, linearLayout, false)
             }
 
-            viewGroup.findViewById<TextView>(R.id.chat_timestamp).text = message["timestamp"] as String
+            var timestamp = message["timestamp"] as String
+            timestamp = timestamp.subSequence(0, timestamp.length - 7).toString()
+
+            viewGroup.findViewById<TextView>(R.id.chat_timestamp).text = timestamp
             viewGroup.findViewById<TextView>(R.id.chat_message).text = message["message"] as String
 
             try {
