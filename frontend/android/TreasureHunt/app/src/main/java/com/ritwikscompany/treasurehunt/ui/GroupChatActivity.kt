@@ -72,10 +72,6 @@ class GroupChatActivity : AppCompatActivity() {
                                 val message = messageET.text.toString()
                                 sendMessage(groupId, message)
                                 messageET.setText("")
-
-                                scrollView.post {
-                                    scrollView.fullScroll(View.FOCUS_DOWN)
-                                }
                             }
 
                             getMessagesFinal(groupId)
@@ -91,6 +87,10 @@ class GroupChatActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
+	
+	scrollView.post {
+            scrollView.fullScroll(View.FOCUS_DOWN)
         }
     }
 
