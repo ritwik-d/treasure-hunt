@@ -157,6 +157,7 @@ class Register(BaseModel):
     email: str
     pw: str
     username: str
+    is_email: bool
 
 
 class RemoveGroupMember(BaseModel):

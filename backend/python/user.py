@@ -445,7 +445,7 @@ class User:
         return {'status': 200, 'body': user_info}
 
 
-    def register(self):
+    def register(self, is_email: bool):
         db = DB()
         db.connect()
 
@@ -459,11 +459,14 @@ class User:
         print(status)
         if not status:
             return {'body': {'error': 'noemail'}, 'status': 200}
+
+
         row = {
             'email': self.email,
             'password': hash_password(self.email, self.pw),
             'username': self.uname,
-            'email_verify_token': email_verify_token
+            'email_verify_token': email_verify_token,
+            'receive_emails': str(is_email).lower()
         }
         row_id = db.insert('users', row)
         if row_id is not None:
