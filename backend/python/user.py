@@ -450,14 +450,15 @@ class User:
         db.connect()
 
         if self.uname in list(itertools.chain(*db.select('select username from users'))):
-            {'body': {'error': 'username_taken'}, 'status': 400}
+            return {'body': {'error': 'username_taken'}, 'status': 200}
         email_verify_token = get_rand_string(10)
         while email_verify_token in list(itertools.chain(*db.select('select email_verify_token from users'))):
             email_verify_token = get_rand_string(10)
 
         status = send_email('account_verification.html', self.email, 'Treasure Hunt Account Verification', params=(self.uname, email_verify_token))
+        print(status)
         if not status:
-            return {'error': 'noemail', 'status': 400}
+            return {'body': {'error': 'noemail'}, 'status': 200}
         row = {
             'email': self.email,
             'password': hash_password(self.email, self.pw),
@@ -467,7 +468,7 @@ class User:
         row_id = db.insert('users', row)
         if row_id is not None:
             return {'body': {'error': 'success'}, 'status': 201}
-        return {'body': {'error': 'email_taken'}, 'status': 400}
+        return {'body': {'error': 'email_taken'}, 'status': 200}
 
 
     # def sign_up_with_google(self):
