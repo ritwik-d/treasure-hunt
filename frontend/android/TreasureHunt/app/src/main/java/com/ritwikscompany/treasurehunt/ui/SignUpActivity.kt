@@ -142,7 +142,8 @@ class SignUpActivity : AppCompatActivity() {
             hashMapOf(
                 "email" to email,
                 "pw" to pw,
-                "username" to username
+                "username" to username,
+                "is_email" to findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.su_switch).isChecked
             )
         )
         CoroutineScope(Dispatchers.IO).launch {
