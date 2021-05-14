@@ -142,7 +142,8 @@ class SignUpActivity : AppCompatActivity() {
             hashMapOf(
                 "email" to email,
                 "pw" to pw,
-                "username" to username
+                "username" to username,
+                "is_email" to findViewById<com.google.android.material.switchmaterial.SwitchMaterial>(R.id.su_switch).isChecked
             )
         )
         CoroutineScope(Dispatchers.IO).launch {
@@ -155,7 +156,7 @@ class SignUpActivity : AppCompatActivity() {
                 runOnUiThread {
                     val (bytes, _) = result
                     if (bytes != null) {
-                        println("blah : ${(Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, String>>(){}.type) as HashMap<String, Any>)["error"] as String}")
+//                        println("blah : ${(Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, String>>(){}.type) as HashMap<String, Any>)["error"] as String}")
                         when ((Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, String>>(){}.type) as HashMap<String, Any>)["error"] as String) {
                             "success" -> {
                                 makeDialog()

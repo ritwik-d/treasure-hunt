@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -92,7 +93,11 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                             findViewById<TextView>(R.id.game_puzzle).text = "Puzzle: ${challengeData["puzzle"] as String}"
                             findViewById<TextView>(R.id.game_creator).text = "Creator: ${challengeData["creator_name"] as String}"
 
-                            findViewById<Button>(R.id.game_start_challenge).setOnClickListener {
+                            val startButton = findViewById<Button>(R.id.game_start_challenge)
+
+                            startButton.setOnClickListener {
+                                startButton.visibility = View.INVISIBLE
+                                startChallengeAPI(value = (challengeData["challenge_id"] as Double).toInt())
                                 launchDaemon(challengeData)
                             }
                         }
@@ -117,6 +122,7 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     override fun onStop() {
         super.onStop()
         stopThread = true
+        exitChallengeAPI()
     }
 
     override fun onMapReady(p0: GoogleMap?) {
@@ -138,6 +144,7 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     override fun onBackPressed() {
         stopThread = true
+        exitChallengeAPI()
 
         val intent = Intent(ctx, PickChallengeActivity::class.java).apply {
             putExtra("userData", userData)
@@ -228,6 +235,26 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 lastLocation = p0.lastLocation
             }
         }, Looper.myLooper())
+    }
+
+
+    private fun startChallengeAPI(key: String = "challenge_id", value: Any, path: String = "start_challenge") {
+        val bodyJson = Gson().toJson(hashMapOf(
+                "user_id" to userData["user_id"] as Int,
+                "pw" to userData["password"] as String,
+                key to value
+        ))
+        CoroutineScope(Dispatchers.IO).launch {
+            val (_, _, _) = Fuel.post("${getString(R.string.host)}/api/$path")
+                    .body(bodyJson)
+                    .header("Content-Type" to "application/json")
+                    .response()
+        }
+    }
+
+
+    private fun exitChallengeAPI() {
+        startChallengeAPI("name", challengeName, "exit_challenge")
     }
 
 
