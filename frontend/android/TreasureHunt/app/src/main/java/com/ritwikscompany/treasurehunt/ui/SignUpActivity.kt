@@ -155,7 +155,7 @@ class SignUpActivity : AppCompatActivity() {
                 runOnUiThread {
                     val (bytes, _) = result
                     if (bytes != null) {
-                        println("blah : ${(Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, String>>(){}.type) as HashMap<String, Any>)["error"] as String}")
+//                        println("blah : ${(Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, String>>(){}.type) as HashMap<String, Any>)["error"] as String}")
                         when ((Gson().fromJson(String(bytes), object: TypeToken<HashMap<String, String>>(){}.type) as HashMap<String, Any>)["error"] as String) {
                             "success" -> {
                                 makeDialog()
