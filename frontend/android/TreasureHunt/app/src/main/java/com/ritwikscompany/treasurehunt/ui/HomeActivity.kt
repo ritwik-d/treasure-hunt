@@ -3,6 +3,7 @@ package com.ritwikscompany.treasurehunt.ui
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -78,10 +79,19 @@ class HomeActivity : AppCompatActivity() {
 //            }
 
             R.id.menu_race -> {
-                val intent = Intent(ctx, RacesActivity::class.java).apply {
-                    putExtra("userData", userData)
-                }
-                startActivity(intent)
+                AlertDialog.Builder(ctx)
+                        .setTitle("Race BETA")
+                        .setMessage("Races is a beta features, meaning that it is still in production. Part of this feature may not work.")
+                        .setPositiveButton("OK") { _, _ ->
+                            val intent = Intent(ctx, RacesActivity::class.java).apply {
+                                putExtra("userData", userData)
+                            }
+                            startActivity(intent)
+                        }
+                        .setNegativeButton("Cancel") { builder, _ ->
+                            builder.cancel()
+                        }
+                        .show()
             }
         }
         return true
