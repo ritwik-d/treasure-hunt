@@ -80,13 +80,14 @@ class HomeActivity : AppCompatActivity() {
 
             R.id.menu_race -> {
                 AlertDialog.Builder(ctx)
-                        .setTitle("Race BETA")
-                        .setMessage("Races is a beta features, meaning that it is still in production. Part of this feature may not work.")
-                        .setPositiveButton("OK") { _, _ ->
-                            val intent = Intent(ctx, RacesActivity::class.java).apply {
-                                putExtra("userData", userData)
-                            }
-                            startActivity(intent)
+                        .setTitle("Race Coming Soon!")
+                        .setMessage("Races is a beta features, meaning that it is still in production. This features will be coming soon!")
+                        .setPositiveButton("OK") { builder, _ ->
+                            builder.cancel()
+//                            val intent = Intent(ctx, RacesActivity::class.java).apply {
+//                                putExtra("userData", userData)
+//                            }
+//                            startActivity(intent)
                         }
                         .setNegativeButton("Cancel") { builder, _ ->
                             builder.cancel()
