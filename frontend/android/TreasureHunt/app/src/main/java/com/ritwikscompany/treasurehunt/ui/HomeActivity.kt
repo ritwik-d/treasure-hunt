@@ -47,6 +47,8 @@ class HomeActivity : AppCompatActivity() {
         setProfilePicture()
 
         findViewById<TextView>(R.id.home_name).text = "Hello ${userData["username"].toString()}!"
+        findViewById<TextView>(R.id.home_points).text = "${(userData["points"] as Double).toInt()} Points"
+
         findViewById<Button>(R.id.home_find_challenge).setOnClickListener {
             findChallengeOnClick()
         }
@@ -80,8 +82,8 @@ class HomeActivity : AppCompatActivity() {
 
             R.id.menu_race -> {
                 AlertDialog.Builder(ctx)
-                        .setTitle("Race Coming Soon!")
-                        .setMessage("Races is a beta features, meaning that it is still in production. This features will be coming soon!")
+                        .setTitle("Races Coming Soon!")
+                        .setMessage("Races is a beta features, meaning that it is still in production. This feature will be coming soon!")
                         .setPositiveButton("OK") { builder, _ ->
                             builder.cancel()
 //                            val intent = Intent(ctx, RacesActivity::class.java).apply {

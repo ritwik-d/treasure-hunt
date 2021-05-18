@@ -5,12 +5,12 @@ plugins {
 
 android {
     signingConfigs {
-        release {
-            storeFile file('C:\\Users\\adith\\Treasurehunt.jks')
-            storePassword 'teamtreasurehunt5901'
-            keyAlias 'TreasureHunt'
-            keyPassword 'teamtreasurehunt5901'
-        }
+//        release {
+//            storeFile file('C:\\Users\\adith\\Treasurehunt.jks')
+//            storePassword 'teamtreasurehunt5901'
+//            keyAlias 'TreasureHunt'
+//            keyPassword 'teamtreasurehunt5901'
+//        }
     }
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
