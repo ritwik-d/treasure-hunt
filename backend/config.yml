@@ -55,6 +55,7 @@ mysql:
 paths:
   emails: /home/ritwik/git_hub/TreasureHunt/backend/emails/
   firebase_config: /home/ritwik/git_hub/TreasureHunt/backend/firebase_config.json
+  gunicorn_run: /home/ritwik/git_hub/TreasureHunt/backend/shell_scripts/gunicorn_run.sh
   html_bodies: /home/ritwik/git_hub/TreasureHunt/backend/html_bodies/
   tmp: /home/ritwik/git_hub/TreasureHunt/backend/tmp/
 security:
