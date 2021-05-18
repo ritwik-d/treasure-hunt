@@ -213,7 +213,7 @@ class User:
         local_path = config.get('paths', 'tmp') + f'dpfp{self.user_id}'
         storage.child(cloud_path).download(local_path)
         try:
-            Timer(1, lambda: os.remove(local_path)).start()
+            # Timer(1, lambda: os.remove(local_path)).start()
             print(f'local path: {local_path}')
             return local_path
         except:
