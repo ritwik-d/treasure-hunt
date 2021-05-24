@@ -184,7 +184,7 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
                         lastLocation = p0.lastLocation
                     }
                 },
-                Looper.myLooper())
+                Looper.myLooper()!!)
     }
 
 
@@ -205,11 +205,11 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
             val timer = object: CountDownTimer(timeRemaining, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
-                    if (millisUntilFinished / 1000 < 60) {
+                    if (millisUntilFinished / 1000 <= 60) {
                         startTimeTV.setTextColor(
                                 ContextCompat.getColor(ctx, R.color.red)
                         )
-                    } else if (millisUntilFinished / 1000 < 600) {
+                    } else if (millisUntilFinished / 1000 <= 600) {
                         startTimeTV.setTextColor(
                                 ContextCompat.getColor(ctx, R.color.yellow)
                         )
@@ -304,7 +304,6 @@ class RaceDataActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMa
 
     private fun setUpRaceMap() {
         if (!ctx::lastLocation.isInitialized || !ctx::map.isInitialized) {
-            println("NOOOOOOOOOOOOOO")
             return
         }
 

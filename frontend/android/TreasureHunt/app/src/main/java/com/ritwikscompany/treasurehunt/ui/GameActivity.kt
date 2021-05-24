@@ -38,10 +38,10 @@ import kotlin.math.cos
 class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private val ctx = this@GameActivity
-    private var userData = HashMap<String, Any>()
     private var challengeName = ""
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
+    @Volatile private var userData = HashMap<String, Any>()
     @Volatile private lateinit var map: GoogleMap
     @Volatile private var stopThread = false
     @Volatile private lateinit var lastLocation: Location
@@ -234,7 +234,7 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             override fun onLocationResult(p0: LocationResult) {
                 lastLocation = p0.lastLocation
             }
-        }, Looper.myLooper())
+        }, Looper.myLooper()!!)
     }
 
 
@@ -261,6 +261,9 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private fun launchDaemon(challengeData: HashMap<String, Any>) {
         val isCompletedThread = IsCompletedThread(challengeData)
         isCompletedThread.start()
+
+//        val stepCountThread = StepCountThread()
+//        stepCountThread.start()
     }
 
 
@@ -286,6 +289,8 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                             .setTitle("Congratulations!")
                             .setMessage("Congratulations on completing the challenge, $challengeName! You get a point!")
                             .setPositiveButton("OK") { _, _ ->
+                                userData["points"] = userData["points"] as Double + 1.0
+
                                 val intent = Intent(ctx, PickChallengeActivity::class.java).apply {
                                     putExtra("userData", userData)
                                 }
@@ -331,4 +336,38 @@ class GameActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             }
         }
     }
+
+//    inner class StepCountThread: Thread() {
+//        override fun run() {
+//            var previousStep: Location? = null
+//            var totalSteps: Long = 0 // meters
+//
+//            while (!ctx.stopThread) {
+//                sleep(1000)
+//
+//                if (!ctx::lastLocation.isInitialized || !ctx::map.isInitialized) {
+//                    continue
+//                }
+//
+//                if (previousStep == null) {
+//                    previousStep = lastLocation
+//                    continue
+//                }
+//
+//                val results = FloatArray(1)
+//                Location.distanceBetween(
+//                    previousStep.latitude,
+//                    previousStep.longitude,
+//                    lastLocation.latitude,
+//                    lastLocation.longitude,
+//                    results
+//                )
+//
+//                previousStep = lastLocation
+//                totalSteps += round(results[0] / 2.5).toLong()
+//            }
+//
+//            println("totalSteps: $totalSteps")
+//        }
+//    }
 }
