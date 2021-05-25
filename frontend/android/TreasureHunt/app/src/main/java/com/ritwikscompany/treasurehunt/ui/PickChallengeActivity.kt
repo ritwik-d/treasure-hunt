@@ -3,7 +3,9 @@ package com.ritwikscompany.treasurehunt.ui
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
+import android.view.View
 import android.widget.SearchView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -71,32 +73,38 @@ class PickChallengeActivity : AppCompatActivity() {
                                 }
 
                                 val firstTab = tabLayout.getTabAt(tabLayout.selectedTabPosition)?.text.toString()
-                                val challenges = challengeData[firstTab] as ArrayList
+                                try {
+                                    val challenges = challengeData[firstTab] as ArrayList
 
-                                val startOnClick = { challengeName: String ->
-                                    val intent = Intent(ctx, GameActivity::class.java).apply {
-                                        putExtra("userData", userData)
-                                        putExtra("challengeName", challengeName)
-                                    }
-                                    startActivity(intent)
-                                }
-
-                                rv.layoutManager = LinearLayoutManager(ctx)
-                                rv.adapter = FindChallengeRVA(challenges, startOnClick)
-
-                                tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-                                    override fun onTabSelected(tab: TabLayout.Tab?) {
-                                        rv.adapter = FindChallengeRVA(challengeData[tab?.text.toString()] as ArrayList, startOnClick)
-
-                                        if (ctx::searchView.isInitialized) {
-                                            searchView.setQuery("", false)
+                                    val onStartClicked = { challengeName: String ->
+                                        val intent = Intent(ctx, GameActivity::class.java).apply {
+                                            putExtra("userData", userData)
+                                            putExtra("challengeName", challengeName)
                                         }
+                                        startActivity(intent)
                                     }
 
-                                    override fun onTabUnselected(tab: TabLayout.Tab?) {}
+                                    rv.layoutManager = LinearLayoutManager(ctx)
+                                    rv.adapter = FindChallengeRVA(challenges, onStartClicked)
 
-                                    override fun onTabReselected(tab: TabLayout.Tab?) {}
-                                })
+                                    tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
+                                        override fun onTabSelected(tab: TabLayout.Tab?) {
+                                            rv.adapter = FindChallengeRVA(challengeData[tab?.text.toString()] as ArrayList, onStartClicked)
+
+                                            if (ctx::searchView.isInitialized) {
+                                                searchView.setQuery("", false)
+                                            }
+                                        }
+
+                                        override fun onTabUnselected(tab: TabLayout.Tab?) {}
+
+                                        override fun onTabReselected(tab: TabLayout.Tab?) {}
+                                    })
+                                }
+                                catch (e: java.lang.NullPointerException) {
+                                    tabLayout.visibility = View.INVISIBLE
+                                    findViewById<TextView>(R.id.pc_nochal).visibility = View.VISIBLE
+                                }
                             }
 
                             else {
@@ -153,17 +161,21 @@ class PickChallengeActivity : AppCompatActivity() {
                             searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
                                 override fun onQueryTextSubmit(query: String?): Boolean {
                                     val text = query!!.toLowerCase(Locale.ROOT)
-                                    val currentChallenges = challengeData[tabLayout.getTabAt(tabLayout.selectedTabPosition)!!.text.toString()] as ArrayList
-                                    val newChallenges = ArrayList<String>()
+                                    try {
+                                        val currentChallenges = challengeData[tabLayout.getTabAt(tabLayout.selectedTabPosition)!!.text.toString()] as ArrayList
+                                        val newChallenges = ArrayList<String>()
 
-                                    for (challenge in currentChallenges) {
-                                        val challenge2 = challenge.toLowerCase(Locale.ROOT)
-                                        if (text in challenge2) {
-                                            newChallenges.add(challenge)
+                                        for (challenge in currentChallenges) {
+                                            val challenge2 = challenge.toLowerCase(Locale.ROOT)
+                                            if (text in challenge2) {
+                                                newChallenges.add(challenge)
+                                            }
                                         }
-                                    }
 
-                                    rv.adapter = FindChallengeRVA(newChallenges, startOnClick)
+                                        rv.adapter = FindChallengeRVA(newChallenges, startOnClick)
+                                    }
+                                    catch (e: java.lang.NullPointerException) {}
+
                                     return true
                                 }
 

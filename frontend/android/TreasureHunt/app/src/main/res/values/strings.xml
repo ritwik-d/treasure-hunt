@@ -42,6 +42,7 @@
     <string name="addGroups">Add Groups</string>
     <string name="editChallenge">Edit Challenge</string>
     <string name="noChallenges">You have no challenges!</string>
+    <string name="noPickChallenges">There are no available challenges</string>
     <string name="puzzle">Puzzle</string>
     <string name="name">Name</string>
     <string name="difficulty">Difficulty</string>
