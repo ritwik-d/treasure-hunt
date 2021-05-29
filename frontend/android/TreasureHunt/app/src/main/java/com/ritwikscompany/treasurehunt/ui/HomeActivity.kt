@@ -160,8 +160,6 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-
-    @SuppressLint("Recycle")
     private fun getRealPathFromUri(uri: Uri?, activity: Activity): String? {
         val proj = arrayOf(MediaStore.Images.Media.DATA)
         val cursor: Cursor? = activity.contentResolver.query(
