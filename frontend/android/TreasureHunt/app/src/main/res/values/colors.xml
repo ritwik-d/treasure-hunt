@@ -16,4 +16,5 @@
     <color name="colorSecondary">#00dcff</color>
     <color name="red">#FF0000</color>
     <color name="yellow">#FFEC00</color>
+    <color name="editPurple">#7800FF</color>
 </resources>

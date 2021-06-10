@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageButton
+import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.ritwikscompany.treasurehunt.R
@@ -20,8 +21,8 @@ class MyChallengesRVA(
 ): RecyclerView.Adapter<MyChallengesRVA.ViewHolder>() {
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         val checkBox: CheckBox = itemView.findViewById(R.id.rowCheckBox)
-        val trashButton: ImageButton = itemView.findViewById(R.id.row_delete_challenge)
-        val editButton: ImageButton = itemView.findViewById(R.id.row_edit_challenge)
+        val trashButton: ImageView = itemView.findViewById(R.id.row_delete_challenge)
+        val editButton: ImageView = itemView.findViewById(R.id.row_edit_challenge)
     }
 
 
