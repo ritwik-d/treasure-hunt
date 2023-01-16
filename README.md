@@ -7,3 +7,6 @@ Our aim was to tackle the issue of low exercise among our community during the C
 Treasure Hunt links people in our community through a game where players place virtual "treasure" throughout public locations (parks, streets, etc), hoping others find them and claim the "treasure."
 
 The goal was to motivate others in our community to get outside, and have a blast hunting for treasure!
+
+Thanks,
+The Treasure Hunt Team
